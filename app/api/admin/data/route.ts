@@ -7,6 +7,8 @@ import {
   getSkillCategories,
   getSkills,
   saveSkill,
+  saveAllSkills,
+  saveSkillCategories,
   deleteSkill,
   getProjects,
   saveProject,
@@ -156,6 +158,15 @@ export async function POST(request: Request) {
       case "saveSkill": {
         const result = await saveSkill(payload);
         return NextResponse.json({ success: true, data: result });
+      }
+
+      case "saveAllSkills": {
+        const { skills, categories } = payload;
+        let savedSkills = null;
+        let savedCategories = null;
+        if (skills) savedSkills = await saveAllSkills(skills);
+        if (categories) savedCategories = await saveSkillCategories(categories);
+        return NextResponse.json({ success: true, data: { skills: savedSkills, categories: savedCategories } });
       }
 
       case "deleteSkill": {

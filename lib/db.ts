@@ -306,6 +306,50 @@ export async function deleteSkill(skillId: string): Promise<boolean> {
   return true;
 }
 
+export async function saveAllSkills(skills: Skill[]): Promise<Skill[]> {
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("skills")
+        .upsert(skills)
+        .select();
+      if (!error && data) {
+        localStore.skills = data as Skill[];
+        persistChanges();
+        return data as Skill[];
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase save all skills fallback:", err);
+  }
+  localStore.skills = [...skills];
+  persistChanges();
+  return skills;
+}
+
+export async function saveSkillCategories(categories: SkillCategory[]): Promise<SkillCategory[]> {
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("skill_categories")
+        .upsert(categories)
+        .select();
+      if (!error && data) {
+        localStore.skillCategories = data as SkillCategory[];
+        persistChanges();
+        return data as SkillCategory[];
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase save skill categories fallback:", err);
+  }
+  localStore.skillCategories = [...categories];
+  persistChanges();
+  return categories;
+}
+
 export async function getProjects(options?: {
   publishedOnly?: boolean;
   featuredOnly?: boolean;
