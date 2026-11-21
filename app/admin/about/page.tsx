@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import {
   Save,
   CheckCircle2,
@@ -9,7 +8,6 @@ import {
   Plus,
   Trash2,
   GraduationCap,
-  Upload,
   X,
   Layers,
   Cpu,
@@ -21,7 +19,6 @@ import {
   Sparkles,
   Tag,
   BookOpen,
-  Image as ImageIcon,
 } from "lucide-react";
 import { AboutContent, EducationEntry } from "@/types/portfolio";
 import { initialAboutContent } from "@/data/initialData";
@@ -40,7 +37,6 @@ const availableIcons = [
 export default function AdminAboutEditor() {
   const [content, setContent] = useState<AboutContent>(initialAboutContent);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
-  const [uploading, setUploading] = useState(false);
   const [newInterest, setNewInterest] = useState("");
 
   useEffect(() => {
@@ -90,37 +86,6 @@ export default function AdminAboutEditor() {
     } catch (err) {
       console.error(err);
       setStatus("error");
-    }
-  };
-
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.success && data.url) {
-        const updated = { ...content, photo_url: data.url };
-        setContent(updated);
-        try {
-          localStorage.setItem("portfolio_about", JSON.stringify(updated));
-        } catch {}
-      } else {
-        alert(data.error || "Failed to upload photo");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error uploading image");
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -266,73 +231,7 @@ export default function AdminAboutEditor() {
         </div>
       </div>
 
-      {/* 2. About Photo / Portrait Image */}
-      <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-5">
-        <div className="flex items-center gap-2 border-b border-amber-500/20 pb-3">
-          <ImageIcon className="w-4 h-4 text-amber-400" />
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-            About Page Photo / Image
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-          <div className="md:col-span-4 flex justify-center">
-            <div className="relative w-44 h-56 rounded-2xl overflow-hidden border-2 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.3)] bg-[#071324]">
-              {content.photo_url ? (
-                <Image
-                  src={content.photo_url}
-                  alt={content.full_name || "About Photo"}
-                  fill
-                  unoptimized={
-                    content.photo_url.startsWith("data:") ||
-                    content.photo_url.startsWith("http")
-                  }
-                  className="object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-amber-400/60 p-4 text-center text-xs">
-                  <ImageIcon className="w-10 h-10 mb-2 opacity-50" />
-                  <span>No photo selected</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="md:col-span-8 space-y-4">
-            <div>
-              <label className="block text-amber-300 font-semibold mb-1 text-xs">
-                Upload New Image File
-              </label>
-              <label className="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#071324] text-xs font-extrabold shadow-md transition-all active:scale-95">
-                <Upload className="w-4 h-4" />
-                <span>{uploading ? "Uploading..." : "Select & Upload Photo"}</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  disabled={uploading}
-                  className="hidden"
-                />
-              </label>
-            </div>
-
-            <div>
-              <label className="block text-amber-300 font-semibold mb-1 text-xs">
-                Or Direct Image URL
-              </label>
-              <input
-                type="text"
-                value={content.photo_url || ""}
-                onChange={(e) => setContent({ ...content, photo_url: e.target.value })}
-                placeholder="/profile.png or https://..."
-                className="w-full px-3.5 py-2 rounded-xl border border-amber-500/30 bg-[#071324] text-xs text-white"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Areas of Specialization */}
+      {/* 2. Areas of Specialization */}
       <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-5">
         <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
           <div className="flex items-center gap-2">

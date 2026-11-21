@@ -17,10 +17,8 @@ import {
   Code,
   ArrowRight,
   CheckCircle2,
-  CheckCircle,
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 interface AboutClientProps {
   initialAbout: AboutContent;
@@ -75,9 +73,6 @@ export default function AboutClient({ initialAbout, settings }: AboutClientProps
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
-
-  const displayPhoto =
-    about.photo_url || settings.profile_photo_url || "/profile.png";
 
   return (
     <div className="min-h-screen flex flex-col bg-[#071324] text-white">
@@ -182,42 +177,8 @@ export default function AboutClient({ initialAbout, settings }: AboutClientProps
               </section>
             </div>
 
-            {/* Right 4 Cols: Photo Card, Areas of Specialization & Core Interests */}
+            {/* Right 4 Cols: Areas of Specialization & Core Interests */}
             <div className="lg:col-span-4 space-y-8">
-              {/* Profile / Portrait Image Card */}
-              {displayPhoto && (
-                <div className="relative group rounded-3xl overflow-hidden border-2 border-amber-400/80 bg-[#0d1f38] shadow-[0_0_25px_rgba(245,158,11,0.25)] p-2">
-                  <div className="relative h-80 sm:h-96 w-full rounded-2xl overflow-hidden bg-[#071324]">
-                    <Image
-                      src={displayPhoto}
-                      alt={about.full_name || settings.name || "Profile Photo"}
-                      fill
-                      unoptimized={
-                        displayPhoto.startsWith("data:") ||
-                        displayPhoto.startsWith("http")
-                      }
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      priority
-                    />
-                    <div className="absolute inset-0 bg-linear-to-t from-[#071324]/90 via-transparent to-transparent pointer-events-none" />
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                      <div>
-                        <div className="text-sm font-extrabold text-white">
-                          {about.full_name || settings.name}
-                        </div>
-                        <div className="text-[11px] font-mono text-amber-300">
-                          {settings.designation}
-                        </div>
-                      </div>
-                      <div className="px-2.5 py-1 rounded-full bg-[#071324]/90 border border-amber-400 text-amber-300 text-[10px] font-mono font-bold flex items-center gap-1 shadow-md">
-                        <CheckCircle className="w-3 h-3 text-amber-400" />
-                        <span>Verified</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Areas of Specialization */}
               {about.areas_of_specialization &&
                 about.areas_of_specialization.length > 0 && (
