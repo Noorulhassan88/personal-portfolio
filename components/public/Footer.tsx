@@ -120,11 +120,7 @@ export default function Footer({
           <div>
             © {new Date().getFullYear()} {name}. Built with Next.js, TypeScript & Supabase.
           </div>
-          <div className="flex items-center gap-4">
-            <Link href="/admin/login" className="hover:text-neutral-900 transition-colors">
-              Admin Portal
-            </Link>
-            <span>•</span>
+          <div>
             <Link href="/contact" className="hover:text-neutral-900 transition-colors">
               Contact
             </Link>
