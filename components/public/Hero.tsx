@@ -10,6 +10,7 @@ import {
   User,
   Sparkles,
   Terminal,
+  Camera,
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/shared/SocialIcons";
 import { HomepageSettings } from "@/types/portfolio";
@@ -137,64 +138,56 @@ export default function Hero({ settings }: HeroProps) {
             </div>
           </div>
 
-          {/* Right Column: Profile Photo Card with Gold Border & Navy Highlights */}
+          {/* Right Column: Dedicated Full-Frame Profile Photo Canvas */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <div className="relative w-64 h-72 sm:w-72 sm:h-80 md:w-80 md:h-[380px]">
-              {/* Outer Glowing Golden Border */}
-              <div className="absolute -inset-1.5 rounded-3xl bg-linear-to-tr from-amber-400 via-amber-500 to-amber-300 opacity-60 blur-xs -z-10 animate-pulse" />
+            <div className="relative w-72 h-[380px] sm:w-80 sm:h-[430px] md:w-[350px] md:h-[470px] lg:w-[380px] lg:h-[500px] max-w-full">
+              {/* Outer Glowing Golden Aura */}
+              <div className="absolute -inset-2 rounded-3xl bg-linear-to-tr from-amber-400 via-amber-500 to-amber-300 opacity-50 blur-md -z-10 animate-pulse" />
 
-              {/* Decorative Navy Backdrop Frame */}
-              <div className="absolute inset-0 rounded-2xl bg-[#0d1f38] border-2 border-amber-400/80 shadow-2xl transition-transform group-hover:rotate-0" />
+              {/* Decorative Frame */}
+              <div className="absolute inset-0 rounded-3xl bg-[#0d1f38] border-2 border-amber-400/90 shadow-2xl" />
 
-              {/* Main Photo Card */}
-              <div className="relative w-full h-full rounded-2xl overflow-hidden border-2 border-amber-400 bg-[#071324] shadow-2xl flex flex-col">
+              {/* Pure Portrait Photo Container - 100% Dedicated to Photo */}
+              <div className="relative w-full h-full rounded-3xl overflow-hidden border-2 border-amber-400 bg-[#071324] shadow-[0_0_35px_rgba(245,158,11,0.3)] flex items-center justify-center">
                 {settings.profile_photo_url && !imgError ? (
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={settings.profile_photo_url}
-                      alt={settings.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 400px"
-                      className="object-cover transition-transform duration-500 hover:scale-105"
-                      style={{
-                        objectPosition: `${photoPos.x}% ${photoPos.y}%`,
-                        transform: `scale(${photoPos.scale || 1})`,
-                      }}
-                      onError={() => setImgError(true)}
-                      priority
-                    />
-                  </div>
+                  <Image
+                    src={settings.profile_photo_url}
+                    alt={settings.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 450px"
+                    className="object-cover w-full h-full transition-transform duration-700 hover:scale-105"
+                    style={{
+                      objectPosition: `${photoPos.x}% ${photoPos.y}%`,
+                      transform: `scale(${photoPos.scale || 1})`,
+                    }}
+                    onError={() => setImgError(true)}
+                    priority
+                  />
                 ) : (
-                  /* Elegant Navy & Gold Monogram Card */
-                  <div className="w-full h-full bg-linear-to-b from-[#0a192f] via-[#0d1f38] to-[#071324] flex flex-col items-center justify-center p-6 text-center text-white">
-                    <div className="w-20 h-20 rounded-full bg-linear-to-br from-amber-400 to-amber-600 text-[#071324] flex items-center justify-center text-2xl font-black tracking-wider mb-3 shadow-[0_0_20px_rgba(245,158,11,0.5)] border-2 border-amber-200">
-                      NH
-                    </div>
-                    <h3 className="font-bold text-base text-white tracking-tight">
-                      {settings.name}
-                    </h3>
-                    <p className="text-[11px] text-amber-300 font-mono mt-0.5 font-semibold">
-                      {settings.designation}
-                    </p>
-                    <div className="mt-4 px-3.5 py-1 rounded-full bg-[#142c50] border border-amber-400/60 text-[10px] font-bold text-amber-300 flex items-center gap-1.5 shadow-md">
-                      <Sparkles className="w-3 h-3 text-amber-400" />
-                      <span>Ready for AI & Full Stack Roles</span>
+                  /* Elegant Full-Height Photo Placeholder Canvas */
+                  <div className="w-full h-full bg-linear-to-b from-[#0a192f] via-[#0d1f38] to-[#071324] flex flex-col items-center justify-center p-8 text-center text-white relative">
+                    <div className="absolute inset-0 bg-[radial-gradient(rgba(212,175,55,0.12)_1px,transparent_1px)] [background-size:20px_20px]" />
+                    
+                    <div className="relative z-10 flex flex-col items-center justify-center space-y-4">
+                      <div className="w-24 h-24 rounded-full bg-[#071324] border-2 border-amber-400 text-amber-400 flex items-center justify-center shadow-[0_0_25px_rgba(245,158,11,0.45)]">
+                        <Camera className="w-10 h-10 stroke-[1.75]" />
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <h3 className="font-extrabold text-lg text-white tracking-tight">
+                          {settings.name}
+                        </h3>
+                        <p className="text-xs font-mono text-amber-300 font-semibold tracking-wide">
+                          Portrait Photo Space
+                        </p>
+                      </div>
+
+                      <p className="text-[11px] text-slate-300 max-w-[200px] leading-relaxed">
+                        Upload your photo in the Admin CMS to display your portrait here
+                      </p>
                     </div>
                   </div>
                 )}
-
-                {/* Bottom Badge Overlay */}
-                <div className="absolute bottom-3 left-3 right-3 p-2 rounded-xl bg-[#071324]/95 backdrop-blur-md border border-amber-400/70 shadow-lg flex items-center justify-between text-white">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shadow-[0_0_6px_#f59e0b]" />
-                    <span className="text-[10px] font-semibold text-amber-200">
-                      AI & Data Science • Crescent
-                    </span>
-                  </div>
-                  <span className="text-[9px] font-mono font-bold text-amber-400 uppercase tracking-wider">
-                    Verified
-                  </span>
-                </div>
               </div>
             </div>
           </div>
