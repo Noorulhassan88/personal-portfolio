@@ -1,23 +1,142 @@
 import { NextResponse } from "next/server";
 import {
+  getHomepageSettings,
   updateHomepageSettings,
+  getAboutContent,
   updateAboutContent,
+  getSkillCategories,
+  getSkills,
   saveSkill,
   deleteSkill,
+  getProjects,
   saveProject,
   deleteProject,
+  getExperience,
   saveExperience,
   deleteExperience,
+  getCertifications,
   saveCertification,
   deleteCertification,
+  getContactMessages,
   updateContactMessage,
   deleteContactMessage,
+  getAppearanceSettings,
   updateAppearanceSettings,
+  getSeoSettings,
   updateSeoSettings,
+  getWebsiteSettings,
   updateWebsiteSettings,
+  getMediaItems,
   addMediaItem,
   deleteMediaItem,
 } from "@/lib/db";
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const section = searchParams.get("section");
+
+    if (section === "homepage") {
+      const data = await getHomepageSettings();
+      return NextResponse.json({ success: true, data });
+    }
+    if (section === "about") {
+      const data = await getAboutContent();
+      return NextResponse.json({ success: true, data });
+    }
+    if (section === "skills") {
+      const [skills, categories] = await Promise.all([
+        getSkills(false),
+        getSkillCategories(),
+      ]);
+      return NextResponse.json({ success: true, data: { skills, categories } });
+    }
+    if (section === "projects") {
+      const data = await getProjects();
+      return NextResponse.json({ success: true, data });
+    }
+    if (section === "experience") {
+      const data = await getExperience(false);
+      return NextResponse.json({ success: true, data });
+    }
+    if (section === "certifications") {
+      const data = await getCertifications(false);
+      return NextResponse.json({ success: true, data });
+    }
+    if (section === "appearance") {
+      const data = await getAppearanceSettings();
+      return NextResponse.json({ success: true, data });
+    }
+    if (section === "seo") {
+      const data = await getSeoSettings();
+      return NextResponse.json({ success: true, data });
+    }
+    if (section === "settings") {
+      const data = await getWebsiteSettings();
+      return NextResponse.json({ success: true, data });
+    }
+    if (section === "media") {
+      const data = await getMediaItems();
+      return NextResponse.json({ success: true, data });
+    }
+    if (section === "messages") {
+      const data = await getContactMessages();
+      return NextResponse.json({ success: true, data });
+    }
+
+    const [
+      homepage,
+      about,
+      categories,
+      skills,
+      projects,
+      experience,
+      certifications,
+      appearance,
+      seo,
+      settings,
+      media,
+      messages,
+    ] = await Promise.all([
+      getHomepageSettings(),
+      getAboutContent(),
+      getSkillCategories(),
+      getSkills(false),
+      getProjects(),
+      getExperience(false),
+      getCertifications(false),
+      getAppearanceSettings(),
+      getSeoSettings(),
+      getWebsiteSettings(),
+      getMediaItems(),
+      getContactMessages(),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        homepage,
+        about,
+        skillCategories: categories,
+        skills,
+        projects,
+        experience,
+        certifications,
+        appearance,
+        seo,
+        settings,
+        media,
+        messages,
+      },
+    });
+  } catch (error) {
+    console.error("Admin API GET error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch admin data" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: Request) {
   try {

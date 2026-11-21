@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Plus,
@@ -12,6 +12,7 @@ import {
   Calendar,
   X,
   Save,
+  Upload,
 } from "lucide-react";
 import { Certification } from "@/types/portfolio";
 import { initialCertifications } from "@/data/initialData";
@@ -23,6 +24,58 @@ export default function AdminCertificationsPage() {
   const [editingCert, setEditingCert] = useState<Certification | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("portfolio_certifications");
+      if (local) {
+        setCertifications(JSON.parse(local));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    fetch("/api/admin/data?section=certifications")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setCertifications(res.data);
+          try {
+            localStorage.setItem("portfolio_certifications", JSON.stringify(res.data));
+          } catch {}
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingCert) return;
+    setUploadingImage(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        setEditingCert({
+          ...editingCert,
+          image_url: data.url,
+        });
+      } else {
+        alert(data.error || "Failed to upload image");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload image");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const handleOpenNew = () => {
     const newCert: Certification = {
@@ -45,6 +98,18 @@ export default function AdminCertificationsPage() {
     e.preventDefault();
     if (!editingCert) return;
 
+    const exists = certifications.some((c) => c.id === editingCert.id);
+    const updated = exists
+      ? certifications.map((c) => (c.id === editingCert.id ? editingCert : c))
+      : [...certifications, editingCert];
+
+    setCertifications(updated);
+    try {
+      localStorage.setItem("portfolio_certifications", JSON.stringify(updated));
+    } catch (err) {
+      console.error(err);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",
@@ -52,33 +117,31 @@ export default function AdminCertificationsPage() {
         body: JSON.stringify({ action: "saveCertification", payload: editingCert }),
       });
 
-      const exists = certifications.some((c) => c.id === editingCert.id);
-      if (exists) {
-        setCertifications(
-          certifications.map((c) => (c.id === editingCert.id ? editingCert : c))
-        );
-      } else {
-        setCertifications([...certifications, editingCert]);
-      }
-
       setIsModalOpen(false);
       setStatusMessage("Certification saved successfully!");
       setTimeout(() => setStatusMessage(""), 3000);
     } catch (err) {
       console.error(err);
-      alert("Failed to save certification.");
+      alert("Failed to save certification to cloud, but saved locally.");
     }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to remove this certification?")) return;
+    const updated = certifications.filter((c) => c.id !== id);
+    setCertifications(updated);
+    try {
+      localStorage.setItem("portfolio_certifications", JSON.stringify(updated));
+    } catch (err) {
+      console.error(err);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "deleteCertification", payload: { id } }),
       });
-      setCertifications(certifications.filter((c) => c.id !== id));
       setStatusMessage("Certification removed.");
       setTimeout(() => setStatusMessage(""), 3000);
     } catch (e) {
@@ -300,16 +363,30 @@ export default function AdminCertificationsPage() {
 
               <div>
                 <label className="block font-semibold text-amber-300 mb-1">
-                  Image or Badge URL
+                  Certificate Image or Badge (Upload File or Enter URL)
                 </label>
-                <input
-                  type="text"
-                  value={editingCert.image_url || ""}
-                  onChange={(e) =>
-                    setEditingCert({ ...editingCert, image_url: e.target.value })
-                  }
-                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={editingCert.image_url || ""}
+                    onChange={(e) =>
+                      setEditingCert({ ...editingCert, image_url: e.target.value })
+                    }
+                    placeholder="https://... or upload photo"
+                    className="flex-1 px-3 py-2 rounded-xl border border-amber-500/30 bg-[#071324] text-white"
+                  />
+                  <label className="cursor-pointer px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-bold shrink-0 flex items-center gap-1.5 transition-colors">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{uploadingImage ? "Uploading..." : "Upload Photo"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                    />
+                  </label>
+                </div>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-amber-500/20">
@@ -322,9 +399,10 @@ export default function AdminCertificationsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-blue-600 text-white font-semibold"
+                  className="inline-flex items-center gap-1.5 px-6 py-2 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] text-xs font-extrabold border border-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all cursor-pointer"
                 >
-                  Save Certificate
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save Certificate</span>
                 </button>
               </div>
             </form>

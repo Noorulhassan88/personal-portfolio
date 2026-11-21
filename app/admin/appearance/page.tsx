@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Palette, CheckCircle2, Save, Layout, Type } from "lucide-react";
 import { AppearanceSettings } from "@/types/portfolio";
 import { initialAppearanceSettings } from "@/data/initialData";
@@ -20,9 +20,39 @@ export default function AdminAppearancePage() {
   );
   const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
 
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("portfolio_appearance");
+      if (local) {
+        setSettings(JSON.parse(local));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    fetch("/api/admin/data?section=appearance")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setSettings(res.data);
+          try {
+            localStorage.setItem("portfolio_appearance", JSON.stringify(res.data));
+          } catch {}
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("saving");
+
+    try {
+      localStorage.setItem("portfolio_appearance", JSON.stringify(settings));
+    } catch (err) {
+      console.error(err);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",

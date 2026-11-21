@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Save,
   CheckCircle2,
@@ -16,8 +16,37 @@ export default function AdminAboutEditor() {
   const [content, setContent] = useState<AboutContent>(initialAboutContent);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("portfolio_about");
+      if (local) {
+        setContent(JSON.parse(local));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    fetch("/api/admin/data?section=about")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setContent(res.data);
+          try {
+            localStorage.setItem("portfolio_about", JSON.stringify(res.data));
+          } catch {}
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   const handleSave = async () => {
     setStatus("saving");
+    try {
+      localStorage.setItem("portfolio_about", JSON.stringify(content));
+    } catch (err) {
+      console.error(err);
+    }
+
     try {
       const res = await fetch("/api/admin/data", {
         method: "POST",

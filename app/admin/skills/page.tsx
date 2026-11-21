@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Plus,
   Edit2,
@@ -15,10 +15,36 @@ import { initialSkills, initialSkillCategories } from "@/data/initialData";
 
 export default function AdminSkillsPage() {
   const [skills, setSkills] = useState<Skill[]>(initialSkills);
-  const [categories] = useState<SkillCategory[]>(initialSkillCategories);
+  const [categories, setCategories] = useState<SkillCategory[]>(initialSkillCategories);
   const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
+
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("portfolio_skills");
+      if (local) {
+        setSkills(JSON.parse(local));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    fetch("/api/admin/data?section=skills")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          if (res.data.skills) {
+            setSkills(res.data.skills);
+            try {
+              localStorage.setItem("portfolio_skills", JSON.stringify(res.data.skills));
+            } catch {}
+          }
+          if (res.data.categories) setCategories(res.data.categories);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const handleOpenNew = () => {
     const newSkill: Skill = {
@@ -44,6 +70,18 @@ export default function AdminSkillsPage() {
       category_name: cat ? cat.name : editingSkill.category_name,
     };
 
+    const exists = skills.some((s) => s.id === payload.id);
+    const updated = exists
+      ? skills.map((s) => (s.id === payload.id ? payload : s))
+      : [...skills, payload];
+
+    setSkills(updated);
+    try {
+      localStorage.setItem("portfolio_skills", JSON.stringify(updated));
+    } catch (err) {
+      console.error(err);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",
@@ -51,31 +89,31 @@ export default function AdminSkillsPage() {
         body: JSON.stringify({ action: "saveSkill", payload }),
       });
 
-      const exists = skills.some((s) => s.id === payload.id);
-      if (exists) {
-        setSkills(skills.map((s) => (s.id === payload.id ? payload : s)));
-      } else {
-        setSkills([...skills, payload]);
-      }
-
       setIsModalOpen(false);
       setStatusMessage("Skill saved successfully!");
       setTimeout(() => setStatusMessage(""), 3000);
     } catch (err) {
       console.error(err);
-      alert("Failed to save skill.");
+      alert("Failed to save skill to cloud, but saved locally.");
     }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this skill?")) return;
+    const updated = skills.filter((s) => s.id !== id);
+    setSkills(updated);
+    try {
+      localStorage.setItem("portfolio_skills", JSON.stringify(updated));
+    } catch (err) {
+      console.error(err);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "deleteSkill", payload: { id } }),
       });
-      setSkills(skills.filter((s) => s.id !== id));
       setStatusMessage("Skill removed.");
       setTimeout(() => setStatusMessage(""), 3000);
     } catch (e) {

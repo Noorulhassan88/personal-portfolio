@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Settings, Save, CheckCircle2, Shield, AlertTriangle } from "lucide-react";
 import { WebsiteSettings } from "@/types/portfolio";
 import { initialWebsiteSettings } from "@/data/initialData";
@@ -9,9 +9,39 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<WebsiteSettings>(initialWebsiteSettings);
   const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
 
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("portfolio_settings");
+      if (local) {
+        setSettings(JSON.parse(local));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    fetch("/api/admin/data?section=settings")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setSettings(res.data);
+          try {
+            localStorage.setItem("portfolio_settings", JSON.stringify(res.data));
+          } catch {}
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("saving");
+
+    try {
+      localStorage.setItem("portfolio_settings", JSON.stringify(settings));
+    } catch (err) {
+      console.error(err);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",

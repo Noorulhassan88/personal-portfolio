@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, CheckCircle2, Briefcase, Calendar, X, Save } from "lucide-react";
 import { ExperienceEntry } from "@/types/portfolio";
 import { initialExperience } from "@/data/initialData";
@@ -11,6 +11,29 @@ export default function AdminExperiencePage() {
   const [editingEntry, setEditingEntry] = useState<ExperienceEntry | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
+
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("portfolio_experience");
+      if (local) {
+        setExperience(JSON.parse(local));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    fetch("/api/admin/data?section=experience")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setExperience(res.data);
+          try {
+            localStorage.setItem("portfolio_experience", JSON.stringify(res.data));
+          } catch {}
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const handleOpenNew = () => {
     const newEntry: ExperienceEntry = {
@@ -34,6 +57,18 @@ export default function AdminExperiencePage() {
     e.preventDefault();
     if (!editingEntry) return;
 
+    const exists = experience.some((e) => e.id === editingEntry.id);
+    const updated = exists
+      ? experience.map((e) => (e.id === editingEntry.id ? editingEntry : e))
+      : [...experience, editingEntry];
+
+    setExperience(updated);
+    try {
+      localStorage.setItem("portfolio_experience", JSON.stringify(updated));
+    } catch (err) {
+      console.error(err);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",
@@ -41,33 +76,31 @@ export default function AdminExperiencePage() {
         body: JSON.stringify({ action: "saveExperience", payload: editingEntry }),
       });
 
-      const exists = experience.some((e) => e.id === editingEntry.id);
-      if (exists) {
-        setExperience(
-          experience.map((e) => (e.id === editingEntry.id ? editingEntry : e))
-        );
-      } else {
-        setExperience([...experience, editingEntry]);
-      }
-
       setIsModalOpen(false);
       setStatusMessage("Experience saved successfully!");
       setTimeout(() => setStatusMessage(""), 3000);
     } catch (err) {
       console.error(err);
-      alert("Failed to save experience.");
+      alert("Failed to save experience to cloud, but saved locally.");
     }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this experience entry?")) return;
+    const updated = experience.filter((e) => e.id !== id);
+    setExperience(updated);
+    try {
+      localStorage.setItem("portfolio_experience", JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "deleteExperience", payload: { id } }),
       });
-      setExperience(experience.filter((e) => e.id !== id));
       setStatusMessage("Entry removed.");
       setTimeout(() => setStatusMessage(""), 3000);
     } catch (e) {

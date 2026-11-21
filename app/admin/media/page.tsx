@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Upload,
@@ -58,6 +58,30 @@ export default function AdminMediaPage() {
   const [mediaList, setMediaList] = useState<MediaItem[]>(initialMedia);
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("portfolio_media");
+      if (local) {
+        setMediaList(JSON.parse(local));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    fetch("/api/admin/data?section=media")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data && res.data.length > 0) {
+          setMediaList(res.data);
+          try {
+            localStorage.setItem("portfolio_media", JSON.stringify(res.data));
+          } catch {}
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const filteredMedia = mediaList.filter((m) =>
     m.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -69,24 +93,68 @@ export default function AdminMediaPage() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this media asset?")) return;
-    setMediaList(mediaList.filter((m) => m.id !== id));
+    const updated = mediaList.filter((m) => m.id !== id);
+    setMediaList(updated);
+    try {
+      localStorage.setItem("portfolio_media", JSON.stringify(updated));
+    } catch {}
+
+    try {
+      await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "deleteMedia", payload: { id } }),
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const handleUploadSimulate = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const newItem: MediaItem = {
-        id: `m-${Date.now()}`,
-        name: file.name,
-        url: URL.createObjectURL(file),
-        file_type: file.type.includes("pdf") ? "pdf" : "image",
-        size: file.size,
-        bucket: "website-assets",
-        created_at: new Date().toISOString(),
-      };
-      setMediaList([newItem, ...mediaList]);
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        const newItem: MediaItem = {
+          id: `m-${Date.now()}`,
+          name: file.name,
+          url: data.url,
+          file_type: file.type.includes("pdf") ? "pdf" : "image",
+          size: file.size,
+          bucket: "website-assets",
+          created_at: new Date().toISOString(),
+        };
+        const updated = [newItem, ...mediaList];
+        setMediaList(updated);
+        try {
+          localStorage.setItem("portfolio_media", JSON.stringify(updated));
+        } catch {}
+
+        await fetch("/api/admin/data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "addMedia", payload: newItem }),
+        });
+      } else {
+        alert(data.error || "Failed to upload file");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload file");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -105,10 +173,11 @@ export default function AdminMediaPage() {
 
         <label className="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base px-6 py-3 border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs">
           <Upload className="w-4 h-4" />
-          <span>Upload File</span>
+          <span>{uploading ? "Uploading File..." : "Upload File"}</span>
           <input
             type="file"
-            onChange={handleUploadSimulate}
+            onChange={handleFileUpload}
+            disabled={uploading}
             className="hidden"
             accept="image/*,.pdf"
           />

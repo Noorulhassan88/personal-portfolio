@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,6 +14,7 @@ import {
   X,
   Save,
   Search,
+  Upload,
 } from "lucide-react";
 import { Project } from "@/types/portfolio";
 import { initialProjects } from "@/data/initialData";
@@ -25,6 +26,30 @@ export default function AdminProjectsPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("portfolio_projects");
+      if (local) {
+        setProjects(JSON.parse(local));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    fetch("/api/admin/data?section=projects")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setProjects(res.data);
+          try {
+            localStorage.setItem("portfolio_projects", JSON.stringify(res.data));
+          } catch {}
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const filteredProjects = projects.filter(
     (p) =>
@@ -62,6 +87,34 @@ export default function AdminProjectsPage() {
     setIsModalOpen(true);
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingProject) return;
+    setUploadingImage(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        setEditingProject({
+          ...editingProject,
+          thumbnail_url: data.url,
+        });
+      } else {
+        alert(data.error || "Failed to upload image");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload image");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleDuplicate = async (p: Project) => {
     const dup: Project = {
       ...p,
@@ -72,13 +125,20 @@ export default function AdminProjectsPage() {
       sort_order: projects.length + 1,
     };
 
+    const updated = [...projects, dup];
+    setProjects(updated);
+    try {
+      localStorage.setItem("portfolio_projects", JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "saveProject", payload: dup }),
       });
-      setProjects([...projects, dup]);
       setStatusMessage("Project duplicated successfully.");
       setTimeout(() => setStatusMessage(""), 3000);
     } catch (e) {
@@ -88,13 +148,20 @@ export default function AdminProjectsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this project?")) return;
+    const updated = projects.filter((p) => p.id !== id);
+    setProjects(updated);
+    try {
+      localStorage.setItem("portfolio_projects", JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "deleteProject", payload: { id } }),
       });
-      setProjects(projects.filter((p) => p.id !== id));
       setStatusMessage("Project deleted.");
       setTimeout(() => setStatusMessage(""), 3000);
     } catch (e) {
@@ -111,6 +178,18 @@ export default function AdminProjectsPage() {
       slug: editingProject.slug || slugify(editingProject.title),
     };
 
+    const exists = projects.some((p) => p.id === payload.id);
+    const updated = exists
+      ? projects.map((p) => (p.id === payload.id ? payload : p))
+      : [...projects, payload];
+
+    setProjects(updated);
+    try {
+      localStorage.setItem("portfolio_projects", JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",
@@ -118,19 +197,12 @@ export default function AdminProjectsPage() {
         body: JSON.stringify({ action: "saveProject", payload }),
       });
 
-      const exists = projects.some((p) => p.id === payload.id);
-      if (exists) {
-        setProjects(projects.map((p) => (p.id === payload.id ? payload : p)));
-      } else {
-        setProjects([...projects, payload]);
-      }
-
       setIsModalOpen(false);
       setStatusMessage("Project saved successfully!");
       setTimeout(() => setStatusMessage(""), 3000);
     } catch (err) {
       console.error(err);
-      alert("Failed to save project.");
+      alert("Failed to save project to cloud, but saved locally.");
     }
   };
 
@@ -506,19 +578,33 @@ export default function AdminProjectsPage() {
 
               <div>
                 <label className="block text-xs font-semibold text-amber-300 mb-1">
-                  Thumbnail Image URL
+                  Thumbnail Image (Upload File or Enter URL)
                 </label>
-                <input
-                  type="text"
-                  value={editingProject.thumbnail_url}
-                  onChange={(e) =>
-                    setEditingProject({
-                      ...editingProject,
-                      thumbnail_url: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={editingProject.thumbnail_url}
+                    onChange={(e) =>
+                      setEditingProject({
+                        ...editingProject,
+                        thumbnail_url: e.target.value,
+                      })
+                    }
+                    placeholder="https://... or upload photo"
+                    className="flex-1 px-3 py-2 rounded-xl border border-amber-500/30 text-xs bg-[#071324] text-white"
+                  />
+                  <label className="cursor-pointer px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-bold shrink-0 flex items-center gap-1.5 transition-colors">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{uploadingImage ? "Uploading..." : "Upload Photo"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                    />
+                  </label>
+                </div>
               </div>
 
               <div className="p-4 border-t border-amber-500/20 flex items-center justify-end gap-3">
@@ -531,7 +617,7 @@ export default function AdminProjectsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors shadow-xs"
+                  className="inline-flex items-center gap-1.5 px-6 py-2 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] text-xs font-extrabold border border-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all cursor-pointer"
                 >
                   <Save className="w-4 h-4" />
                   <span>Save Project</span>

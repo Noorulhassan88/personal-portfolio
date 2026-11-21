@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import {
   initialHomepageSettings,
   initialAboutContent,
@@ -26,6 +28,46 @@ import {
   MediaItem,
 } from "@/types/portfolio";
 import { createServerSupabaseClient } from "./supabase/server";
+
+function getStorageFilePath() {
+  try {
+    return path.join(process.cwd(), "data", "portfolio_store.json");
+  } catch {
+    return "/tmp/portfolio_store.json";
+  }
+}
+
+function loadDiskStore(): any | null {
+  try {
+    const file = getStorageFilePath();
+    if (fs.existsSync(file)) {
+      const data = fs.readFileSync(file, "utf-8");
+      return JSON.parse(data);
+    }
+  } catch {
+    try {
+      if (fs.existsSync("/tmp/portfolio_store.json")) {
+        return JSON.parse(fs.readFileSync("/tmp/portfolio_store.json", "utf-8"));
+      }
+    } catch {}
+  }
+  return null;
+}
+
+function saveDiskStore(store: LocalStore) {
+  try {
+    const file = getStorageFilePath();
+    const dir = path.dirname(file);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(file, JSON.stringify(store, null, 2), "utf-8");
+  } catch {
+    try {
+      fs.writeFileSync("/tmp/portfolio_store.json", JSON.stringify(store, null, 2), "utf-8");
+    } catch {}
+  }
+}
 
 // In-memory persistent fallback store during runtime / offline development
 class LocalStore {
@@ -69,11 +111,33 @@ class LocalStore {
       created_at: new Date().toISOString(),
     },
   ];
+
+  constructor() {
+    const saved = loadDiskStore();
+    if (saved) {
+      if (saved.homepage) this.homepage = saved.homepage;
+      if (saved.about) this.about = saved.about;
+      if (saved.skillCategories) this.skillCategories = saved.skillCategories;
+      if (saved.skills) this.skills = saved.skills;
+      if (saved.projects) this.projects = saved.projects;
+      if (saved.experience) this.experience = saved.experience;
+      if (saved.certifications) this.certifications = saved.certifications;
+      if (saved.appearance) this.appearance = saved.appearance;
+      if (saved.seo) this.seo = saved.seo;
+      if (saved.settings) this.settings = saved.settings;
+      if (saved.messages) this.messages = saved.messages;
+      if (saved.media) this.media = saved.media;
+    }
+  }
 }
 
 const globalForStore = globalThis as unknown as { localStore?: LocalStore };
 export const localStore = globalForStore.localStore || new LocalStore();
 if (process.env.NODE_ENV !== "production") globalForStore.localStore = localStore;
+
+function persistChanges() {
+  saveDiskStore(localStore);
+}
 
 // Unified Data Access Layer
 export async function getHomepageSettings(): Promise<HomepageSettings> {
@@ -91,31 +155,44 @@ export async function getHomepageSettings(): Promise<HomepageSettings> {
 export async function updateHomepageSettings(
   settings: Partial<HomepageSettings>
 ): Promise<HomepageSettings> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("homepage_settings")
-      .upsert({ ...settings, updated_at: new Date().toISOString() })
-      .select()
-      .single();
-    if (!error && data) return data as HomepageSettings;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("homepage_settings")
+        .upsert({ ...settings, updated_at: new Date().toISOString() })
+        .select()
+        .single();
+      if (!error && data) {
+        localStore.homepage = data as HomepageSettings;
+        persistChanges();
+        return data as HomepageSettings;
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase homepage update fallback:", err);
   }
   localStore.homepage = {
     ...localStore.homepage,
     ...settings,
     updated_at: new Date().toISOString(),
   };
+  persistChanges();
   return localStore.homepage;
 }
 
 export async function getAboutContent(): Promise<AboutContent> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("about_content")
-      .select("*")
-      .single();
-    if (!error && data) return data as AboutContent;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("about_content")
+        .select("*")
+        .single();
+      if (!error && data) return data as AboutContent;
+    }
+  } catch (err) {
+    console.warn("Supabase about query fallback:", err);
   }
   return localStore.about;
 }
@@ -123,44 +200,61 @@ export async function getAboutContent(): Promise<AboutContent> {
 export async function updateAboutContent(
   content: Partial<AboutContent>
 ): Promise<AboutContent> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("about_content")
-      .upsert({ ...content, updated_at: new Date().toISOString() })
-      .select()
-      .single();
-    if (!error && data) return data as AboutContent;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("about_content")
+        .upsert({ ...content, updated_at: new Date().toISOString() })
+        .select()
+        .single();
+      if (!error && data) {
+        localStore.about = data as AboutContent;
+        persistChanges();
+        return data as AboutContent;
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase about update fallback:", err);
   }
   localStore.about = {
     ...localStore.about,
     ...content,
     updated_at: new Date().toISOString(),
   };
+  persistChanges();
   return localStore.about;
 }
 
 export async function getSkillCategories(): Promise<SkillCategory[]> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("skill_categories")
-      .select("*")
-      .order("sort_order", { ascending: true });
-    if (!error && data && data.length > 0) return data as SkillCategory[];
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("skill_categories")
+        .select("*")
+        .order("sort_order", { ascending: true });
+      if (!error && data && data.length > 0) return data as SkillCategory[];
+    }
+  } catch (err) {
+    console.warn("Supabase skill categories fallback:", err);
   }
   return localStore.skillCategories.sort((a, b) => a.sort_order - b.sort_order);
 }
 
 export async function getSkills(onlyActive = true): Promise<Skill[]> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    let query = supabase.from("skills").select("*").order("sort_order", { ascending: true });
-    if (onlyActive) {
-      query = query.eq("is_active", true);
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      let query = supabase.from("skills").select("*").order("sort_order", { ascending: true });
+      if (onlyActive) {
+        query = query.eq("is_active", true);
+      }
+      const { data, error } = await query;
+      if (!error && data && data.length > 0) return data as Skill[];
     }
-    const { data, error } = await query;
-    if (!error && data && data.length > 0) return data as Skill[];
+  } catch (err) {
+    console.warn("Supabase skills fallback:", err);
   }
   const skills = onlyActive
     ? localStore.skills.filter((s) => s.is_active)
@@ -169,14 +263,24 @@ export async function getSkills(onlyActive = true): Promise<Skill[]> {
 }
 
 export async function saveSkill(skill: Skill): Promise<Skill> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("skills")
-      .upsert(skill)
-      .select()
-      .single();
-    if (!error && data) return data as Skill;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("skills")
+        .upsert(skill)
+        .select()
+        .single();
+      if (!error && data) {
+        const index = localStore.skills.findIndex((s) => s.id === skill.id);
+        if (index >= 0) localStore.skills[index] = data as Skill;
+        else localStore.skills.push(data as Skill);
+        persistChanges();
+        return data as Skill;
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase save skill fallback:", err);
   }
   const index = localStore.skills.findIndex((s) => s.id === skill.id);
   if (index >= 0) {
@@ -184,16 +288,21 @@ export async function saveSkill(skill: Skill): Promise<Skill> {
   } else {
     localStore.skills.push(skill);
   }
+  persistChanges();
   return skill;
 }
 
 export async function deleteSkill(skillId: string): Promise<boolean> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { error } = await supabase.from("skills").delete().eq("id", skillId);
-    if (!error) return true;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      await supabase.from("skills").delete().eq("id", skillId);
+    }
+  } catch (err) {
+    console.warn("Supabase delete skill fallback:", err);
   }
   localStore.skills = localStore.skills.filter((s) => s.id !== skillId);
+  persistChanges();
   return true;
 }
 
@@ -202,20 +311,24 @@ export async function getProjects(options?: {
   featuredOnly?: boolean;
   category?: string;
 }): Promise<Project[]> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    let query = supabase.from("projects").select("*").order("sort_order", { ascending: true });
-    if (options?.publishedOnly) {
-      query = query.eq("is_published", true);
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      let query = supabase.from("projects").select("*").order("sort_order", { ascending: true });
+      if (options?.publishedOnly) {
+        query = query.eq("is_published", true);
+      }
+      if (options?.featuredOnly) {
+        query = query.eq("is_featured", true);
+      }
+      if (options?.category && options.category !== "All") {
+        query = query.eq("category", options.category);
+      }
+      const { data, error } = await query;
+      if (!error && data && data.length > 0) return data as Project[];
     }
-    if (options?.featuredOnly) {
-      query = query.eq("is_featured", true);
-    }
-    if (options?.category && options.category !== "All") {
-      query = query.eq("category", options.category);
-    }
-    const { data, error } = await query;
-    if (!error && data && data.length > 0) return data as Project[];
+  } catch (err) {
+    console.warn("Supabase projects fallback:", err);
   }
 
   let projects = [...localStore.projects];
@@ -232,69 +345,103 @@ export async function getProjects(options?: {
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("slug", slug)
-      .single();
-    if (!error && data) return data as Project;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+      if (!error && data) return data as Project;
+    }
+  } catch (err) {
+    console.warn("Supabase project slug fallback:", err);
   }
   const found = localStore.projects.find((p) => p.slug === slug);
   return found || null;
 }
 
 export async function saveProject(project: Project): Promise<Project> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("projects")
-      .upsert({ ...project, updated_at: new Date().toISOString() })
-      .select()
-      .single();
-    if (!error && data) return data as Project;
+  const updatedProject = { ...project, updated_at: new Date().toISOString() };
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("projects")
+        .upsert(updatedProject)
+        .select()
+        .single();
+      if (!error && data) {
+        const index = localStore.projects.findIndex((p) => p.id === project.id);
+        if (index >= 0) localStore.projects[index] = data as Project;
+        else localStore.projects.push(data as Project);
+        persistChanges();
+        return data as Project;
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase save project fallback:", err);
   }
   const index = localStore.projects.findIndex((p) => p.id === project.id);
   if (index >= 0) {
-    localStore.projects[index] = { ...project, updated_at: new Date().toISOString() };
+    localStore.projects[index] = updatedProject;
   } else {
-    localStore.projects.push({ ...project, updated_at: new Date().toISOString() });
+    localStore.projects.push(updatedProject);
   }
-  return project;
+  persistChanges();
+  return updatedProject;
 }
 
 export async function deleteProject(projectId: string): Promise<boolean> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { error } = await supabase.from("projects").delete().eq("id", projectId);
-    if (!error) return true;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      await supabase.from("projects").delete().eq("id", projectId);
+    }
+  } catch (err) {
+    console.warn("Supabase delete project fallback:", err);
   }
   localStore.projects = localStore.projects.filter((p) => p.id !== projectId);
+  persistChanges();
   return true;
 }
 
 export async function getExperience(onlyPublished = true): Promise<ExperienceEntry[]> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("experience")
-      .select("*")
-      .order("sort_order", { ascending: true });
-    if (!error && data && data.length > 0) return data as ExperienceEntry[];
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("experience")
+        .select("*")
+        .order("sort_order", { ascending: true });
+      if (!error && data && data.length > 0) return data as ExperienceEntry[];
+    }
+  } catch (err) {
+    console.warn("Supabase experience fallback:", err);
   }
   return localStore.experience.sort((a, b) => a.sort_order - b.sort_order);
 }
 
 export async function saveExperience(entry: ExperienceEntry): Promise<ExperienceEntry> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("experience")
-      .upsert(entry)
-      .select()
-      .single();
-    if (!error && data) return data as ExperienceEntry;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("experience")
+        .upsert(entry)
+        .select()
+        .single();
+      if (!error && data) {
+        const index = localStore.experience.findIndex((e) => e.id === entry.id);
+        if (index >= 0) localStore.experience[index] = data as ExperienceEntry;
+        else localStore.experience.push(data as ExperienceEntry);
+        persistChanges();
+        return data as ExperienceEntry;
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase save experience fallback:", err);
   }
   const index = localStore.experience.findIndex((e) => e.id === entry.id);
   if (index >= 0) {
@@ -302,26 +449,35 @@ export async function saveExperience(entry: ExperienceEntry): Promise<Experience
   } else {
     localStore.experience.push(entry);
   }
+  persistChanges();
   return entry;
 }
 
 export async function deleteExperience(id: string): Promise<boolean> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { error } = await supabase.from("experience").delete().eq("id", id);
-    if (!error) return true;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      await supabase.from("experience").delete().eq("id", id);
+    }
+  } catch (err) {
+    console.warn("Supabase delete experience fallback:", err);
   }
   localStore.experience = localStore.experience.filter((e) => e.id !== id);
+  persistChanges();
   return true;
 }
 
 export async function getCertifications(onlyPublished = true): Promise<Certification[]> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    let query = supabase.from("certifications").select("*").order("sort_order", { ascending: true });
-    if (onlyPublished) query = query.eq("is_published", true);
-    const { data, error } = await query;
-    if (!error && data && data.length > 0) return data as Certification[];
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      let query = supabase.from("certifications").select("*").order("sort_order", { ascending: true });
+      if (onlyPublished) query = query.eq("is_published", true);
+      const { data, error } = await query;
+      if (!error && data && data.length > 0) return data as Certification[];
+    }
+  } catch (err) {
+    console.warn("Supabase certifications fallback:", err);
   }
   const certs = onlyPublished
     ? localStore.certifications.filter((c) => c.is_published)
@@ -330,14 +486,24 @@ export async function getCertifications(onlyPublished = true): Promise<Certifica
 }
 
 export async function saveCertification(cert: Certification): Promise<Certification> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("certifications")
-      .upsert(cert)
-      .select()
-      .single();
-    if (!error && data) return data as Certification;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("certifications")
+        .upsert(cert)
+        .select()
+        .single();
+      if (!error && data) {
+        const index = localStore.certifications.findIndex((c) => c.id === cert.id);
+        if (index >= 0) localStore.certifications[index] = data as Certification;
+        else localStore.certifications.push(data as Certification);
+        persistChanges();
+        return data as Certification;
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase save certification fallback:", err);
   }
   const index = localStore.certifications.findIndex((c) => c.id === cert.id);
   if (index >= 0) {
@@ -345,27 +511,36 @@ export async function saveCertification(cert: Certification): Promise<Certificat
   } else {
     localStore.certifications.push(cert);
   }
+  persistChanges();
   return cert;
 }
 
 export async function deleteCertification(id: string): Promise<boolean> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { error } = await supabase.from("certifications").delete().eq("id", id);
-    if (!error) return true;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      await supabase.from("certifications").delete().eq("id", id);
+    }
+  } catch (err) {
+    console.warn("Supabase delete certification fallback:", err);
   }
   localStore.certifications = localStore.certifications.filter((c) => c.id !== id);
+  persistChanges();
   return true;
 }
 
 export async function getContactMessages(): Promise<ContactMessage[]> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("contact_messages")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (!error && data) return data as ContactMessage[];
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("contact_messages")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!error && data) return data as ContactMessage[];
+    }
+  } catch (err) {
+    console.warn("Supabase messages fallback:", err);
   }
   return [...localStore.messages].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -383,17 +558,26 @@ export async function saveContactMessage(
     created_at: new Date().toISOString(),
   };
 
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("contact_messages")
-      .insert(newMessage)
-      .select()
-      .single();
-    if (!error && data) return data as ContactMessage;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("contact_messages")
+        .insert(newMessage)
+        .select()
+        .single();
+      if (!error && data) {
+        localStore.messages.unshift(data as ContactMessage);
+        persistChanges();
+        return data as ContactMessage;
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase save message fallback:", err);
   }
 
   localStore.messages.unshift(newMessage);
+  persistChanges();
   return newMessage;
 }
 
@@ -401,29 +585,37 @@ export async function updateContactMessage(
   id: string,
   updates: Partial<ContactMessage>
 ): Promise<boolean> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { error } = await supabase
-      .from("contact_messages")
-      .update(updates)
-      .eq("id", id);
-    if (!error) return true;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      await supabase
+        .from("contact_messages")
+        .update(updates)
+        .eq("id", id);
+    }
+  } catch (err) {
+    console.warn("Supabase update message fallback:", err);
   }
   const index = localStore.messages.findIndex((m) => m.id === id);
   if (index >= 0) {
     localStore.messages[index] = { ...localStore.messages[index], ...updates };
+    persistChanges();
     return true;
   }
   return false;
 }
 
 export async function deleteContactMessage(id: string): Promise<boolean> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { error } = await supabase.from("contact_messages").delete().eq("id", id);
-    if (!error) return true;
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      await supabase.from("contact_messages").delete().eq("id", id);
+    }
+  } catch (err) {
+    console.warn("Supabase delete message fallback:", err);
   }
   localStore.messages = localStore.messages.filter((m) => m.id !== id);
+  persistChanges();
   return true;
 }
 
@@ -433,11 +625,13 @@ export async function getMediaItems(): Promise<MediaItem[]> {
 
 export async function addMediaItem(item: MediaItem): Promise<MediaItem> {
   localStore.media.unshift(item);
+  persistChanges();
   return item;
 }
 
 export async function deleteMediaItem(id: string): Promise<boolean> {
   localStore.media = localStore.media.filter((m) => m.id !== id);
+  persistChanges();
   return true;
 }
 
@@ -453,6 +647,7 @@ export async function updateAppearanceSettings(
     ...settings,
     updated_at: new Date().toISOString(),
   };
+  persistChanges();
   return localStore.appearance;
 }
 
@@ -468,6 +663,7 @@ export async function updateSeoSettings(
     ...settings,
     updated_at: new Date().toISOString(),
   };
+  persistChanges();
   return localStore.seo;
 }
 
@@ -483,5 +679,6 @@ export async function updateWebsiteSettings(
     ...settings,
     updated_at: new Date().toISOString(),
   };
+  persistChanges();
   return localStore.settings;
 }

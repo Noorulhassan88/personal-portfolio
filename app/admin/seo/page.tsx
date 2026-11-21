@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Save, CheckCircle2, Globe } from "lucide-react";
 import { SeoSettings } from "@/types/portfolio";
 import { initialSeoSettings } from "@/data/initialData";
@@ -9,9 +9,39 @@ export default function AdminSeoPage() {
   const [seo, setSeo] = useState<SeoSettings>(initialSeoSettings);
   const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
 
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("portfolio_seo");
+      if (local) {
+        setSeo(JSON.parse(local));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    fetch("/api/admin/data?section=seo")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setSeo(res.data);
+          try {
+            localStorage.setItem("portfolio_seo", JSON.stringify(res.data));
+          } catch {}
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("saving");
+
+    try {
+      localStorage.setItem("portfolio_seo", JSON.stringify(seo));
+    } catch (err) {
+      console.error(err);
+    }
+
     try {
       await fetch("/api/admin/data", {
         method: "POST",

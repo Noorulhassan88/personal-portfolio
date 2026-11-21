@@ -47,6 +47,10 @@ export default async function CertificationsPage() {
                       src={cert.image_url}
                       alt={cert.title}
                       fill
+                      unoptimized={
+                        cert.image_url.startsWith("data:") ||
+                        cert.image_url.startsWith("http")
+                      }
                       sizes="(max-width: 768px) 100vw, 400px"
                       className="object-cover opacity-90 transition-transform duration-500 group-hover:scale-105"
                     />

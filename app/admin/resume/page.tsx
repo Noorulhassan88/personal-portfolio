@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FileText,
   Upload,
@@ -19,11 +19,48 @@ export default function AdminResumePage() {
     initialHomepageSettings.resume_enabled
   );
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [uploading, setUploading] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("noorul-hassan-resume.pdf");
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("portfolio_homepage_settings");
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (parsed.resume_url) setResumeUrl(parsed.resume_url);
+        if (parsed.resume_enabled !== undefined) setResumeEnabled(parsed.resume_enabled);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    fetch("/api/admin/data?section=homepage")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          if (res.data.resume_url) setResumeUrl(res.data.resume_url);
+          if (res.data.resume_enabled !== undefined) setResumeEnabled(res.data.resume_enabled);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const handleSave = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setStatus("saving");
+
+    try {
+      const existing = localStorage.getItem("portfolio_homepage_settings");
+      const parsed = existing ? JSON.parse(existing) : initialHomepageSettings;
+      const updated = {
+        ...parsed,
+        resume_url: resumeUrl,
+        resume_enabled: resumeEnabled,
+      };
+      localStorage.setItem("portfolio_homepage_settings", JSON.stringify(updated));
+    } catch (err) {
+      console.error(err);
+    }
 
     try {
       const res = await fetch("/api/admin/data", {
@@ -47,12 +84,56 @@ export default function AdminResumePage() {
     }
   };
 
-  const handleSimulateUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setUploadedFileName(file.name);
-      setResumeUrl(`/uploads/${file.name}`);
-      alert(`File "${file.name}" selected. Click "Save Resume Settings" to publish.`);
+    if (!file) return;
+
+    setUploading(true);
+    setUploadedFileName(file.name);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        setResumeUrl(data.url);
+        try {
+          const existing = localStorage.getItem("portfolio_homepage_settings");
+          const parsed = existing ? JSON.parse(existing) : initialHomepageSettings;
+          const updated = {
+            ...parsed,
+            resume_url: data.url,
+            resume_enabled: resumeEnabled,
+          };
+          localStorage.setItem("portfolio_homepage_settings", JSON.stringify(updated));
+        } catch (err) {
+          console.error(err);
+        }
+
+        // Also save to database
+        fetch("/api/admin/data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "updateHomepage",
+            payload: { resume_url: data.url, resume_enabled: resumeEnabled },
+          }),
+        }).catch(console.error);
+
+        setStatus("saved");
+        setTimeout(() => setStatus("idle"), 3000);
+      } else {
+        alert(data.error || "Failed to upload PDF resume");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload PDF resume");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -107,11 +188,12 @@ export default function AdminResumePage() {
               </p>
               <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0d1f38] border border-amber-500/40 hover:bg-[#071324] text-xs font-semibold text-slate-100 shadow-2xs transition-colors">
                 <Upload className="w-3.5 h-3.5" />
-                <span>Select PDF File</span>
+                <span>{uploading ? "Uploading PDF..." : "Select PDF File"}</span>
                 <input
                   type="file"
                   accept=".pdf"
-                  onChange={handleSimulateUpload}
+                  onChange={handleFileUpload}
+                  disabled={uploading}
                   className="hidden"
                 />
               </label>

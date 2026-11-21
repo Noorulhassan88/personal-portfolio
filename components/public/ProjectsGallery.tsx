@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ExternalLink, Search, Cpu } from "lucide-react";
@@ -14,11 +14,21 @@ interface ProjectsGalleryProps {
 const categories = ["All", "Full Stack", "AI/ML", "Generative AI", "Web Development"];
 
 export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProps) {
+  const [projectsList, setProjectsList] = useState<Project[]>(initialProjects);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("portfolio_projects");
+      if (local) {
+        setProjectsList(JSON.parse(local));
+      }
+    } catch {}
+  }, []);
+
   const filteredProjects = useMemo(() => {
-    return initialProjects.filter((project) => {
+    return projectsList.filter((project) => {
       const matchesCategory =
         selectedCategory === "All" || project.category === selectedCategory;
       const query = searchQuery.toLowerCase();
@@ -29,7 +39,7 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
         project.technologies.some((t) => t.toLowerCase().includes(query));
       return matchesCategory && matchesSearch;
     });
-  }, [initialProjects, selectedCategory, searchQuery]);
+  }, [projectsList, selectedCategory, searchQuery]);
 
   return (
     <div className="space-y-10">
@@ -98,6 +108,10 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
                     src={project.thumbnail_url}
                     alt={project.title}
                     fill
+                    unoptimized={
+                      project.thumbnail_url.startsWith("data:") ||
+                      project.thumbnail_url.startsWith("http")
+                    }
                     sizes="(max-width: 768px) 100vw, 400px"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
