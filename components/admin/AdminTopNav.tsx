@@ -24,18 +24,18 @@ export default function AdminTopNav({ onMenuToggle, title }: AdminTopNavProps) {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-amber-500/20 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
+    <header className="h-16 bg-[#0d1f38] border-b border-amber-500/30 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-lg text-white">
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuToggle}
-          className="lg:hidden p-2 rounded-lg text-[#0a192f] hover:bg-amber-50"
+          className="lg:hidden p-2 rounded-lg text-amber-300 hover:bg-[#142c50]"
           aria-label="Toggle navigation"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         {title && (
-          <h1 className="text-base sm:text-lg font-bold text-[#0a192f] tracking-tight">
+          <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">
             {title}
           </h1>
         )}
@@ -46,22 +46,22 @@ export default function AdminTopNav({ onMenuToggle, title }: AdminTopNavProps) {
         <Link
           href="/"
           target="_blank"
-          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-300 text-xs font-semibold text-[#0a192f] hover:bg-amber-50 transition-colors"
+          className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full border border-amber-400/60 bg-[#071324] text-xs sm:text-sm font-bold text-amber-300 hover:bg-[#142c50] transition-colors shadow-sm"
         >
           <span>View Site</span>
-          <ExternalLink className="w-3.5 h-3.5 text-amber-600" />
+          <ExternalLink className="w-4 h-4 text-amber-400 stroke-[2.5]" />
         </Link>
 
         {/* Admin Monogram Profile - Navy & Gold */}
-        <div className="flex items-center gap-2 pl-2 border-l border-neutral-200">
-          <div className="w-8 h-8 rounded-full bg-[#0a192f] border border-amber-400 text-amber-400 flex items-center justify-center font-bold text-xs shadow-xs">
+        <div className="flex items-center gap-2 pl-2 border-l border-amber-500/20">
+          <div className="w-9 h-9 rounded-full bg-[#071324] border-2 border-amber-400 text-amber-400 flex items-center justify-center font-bold text-xs shadow-md">
             NH
           </div>
           <div className="hidden md:flex flex-col text-left">
-            <span className="text-xs font-bold text-[#0a192f] leading-none">
+            <span className="text-xs sm:text-sm font-bold text-white leading-none">
               Noorul Hassan
             </span>
-            <span className="text-[10px] text-amber-700 font-mono font-medium mt-0.5">
+            <span className="text-[10px] text-amber-400 font-mono font-semibold mt-0.5">
               Superadmin
             </span>
           </div>
@@ -69,7 +69,7 @@ export default function AdminTopNav({ onMenuToggle, title }: AdminTopNavProps) {
           <button
             onClick={handleLogout}
             title="Log Out"
-            className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 hover:bg-red-50 transition-colors ml-1"
+            className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors ml-1"
           >
             <LogOut className="w-4 h-4" />
           </button>

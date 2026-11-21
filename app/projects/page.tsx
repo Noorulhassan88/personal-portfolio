@@ -20,7 +20,7 @@ export default async function ProjectsPage() {
   ]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fafafa]">
+    <div className="min-h-screen flex flex-col bg-[#071324] text-white">
       <Navbar name={settings.name} designation={settings.designation} />
 
       <main className="flex-1">

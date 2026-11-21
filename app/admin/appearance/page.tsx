@@ -39,12 +39,12 @@ export default function AdminAppearancePage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-amber-500/30">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
             Appearance & Visual Identity
           </h1>
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="text-xs text-amber-200/80 mt-1">
             Fine-tune primary accent hues, typography scales, navbar styling, and footer branding.
           </p>
         </div>
@@ -52,7 +52,7 @@ export default function AdminAppearancePage() {
         <button
           onClick={handleSave}
           disabled={status === "saving"}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide transition-all shadow-xs"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base px-6 py-3 border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs"
         >
           <Save className="w-4 h-4" />
           <span>{status === "saving" ? "Saving..." : "Apply Appearance"}</span>
@@ -70,8 +70,8 @@ export default function AdminAppearancePage() {
         {/* Left 8 Cols: Controls */}
         <div className="lg:col-span-8 space-y-6">
           {/* Accent Color Palette */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-4">
-            <h3 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+          <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-4">
+            <h3 className="text-sm font-bold text-white border-b border-amber-500/20 pb-3">
               Primary Accent Color
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -90,8 +90,8 @@ export default function AdminAppearancePage() {
                     }
                     className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
                       isSelected
-                        ? "border-neutral-900 bg-neutral-50 shadow-xs"
-                        : "border-neutral-200 hover:border-neutral-300"
+                        ? "border-neutral-900 bg-[#071324] shadow-xs"
+                        : "border-amber-500/30 hover:border-amber-500/40"
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
@@ -99,12 +99,12 @@ export default function AdminAppearancePage() {
                         className="w-5 h-5 rounded-full shadow-2xs"
                         style={{ backgroundColor: preset.color }}
                       />
-                      <span className="text-xs font-semibold text-neutral-800">
+                      <span className="text-xs font-semibold text-slate-100">
                         {preset.label}
                       </span>
                     </div>
                     {isSelected && (
-                      <CheckCircle2 className="w-4 h-4 text-neutral-900" />
+                      <CheckCircle2 className="w-4 h-4 text-white" />
                     )}
                   </button>
                 );
@@ -113,14 +113,14 @@ export default function AdminAppearancePage() {
           </div>
 
           {/* Background & Typography Presets */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-5">
-            <h3 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+          <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-5">
+            <h3 className="text-sm font-bold text-white border-b border-amber-500/20 pb-3">
               Theme Layout Presets
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 uppercase mb-1.5">
+                <label className="block text-xs font-semibold text-amber-300 uppercase mb-1.5">
                   Background Style
                 </label>
                 <select
@@ -131,7 +131,7 @@ export default function AdminAppearancePage() {
                       bg_preset: e.target.value as AppearanceSettings["bg_preset"],
                     })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-200 text-xs bg-white text-neutral-900"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/30 text-xs bg-[#0d1f38] text-white"
                 >
                   <option value="clean-white">Minimal Clean White (#fafafa)</option>
                   <option value="warm-white">Warm Editorial Off-White (#fcfbf9)</option>
@@ -140,7 +140,7 @@ export default function AdminAppearancePage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 uppercase mb-1.5">
+                <label className="block text-xs font-semibold text-amber-300 uppercase mb-1.5">
                   Typography Preset
                 </label>
                 <select
@@ -151,7 +151,7 @@ export default function AdminAppearancePage() {
                       font_preset: e.target.value as AppearanceSettings["font_preset"],
                     })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-200 text-xs bg-white text-neutral-900"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/30 text-xs bg-[#0d1f38] text-white"
                 >
                   <option value="modern-sans">Modern Clean Sans-Serif</option>
                   <option value="editorial">Editorial Minimalist</option>
@@ -161,7 +161,7 @@ export default function AdminAppearancePage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 uppercase mb-1.5">
+              <label className="block text-xs font-semibold text-amber-300 uppercase mb-1.5">
                 Website Footer Copyright Text
               </label>
               <input
@@ -170,7 +170,7 @@ export default function AdminAppearancePage() {
                 onChange={(e) =>
                   setSettings({ ...settings, footer_text: e.target.value })
                 }
-                className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-200 text-xs text-neutral-900"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/30 text-xs text-white"
               />
             </div>
           </div>
@@ -178,12 +178,12 @@ export default function AdminAppearancePage() {
 
         {/* Right 4 Cols: Live Preview Card */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-4">
-            <h3 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-2">
+          <div className="p-6 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-4">
+            <h3 className="text-sm font-bold text-white border-b border-amber-500/20 pb-2">
               Live Swatch Preview
             </h3>
 
-            <div className="p-5 rounded-2xl bg-[#fafafa] border border-neutral-200 space-y-3">
+            <div className="p-5 rounded-2xl bg-[#071324] border border-amber-500/30 space-y-3">
               <div className="flex items-center gap-2">
                 <span
                   className="w-7 h-7 rounded-lg text-white flex items-center justify-center font-bold text-xs"
@@ -191,12 +191,12 @@ export default function AdminAppearancePage() {
                 >
                   NH
                 </span>
-                <span className="font-bold text-xs text-neutral-900">
+                <span className="font-bold text-xs text-white">
                   {settings.logo_text}
                 </span>
               </div>
 
-              <div className="text-xs text-neutral-600">
+              <div className="text-xs text-slate-300">
                 Sample interactive button preview:
               </div>
 

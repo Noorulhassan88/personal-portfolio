@@ -89,19 +89,19 @@ export default function AdminCertificationsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-amber-500/30">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
             Certifications Manager
           </h1>
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="text-xs text-amber-200/80 mt-1">
             Add and manage verified credentials in AI, Deep Learning, and Web Architecture.
           </p>
         </div>
 
         <button
           onClick={handleOpenNew}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide transition-all shadow-xs"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base px-6 py-3 border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs"
         >
           <Plus className="w-4 h-4" />
           <span>Add Certification</span>
@@ -120,7 +120,7 @@ export default function AdminCertificationsPage() {
         {certifications.map((cert) => (
           <div
             key={cert.id}
-            className="bg-white rounded-2xl border border-neutral-200 shadow-2xs overflow-hidden flex flex-col justify-between"
+            className="bg-[#0d1f38] rounded-2xl border border-amber-500/30 shadow-2xs overflow-hidden flex flex-col justify-between"
           >
             {cert.image_url && (
               <div className="relative h-36 w-full bg-neutral-900 overflow-hidden">
@@ -138,26 +138,26 @@ export default function AdminCertificationsPage() {
                 <div className="text-[10px] font-mono text-blue-600 uppercase mb-1">
                   {cert.issuing_organization}
                 </div>
-                <h3 className="text-sm font-bold text-neutral-900 leading-snug">
+                <h3 className="text-sm font-bold text-white leading-snug">
                   {cert.title}
                 </h3>
-                <div className="text-xs text-neutral-500 font-mono mt-2">
+                <div className="text-xs text-amber-200/80 font-mono mt-2">
                   Issued: {formatDate(cert.issue_date)}
                 </div>
                 {cert.credential_id && (
-                  <div className="text-[10px] font-mono text-neutral-400 mt-0.5">
+                  <div className="text-[10px] font-mono text-slate-400 mt-0.5">
                     ID: {cert.credential_id}
                   </div>
                 )}
               </div>
 
-              <div className="mt-5 pt-3 border-t border-neutral-100 flex items-center justify-between">
+              <div className="mt-5 pt-3 border-t border-amber-500/20 flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <span
                     className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
                       cert.is_published
                         ? "bg-emerald-100 text-emerald-700"
-                        : "bg-neutral-100 text-neutral-600"
+                        : "bg-[#142c50] text-slate-300"
                     }`}
                   >
                     {cert.is_published ? "Published" : "Draft"}
@@ -170,7 +170,7 @@ export default function AdminCertificationsPage() {
                       href={cert.verification_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-900"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-white"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
@@ -180,13 +180,13 @@ export default function AdminCertificationsPage() {
                       setEditingCert({ ...cert });
                       setIsModalOpen(true);
                     }}
-                    className="p-1.5 rounded-lg text-neutral-400 hover:text-blue-600"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => handleDelete(cert.id)}
-                    className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-red-600"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -200,14 +200,14 @@ export default function AdminCertificationsPage() {
       {/* Modal */}
       {isModalOpen && editingCert && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/50 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl border border-neutral-200 shadow-2xl w-full max-w-lg p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-              <h3 className="text-sm font-bold text-neutral-900">
+          <div className="bg-[#0d1f38] rounded-3xl border border-amber-500/30 shadow-2xl w-full max-w-lg p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+              <h3 className="text-sm font-bold text-white">
                 {editingCert.id.startsWith("cert-") ? "Add Certificate" : "Edit Certificate"}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 text-neutral-400 hover:text-neutral-900"
+                className="p-1 text-slate-400 hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -215,7 +215,7 @@ export default function AdminCertificationsPage() {
 
             <form onSubmit={handleSaveModal} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-neutral-700 mb-1">
+                <label className="block font-semibold text-amber-300 mb-1">
                   Certificate Title *
                 </label>
                 <input
@@ -225,12 +225,12 @@ export default function AdminCertificationsPage() {
                   onChange={(e) =>
                     setEditingCert({ ...editingCert, title: e.target.value })
                   }
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-neutral-700 mb-1">
+                <label className="block font-semibold text-amber-300 mb-1">
                   Issuing Organization *
                 </label>
                 <input
@@ -243,13 +243,13 @@ export default function AdminCertificationsPage() {
                       issuing_organization: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-neutral-700 mb-1">
+                  <label className="block font-semibold text-amber-300 mb-1">
                     Issue Date
                   </label>
                   <input
@@ -258,12 +258,12 @@ export default function AdminCertificationsPage() {
                     onChange={(e) =>
                       setEditingCert({ ...editingCert, issue_date: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-neutral-700 mb-1">
+                  <label className="block font-semibold text-amber-300 mb-1">
                     Credential ID
                   </label>
                   <input
@@ -275,13 +275,13 @@ export default function AdminCertificationsPage() {
                         credential_id: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-neutral-700 mb-1">
+                <label className="block font-semibold text-amber-300 mb-1">
                   Verification URL
                 </label>
                 <input
@@ -294,12 +294,12 @@ export default function AdminCertificationsPage() {
                     })
                   }
                   placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-neutral-700 mb-1">
+                <label className="block font-semibold text-amber-300 mb-1">
                   Image or Badge URL
                 </label>
                 <input
@@ -308,15 +308,15 @@ export default function AdminCertificationsPage() {
                   onChange={(e) =>
                     setEditingCert({ ...editingCert, image_url: e.target.value })
                   }
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-amber-500/20">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-neutral-200 text-neutral-700 font-semibold"
+                  className="px-4 py-2 rounded-xl border border-amber-500/30 text-amber-300 font-semibold"
                 >
                   Cancel
                 </button>

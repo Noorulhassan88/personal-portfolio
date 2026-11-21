@@ -60,12 +60,12 @@ export default function AdminAboutEditor() {
   return (
     <div className="space-y-8">
       {/* Top Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-amber-500/30">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
             About Me Content Editor
           </h1>
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="text-xs text-amber-200/80 mt-1">
             Manage your biography paragraphs, education credentials, philosophy, and specializations.
           </p>
         </div>
@@ -73,7 +73,7 @@ export default function AdminAboutEditor() {
         <button
           onClick={handleSave}
           disabled={status === "saving"}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide transition-all shadow-xs disabled:opacity-70"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base px-6 py-3 border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs disabled:opacity-70"
         >
           <Save className="w-4 h-4" />
           <span>{status === "saving" ? "Saving..." : "Save About Content"}</span>
@@ -88,14 +88,14 @@ export default function AdminAboutEditor() {
       )}
 
       {/* Biography Paragraphs */}
-      <div className="p-6 sm:p-8 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-4">
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-          <h3 className="text-sm font-bold text-neutral-900">
+      <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-4">
+        <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+          <h3 className="text-sm font-bold text-white">
             Professional Biography Paragraphs
           </h3>
           <button
             onClick={addParagraph}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-xs font-semibold text-neutral-800 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#142c50] hover:bg-[#1b3a6b] text-xs font-semibold text-slate-100 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Paragraph</span>
@@ -110,11 +110,11 @@ export default function AdminAboutEditor() {
                 value={p}
                 onChange={(e) => handleParagraphChange(idx, e.target.value)}
                 placeholder={`Paragraph ${idx + 1}...`}
-                className="flex-1 px-3.5 py-2.5 rounded-xl border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:border-blue-600 resize-none"
+                className="flex-1 px-3.5 py-2.5 rounded-xl border border-amber-500/30 text-xs text-white focus:outline-none focus:border-amber-400 resize-none"
               />
               <button
                 onClick={() => removeParagraph(idx)}
-                className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors h-fit"
+                className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors h-fit"
                 title="Remove paragraph"
               >
                 <Trash2 className="w-4 h-4" />
@@ -125,11 +125,11 @@ export default function AdminAboutEditor() {
       </div>
 
       {/* Education Credentials */}
-      <div className="p-6 sm:p-8 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-6">
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+      <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-6">
+        <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
           <div className="flex items-center gap-2">
             <GraduationCap className="w-4 h-4 text-blue-600" />
-            <h3 className="text-sm font-bold text-neutral-900">
+            <h3 className="text-sm font-bold text-white">
               Education History
             </h3>
           </div>
@@ -138,11 +138,11 @@ export default function AdminAboutEditor() {
         {content.education.map((edu, idx) => (
           <div
             key={edu.id}
-            className="p-5 rounded-xl border border-neutral-200 bg-neutral-50/40 space-y-4"
+            className="p-5 rounded-xl border border-amber-500/30 bg-[#071324]/40 space-y-4"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-700 uppercase mb-1">
+                <label className="block text-[11px] font-semibold text-amber-300 uppercase mb-1">
                   Degree Title
                 </label>
                 <input
@@ -153,12 +153,12 @@ export default function AdminAboutEditor() {
                     updated[idx].degree = e.target.value;
                     setContent({ ...content, education: updated });
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200 bg-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-700 uppercase mb-1">
+                <label className="block text-[11px] font-semibold text-amber-300 uppercase mb-1">
                   Institution Name
                 </label>
                 <input
@@ -169,14 +169,14 @@ export default function AdminAboutEditor() {
                     updated[idx].institution = e.target.value;
                     setContent({ ...content, education: updated });
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200 bg-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-700 uppercase mb-1">
+                <label className="block text-[11px] font-semibold text-amber-300 uppercase mb-1">
                   Start Year
                 </label>
                 <input
@@ -187,12 +187,12 @@ export default function AdminAboutEditor() {
                     updated[idx].start_year = e.target.value;
                     setContent({ ...content, education: updated });
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200 bg-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-700 uppercase mb-1">
+                <label className="block text-[11px] font-semibold text-amber-300 uppercase mb-1">
                   End Year
                 </label>
                 <input
@@ -203,12 +203,12 @@ export default function AdminAboutEditor() {
                     updated[idx].end_year = e.target.value;
                     setContent({ ...content, education: updated });
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200 bg-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-700 uppercase mb-1">
+                <label className="block text-[11px] font-semibold text-amber-300 uppercase mb-1">
                   Grade / Honor
                 </label>
                 <input
@@ -219,7 +219,7 @@ export default function AdminAboutEditor() {
                     updated[idx].grade = e.target.value;
                     setContent({ ...content, education: updated });
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200 bg-white text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs"
                 />
               </div>
             </div>
@@ -229,8 +229,8 @@ export default function AdminAboutEditor() {
 
       {/* Philosophy and Career Objectives */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-3">
-          <h3 className="text-sm font-bold text-neutral-900">
+        <div className="p-6 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-3">
+          <h3 className="text-sm font-bold text-white">
             Development Philosophy
           </h3>
           <textarea
@@ -239,19 +239,19 @@ export default function AdminAboutEditor() {
             onChange={(e) =>
               setContent({ ...content, development_philosophy: e.target.value })
             }
-            className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs resize-none"
+            className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs resize-none"
           />
         </div>
 
-        <div className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-3">
-          <h3 className="text-sm font-bold text-neutral-900">Career Objectives</h3>
+        <div className="p-6 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-3">
+          <h3 className="text-sm font-bold text-white">Career Objectives</h3>
           <textarea
             rows={4}
             value={content.career_objectives}
             onChange={(e) =>
               setContent({ ...content, career_objectives: e.target.value })
             }
-            className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs resize-none"
+            className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs resize-none"
           />
         </div>
       </div>

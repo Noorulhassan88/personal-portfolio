@@ -45,23 +45,23 @@ export default function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-8 sm:p-10 rounded-2xl bg-white border border-amber-200/90 shadow-md space-y-6"
+      className="p-8 sm:p-10 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xl space-y-6 text-white"
     >
-      <div className="border-b border-neutral-100 pb-4">
-        <h2 className="text-xl font-bold tracking-tight text-[#0a192f]">
+      <div className="border-b border-amber-500/20 pb-4">
+        <h2 className="text-xl font-bold tracking-tight text-white">
           Send a Direct Message
         </h2>
-        <p className="text-xs text-neutral-500 mt-1">
+        <p className="text-xs text-slate-300 mt-1">
           I will respond to all inquiries regarding roles, projects, and collaborations promptly.
         </p>
       </div>
 
       {status === "success" && (
-        <div className="p-4 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 flex items-start gap-3">
-          <CheckCircle2 className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-400 text-amber-200 flex items-start gap-3">
+          <CheckCircle2 className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
           <div className="text-xs sm:text-sm">
-            <p className="font-semibold">Message delivered successfully!</p>
-            <p className="text-amber-800 mt-0.5">
+            <p className="font-bold text-amber-300">Message delivered successfully!</p>
+            <p className="text-amber-200 mt-0.5">
               Thank you for reaching out. Your message is safely stored and I will get back to you shortly.
             </p>
           </div>
@@ -69,18 +69,18 @@ export default function ContactForm() {
       )}
 
       {status === "error" && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-red-500/10 border border-red-400 text-red-200 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
           <div className="text-xs sm:text-sm">
-            <p className="font-semibold">Unable to send message</p>
-            <p className="text-red-700 mt-0.5">{errorMessage}</p>
+            <p className="font-bold">Unable to send message</p>
+            <p className="text-red-200 mt-0.5">{errorMessage}</p>
           </div>
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label className="block text-xs font-semibold text-[#0a192f] mb-1.5 uppercase tracking-wider">
+          <label className="block text-xs font-bold text-amber-300 mb-1.5 uppercase tracking-wider">
             Your Name *
           </label>
           <input
@@ -89,12 +89,12 @@ export default function ContactForm() {
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="John Doe"
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-amber-500 transition-colors"
+            className="w-full px-4 py-2.5 rounded-xl border border-amber-500/30 bg-[#071324] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#0a192f] mb-1.5 uppercase tracking-wider">
+          <label className="block text-xs font-bold text-amber-300 mb-1.5 uppercase tracking-wider">
             Your Email *
           </label>
           <input
@@ -103,13 +103,13 @@ export default function ContactForm() {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             placeholder="john@example.com"
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-amber-500 transition-colors"
+            className="w-full px-4 py-2.5 rounded-xl border border-amber-500/30 bg-[#071324] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-semibold text-[#0a192f] mb-1.5 uppercase tracking-wider">
+        <label className="block text-xs font-bold text-amber-300 mb-1.5 uppercase tracking-wider">
           Subject *
         </label>
         <input
@@ -118,12 +118,12 @@ export default function ContactForm() {
           value={formData.subject}
           onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
           placeholder="Collaboration on AI / Full Stack Opportunity"
-          className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-amber-500 transition-colors"
+          className="w-full px-4 py-2.5 rounded-xl border border-amber-500/30 bg-[#071324] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
         />
       </div>
 
       <div>
-        <label className="block text-xs font-semibold text-[#0a192f] mb-1.5 uppercase tracking-wider">
+        <label className="block text-xs font-bold text-amber-300 mb-1.5 uppercase tracking-wider">
           Message *
         </label>
         <textarea
@@ -132,23 +132,23 @@ export default function ContactForm() {
           value={formData.message}
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
           placeholder="Describe your project, timeline, or engineering opportunity..."
-          className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-amber-500 transition-colors resize-none"
+          className="w-full px-4 py-3 rounded-xl border border-amber-500/30 bg-[#071324] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors resize-none"
         />
       </div>
 
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-[#0a192f] hover:bg-[#112240] text-amber-300 font-bold text-xs tracking-wide transition-all duration-150 shadow-md border border-amber-400/50 disabled:opacity-70 disabled:cursor-not-allowed"
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-9 py-3.5 rounded-full bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base tracking-wide transition-all duration-150 shadow-[0_0_25px_rgba(245,158,11,0.45)] hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] hover:scale-[1.02] border-2 border-amber-300 disabled:opacity-70 disabled:cursor-not-allowed"
       >
         {status === "loading" ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+            <Loader2 className="w-5 h-5 animate-spin text-[#071324]" />
             <span>Sending Message...</span>
           </>
         ) : (
           <>
-            <Send className="w-4 h-4 text-amber-400" />
+            <Send className="w-5 h-5 stroke-[2.5]" />
             <span>Send Message</span>
           </>
         )}

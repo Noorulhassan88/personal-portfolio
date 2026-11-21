@@ -137,19 +137,19 @@ export default function AdminProjectsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-amber-500/30">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
             Projects Manager (CRUD)
           </h1>
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="text-xs text-amber-200/80 mt-1">
             Create, edit, duplicate, publish, and feature your software & AI projects.
           </p>
         </div>
 
         <button
           onClick={handleOpenNew}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide transition-all shadow-xs"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base px-6 py-3 border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Project</span>
@@ -164,26 +164,26 @@ export default function AdminProjectsPage() {
       )}
 
       {/* Search and Table */}
-      <div className="bg-white rounded-2xl border border-neutral-200 shadow-2xs overflow-hidden">
-        <div className="p-4 border-b border-neutral-100 flex items-center justify-between gap-4">
+      <div className="bg-[#0d1f38] rounded-2xl border border-amber-500/30 shadow-2xs overflow-hidden">
+        <div className="p-4 border-b border-amber-500/20 flex items-center justify-between gap-4">
           <div className="relative w-full max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
               placeholder="Filter projects..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 rounded-lg border border-neutral-200 text-xs text-neutral-900"
+              className="w-full pl-9 pr-4 py-1.5 rounded-lg border border-amber-500/30 text-xs text-white"
             />
           </div>
-          <span className="text-xs text-neutral-500 font-mono">
+          <span className="text-xs text-amber-200/80 font-mono">
             {filteredProjects.length} items
           </span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-neutral-50 border-b border-neutral-100 text-neutral-500 uppercase font-mono tracking-wider">
+            <thead className="bg-[#071324] border-b border-amber-500/20 text-amber-200/80 uppercase font-mono tracking-wider">
               <tr>
                 <th className="py-3 px-4">Project</th>
                 <th className="py-3 px-4">Category</th>
@@ -192,13 +192,13 @@ export default function AdminProjectsPage() {
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100 text-neutral-800">
+            <tbody className="divide-y divide-neutral-100 text-slate-100">
               {filteredProjects.map((p) => (
-                <tr key={p.id} className="hover:bg-neutral-50/60 transition-colors">
+                <tr key={p.id} className="hover:bg-[#071324]/60 transition-colors">
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
                       {p.thumbnail_url && (
-                        <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-neutral-100">
+                        <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-[#142c50]">
                           <Image
                             src={p.thumbnail_url}
                             alt={p.title}
@@ -208,15 +208,15 @@ export default function AdminProjectsPage() {
                         </div>
                       )}
                       <div>
-                        <div className="font-bold text-neutral-900">{p.title}</div>
-                        <div className="text-[10px] text-neutral-400 font-mono">
+                        <div className="font-bold text-white">{p.title}</div>
+                        <div className="text-[10px] text-slate-400 font-mono">
                           /{p.slug}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="py-3 px-4">
-                    <span className="px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-700 font-medium">
+                    <span className="px-2 py-0.5 rounded-md bg-[#142c50] text-amber-300 font-medium">
                       {p.category}
                     </span>
                   </td>
@@ -225,7 +225,7 @@ export default function AdminProjectsPage() {
                       className={`px-2 py-0.5 rounded-full font-semibold text-[10px] ${
                         p.is_published
                           ? "bg-emerald-50 text-emerald-700"
-                          : "bg-amber-50 text-amber-700"
+                          : "bg-[#142c50] text-amber-400"
                       }`}
                     >
                       {p.is_published ? "Published" : "Draft"}
@@ -237,7 +237,7 @@ export default function AdminProjectsPage() {
                         Yes
                       </span>
                     ) : (
-                      <span className="text-neutral-400 text-[10px]">No</span>
+                      <span className="text-slate-400 text-[10px]">No</span>
                     )}
                   </td>
                   <td className="py-3 px-4 text-right">
@@ -245,28 +245,28 @@ export default function AdminProjectsPage() {
                       <Link
                         href={`/projects/${p.slug}`}
                         target="_blank"
-                        className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#142c50]"
                         title="View Live Detail Page"
                       >
                         <Eye className="w-3.5 h-3.5" />
                       </Link>
                       <button
                         onClick={() => handleDuplicate(p)}
-                        className="p-1.5 rounded-lg text-neutral-400 hover:text-blue-600 hover:bg-neutral-100"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-[#142c50]"
                         title="Duplicate"
                       >
                         <Copy className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleEdit(p)}
-                        className="p-1.5 rounded-lg text-neutral-400 hover:text-blue-600 hover:bg-neutral-100"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-[#142c50]"
                         title="Edit Project"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDelete(p.id)}
-                        className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 hover:bg-neutral-100"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-[#142c50]"
                         title="Delete Project"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -283,16 +283,16 @@ export default function AdminProjectsPage() {
       {/* Editor Modal */}
       {isModalOpen && editingProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/50 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl border border-neutral-200 shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
-            <div className="p-5 border-b border-neutral-100 flex items-center justify-between">
-              <h2 className="text-base font-bold text-neutral-900">
+          <div className="bg-[#0d1f38] rounded-3xl border border-amber-500/30 shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="p-5 border-b border-amber-500/20 flex items-center justify-between">
+              <h2 className="text-base font-bold text-white">
                 {editingProject.id.startsWith("proj-")
                   ? "Create New Project"
                   : `Edit: ${editingProject.title}`}
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#142c50]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -301,7 +301,7 @@ export default function AdminProjectsPage() {
             <form onSubmit={handleSaveModal} className="p-6 overflow-y-auto space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                  <label className="block text-xs font-semibold text-amber-300 mb-1">
                     Project Title *
                   </label>
                   <input
@@ -315,12 +315,12 @@ export default function AdminProjectsPage() {
                         slug: slugify(e.target.value),
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                  <label className="block text-xs font-semibold text-amber-300 mb-1">
                     URL Slug *
                   </label>
                   <input
@@ -330,14 +330,14 @@ export default function AdminProjectsPage() {
                     onChange={(e) =>
                       setEditingProject({ ...editingProject, slug: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs text-white"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                  <label className="block text-xs font-semibold text-amber-300 mb-1">
                     Category *
                   </label>
                   <select
@@ -348,7 +348,7 @@ export default function AdminProjectsPage() {
                         category: e.target.value as Project["category"],
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900 bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs text-white bg-[#0d1f38]"
                   >
                     <option value="Full Stack">Full Stack</option>
                     <option value="AI/ML">AI/ML</option>
@@ -358,7 +358,7 @@ export default function AdminProjectsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                  <label className="block text-xs font-semibold text-amber-300 mb-1">
                     Publish Status
                   </label>
                   <select
@@ -369,7 +369,7 @@ export default function AdminProjectsPage() {
                         is_published: e.target.value === "true",
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900 bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs text-white bg-[#0d1f38]"
                   >
                     <option value="true">Published</option>
                     <option value="false">Draft (Hidden)</option>
@@ -377,7 +377,7 @@ export default function AdminProjectsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                  <label className="block text-xs font-semibold text-amber-300 mb-1">
                     Featured on Home
                   </label>
                   <select
@@ -388,7 +388,7 @@ export default function AdminProjectsPage() {
                         is_featured: e.target.value === "true",
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900 bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs text-white bg-[#0d1f38]"
                   >
                     <option value="true">Yes (Featured)</option>
                     <option value="false">No</option>
@@ -397,7 +397,7 @@ export default function AdminProjectsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                <label className="block text-xs font-semibold text-amber-300 mb-1">
                   Short Description *
                 </label>
                 <textarea
@@ -410,12 +410,12 @@ export default function AdminProjectsPage() {
                       short_description: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900 resize-none"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs text-white resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                <label className="block text-xs font-semibold text-amber-300 mb-1">
                   Full Detailed Overview *
                 </label>
                 <textarea
@@ -428,13 +428,13 @@ export default function AdminProjectsPage() {
                       full_description: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900 resize-none"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs text-white resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                  <label className="block text-xs font-semibold text-amber-300 mb-1">
                     Problem Statement
                   </label>
                   <textarea
@@ -446,12 +446,12 @@ export default function AdminProjectsPage() {
                         problem_statement: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs resize-none"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs resize-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                  <label className="block text-xs font-semibold text-amber-300 mb-1">
                     Proposed Solution
                   </label>
                   <textarea
@@ -463,14 +463,14 @@ export default function AdminProjectsPage() {
                         solution: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs resize-none"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs resize-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                  <label className="block text-xs font-semibold text-amber-300 mb-1">
                     GitHub URL
                   </label>
                   <input
@@ -482,12 +482,12 @@ export default function AdminProjectsPage() {
                         github_url: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                  <label className="block text-xs font-semibold text-amber-300 mb-1">
                     Live Demo URL
                   </label>
                   <input
@@ -499,13 +499,13 @@ export default function AdminProjectsPage() {
                         live_demo_url: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                <label className="block text-xs font-semibold text-amber-300 mb-1">
                   Thumbnail Image URL
                 </label>
                 <input
@@ -517,15 +517,15 @@ export default function AdminProjectsPage() {
                       thumbnail_url: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200 text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs"
                 />
               </div>
 
-              <div className="p-4 border-t border-neutral-100 flex items-center justify-end gap-3">
+              <div className="p-4 border-t border-amber-500/20 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-neutral-200 text-xs font-semibold text-neutral-700 hover:bg-neutral-50"
+                  className="px-4 py-2 rounded-xl border border-amber-500/30 text-xs font-semibold text-amber-300 hover:bg-[#071324]"
                 >
                   Cancel
                 </button>

@@ -78,19 +78,19 @@ export default function AdminExperiencePage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-amber-500/30">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
             Experience & Timeline Manager
           </h1>
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="text-xs text-amber-200/80 mt-1">
             Manage your internships, engineering positions, and research contributions.
           </p>
         </div>
 
         <button
           onClick={handleOpenNew}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide transition-all shadow-xs"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base px-6 py-3 border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs"
         >
           <Plus className="w-4 h-4" />
           <span>Add Experience</span>
@@ -109,23 +109,23 @@ export default function AdminExperiencePage() {
         {experience.map((entry) => (
           <div
             key={entry.id}
-            className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            className="p-6 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
                   {entry.type}
                 </span>
-                <span className="text-xs text-neutral-400 font-mono">
+                <span className="text-xs text-slate-400 font-mono">
                   {formatDate(entry.start_date)} –{" "}
                   {entry.is_current ? "Present" : formatDate(entry.end_date)}
                 </span>
               </div>
 
-              <h3 className="text-base font-bold text-neutral-900">
+              <h3 className="text-base font-bold text-white">
                 {entry.designation}
               </h3>
-              <p className="text-xs text-neutral-600 mt-0.5">
+              <p className="text-xs text-slate-300 mt-0.5">
                 {entry.organization} {entry.location && `• ${entry.location}`}
               </p>
             </div>
@@ -136,13 +136,13 @@ export default function AdminExperiencePage() {
                   setEditingEntry({ ...entry });
                   setIsModalOpen(true);
                 }}
-                className="p-2 rounded-xl text-neutral-400 hover:text-blue-600 hover:bg-neutral-100"
+                className="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-[#142c50]"
               >
                 <Edit2 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleDelete(entry.id)}
-                className="p-2 rounded-xl text-neutral-400 hover:text-red-600 hover:bg-neutral-100"
+                className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-[#142c50]"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -154,14 +154,14 @@ export default function AdminExperiencePage() {
       {/* Modal */}
       {isModalOpen && editingEntry && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/50 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl border border-neutral-200 shadow-2xl w-full max-w-xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-              <h3 className="text-sm font-bold text-neutral-900">
+          <div className="bg-[#0d1f38] rounded-3xl border border-amber-500/30 shadow-2xl w-full max-w-xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+              <h3 className="text-sm font-bold text-white">
                 {editingEntry.id.startsWith("exp-") ? "Add Experience" : "Edit Experience"}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 text-neutral-400 hover:text-neutral-900"
+                className="p-1 text-slate-400 hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -170,7 +170,7 @@ export default function AdminExperiencePage() {
             <form onSubmit={handleSaveModal} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-neutral-700 mb-1">
+                  <label className="block font-semibold text-amber-300 mb-1">
                     Designation / Role *
                   </label>
                   <input
@@ -180,12 +180,12 @@ export default function AdminExperiencePage() {
                     onChange={(e) =>
                       setEditingEntry({ ...editingEntry, designation: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-neutral-700 mb-1">
+                  <label className="block font-semibold text-amber-300 mb-1">
                     Organization / Company *
                   </label>
                   <input
@@ -195,14 +195,14 @@ export default function AdminExperiencePage() {
                     onChange={(e) =>
                       setEditingEntry({ ...editingEntry, organization: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block font-semibold text-neutral-700 mb-1">Type</label>
+                  <label className="block font-semibold text-amber-300 mb-1">Type</label>
                   <select
                     value={editingEntry.type}
                     onChange={(e) =>
@@ -211,7 +211,7 @@ export default function AdminExperiencePage() {
                         type: e.target.value as ExperienceEntry["type"],
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200 bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38]"
                   >
                     <option value="Internship">Internship</option>
                     <option value="Work Experience">Work Experience</option>
@@ -223,7 +223,7 @@ export default function AdminExperiencePage() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-neutral-700 mb-1">
+                  <label className="block font-semibold text-amber-300 mb-1">
                     Start Date
                   </label>
                   <input
@@ -233,12 +233,12 @@ export default function AdminExperiencePage() {
                       setEditingEntry({ ...editingEntry, start_date: e.target.value })
                     }
                     placeholder="YYYY-MM-DD"
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-neutral-700 mb-1">
+                  <label className="block font-semibold text-amber-300 mb-1">
                     End Date
                   </label>
                   <input
@@ -248,16 +248,16 @@ export default function AdminExperiencePage() {
                       setEditingEntry({ ...editingEntry, end_date: e.target.value })
                     }
                     placeholder="YYYY-MM-DD or Present"
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-amber-500/20">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-neutral-200 text-neutral-700 font-semibold"
+                  className="px-4 py-2 rounded-xl border border-amber-500/30 text-amber-300 font-semibold"
                 >
                   Cancel
                 </button>

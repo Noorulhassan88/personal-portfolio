@@ -28,12 +28,12 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-amber-500/30">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
             System & Website Settings
           </h1>
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="text-xs text-amber-200/80 mt-1">
             Configure contact availability, site maintenance mode, and general metadata.
           </p>
         </div>
@@ -41,7 +41,7 @@ export default function AdminSettingsPage() {
         <button
           onClick={handleSave}
           disabled={status === "saving"}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide transition-all shadow-xs"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base px-6 py-3 border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs"
         >
           <Save className="w-4 h-4" />
           <span>{status === "saving" ? "Saving..." : "Save Settings"}</span>
@@ -56,14 +56,14 @@ export default function AdminSettingsPage() {
       )}
 
       <form onSubmit={handleSave} className="space-y-6">
-        <div className="p-6 sm:p-8 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-5">
-          <h3 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+        <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-5">
+          <h3 className="text-sm font-bold text-white border-b border-amber-500/20 pb-3">
             General Portfolio Settings
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 uppercase mb-1">
+              <label className="block text-xs font-semibold text-amber-300 uppercase mb-1">
                 Website Name
               </label>
               <input
@@ -72,12 +72,12 @@ export default function AdminSettingsPage() {
                 onChange={(e) =>
                   setSettings({ ...settings, site_name: e.target.value })
                 }
-                className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900"
+                className="w-full px-3.5 py-2 rounded-xl border border-amber-500/30 text-xs text-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 uppercase mb-1">
+              <label className="block text-xs font-semibold text-amber-300 uppercase mb-1">
                 Primary Contact Email
               </label>
               <input
@@ -86,14 +86,14 @@ export default function AdminSettingsPage() {
                 onChange={(e) =>
                   setSettings({ ...settings, contact_email: e.target.value })
                 }
-                className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900"
+                className="w-full px-3.5 py-2 rounded-xl border border-amber-500/30 text-xs text-white"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 uppercase mb-1">
+              <label className="block text-xs font-semibold text-amber-300 uppercase mb-1">
                 GitHub Organization / User URL
               </label>
               <input
@@ -102,12 +102,12 @@ export default function AdminSettingsPage() {
                 onChange={(e) =>
                   setSettings({ ...settings, github_url: e.target.value })
                 }
-                className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900"
+                className="w-full px-3.5 py-2 rounded-xl border border-amber-500/30 text-xs text-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 uppercase mb-1">
+              <label className="block text-xs font-semibold text-amber-300 uppercase mb-1">
                 LinkedIn Profile URL
               </label>
               <input
@@ -116,24 +116,24 @@ export default function AdminSettingsPage() {
                 onChange={(e) =>
                   setSettings({ ...settings, linkedin_url: e.target.value })
                 }
-                className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900"
+                className="w-full px-3.5 py-2 rounded-xl border border-amber-500/30 text-xs text-white"
               />
             </div>
           </div>
         </div>
 
         {/* Feature Switches */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-4">
-          <h3 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-3">
+        <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-4">
+          <h3 className="text-sm font-bold text-white border-b border-amber-500/20 pb-3">
             Features & Toggles
           </h3>
 
-          <div className="flex items-center justify-between py-2 border-b border-neutral-100">
+          <div className="flex items-center justify-between py-2 border-b border-amber-500/20">
             <div>
-              <div className="text-xs font-bold text-neutral-900">
+              <div className="text-xs font-bold text-white">
                 Enable Public Contact Form
               </div>
-              <p className="text-[11px] text-neutral-500">
+              <p className="text-[11px] text-amber-200/80">
                 Allows public visitors to submit inquiries directly into your admin inbox.
               </p>
             </div>
@@ -149,10 +149,10 @@ export default function AdminSettingsPage() {
 
           <div className="flex items-center justify-between py-2">
             <div>
-              <div className="text-xs font-bold text-neutral-900">
+              <div className="text-xs font-bold text-white">
                 Maintenance Mode
               </div>
-              <p className="text-[11px] text-neutral-500">
+              <p className="text-[11px] text-amber-200/80">
                 Displays a friendly update notice to public visitors while you make major modifications.
               </p>
             </div>

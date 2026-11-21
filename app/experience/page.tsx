@@ -21,7 +21,7 @@ export default async function ExperiencePage() {
   ]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fcfbf9]">
+    <div className="min-h-screen flex flex-col bg-[#071324] text-white">
       <Navbar name={settings.name} designation={settings.designation} />
 
       <main className="flex-1">
@@ -33,26 +33,26 @@ export default async function ExperiencePage() {
         />
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="relative border-l-2 border-amber-300 ml-4 sm:ml-8 space-y-12">
+          <div className="relative border-l-2 border-amber-500/40 ml-4 sm:ml-8 space-y-12">
             {experience.map((entry) => (
               <div key={entry.id} className="relative pl-6 sm:pl-8 group">
                 {/* Timeline Dot Indicator: Gold / Navy */}
                 <div
-                  className={`absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 bg-white transition-colors duration-200 ${
+                  className={`absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 transition-colors duration-200 ${
                     entry.is_current
-                      ? "border-amber-500 bg-amber-500 shadow-md ring-4 ring-amber-200"
-                      : "border-[#0a192f] bg-[#0a192f]"
+                      ? "border-amber-400 bg-amber-400 shadow-[0_0_12px_#f59e0b] ring-4 ring-amber-400/20"
+                      : "border-amber-400/60 bg-[#071324]"
                   }`}
                 />
 
                 {/* Entry Card */}
-                <div className="p-6 sm:p-8 rounded-2xl bg-white border border-amber-200/90 shadow-md hover:border-amber-400 transition-all duration-200">
+                <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-xl hover:border-amber-400 transition-all duration-200">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                    <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-950 border border-amber-300 w-fit">
+                    <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-[#142c50] text-amber-300 border border-amber-400/50 w-fit">
                       {entry.type}
                     </span>
-                    <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-mono font-medium">
-                      <Calendar className="w-3.5 h-3.5 text-amber-600" />
+                    <div className="flex items-center gap-1.5 text-xs text-amber-200/80 font-mono font-medium">
+                      <Calendar className="w-3.5 h-3.5 text-amber-400" />
                       <span>
                         {formatDate(entry.start_date)} –{" "}
                         {entry.is_current ? "Present" : formatDate(entry.end_date)}
@@ -60,17 +60,17 @@ export default async function ExperiencePage() {
                     </div>
                   </div>
 
-                  <h3 className="text-xl font-bold text-[#0a192f] tracking-tight">
+                  <h3 className="text-xl font-bold text-white tracking-tight">
                     {entry.designation}
                   </h3>
 
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-700 font-semibold mt-1 mb-4">
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-amber-300 font-semibold mt-1 mb-4">
                     <span className="flex items-center gap-1">
-                      <Briefcase className="w-4 h-4 text-amber-600" />
+                      <Briefcase className="w-4 h-4 text-amber-400" />
                       {entry.organization}
                     </span>
                     {entry.location && (
-                      <span className="flex items-center gap-1 text-neutral-500 text-xs">
+                      <span className="flex items-center gap-1 text-slate-400 text-xs">
                         <MapPin className="w-3.5 h-3.5" />
                         {entry.location}
                       </span>
@@ -83,9 +83,9 @@ export default async function ExperiencePage() {
                       {entry.responsibilities.map((resp, i) => (
                         <li
                           key={i}
-                          className="flex items-start gap-2 text-xs sm:text-sm text-neutral-700"
+                          className="flex items-start gap-2 text-xs sm:text-sm text-slate-300"
                         >
-                          <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                           <span>{resp}</span>
                         </li>
                       ))}
@@ -94,11 +94,11 @@ export default async function ExperiencePage() {
 
                   {/* Technology Tags */}
                   {entry.technologies && entry.technologies.length > 0 && (
-                    <div className="pt-4 border-t border-neutral-100 flex flex-wrap gap-1.5">
+                    <div className="pt-4 border-t border-amber-500/20 flex flex-wrap gap-1.5">
                       {entry.technologies.map((t) => (
                         <span
                           key={t}
-                          className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-amber-50 text-amber-900 border border-amber-200"
+                          className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-[#071324] text-amber-300 border border-amber-500/30"
                         >
                           {t}
                         </span>

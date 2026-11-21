@@ -16,20 +16,20 @@ export default function PageHeader({
   breadcrumb,
 }: PageHeaderProps) {
   return (
-    <div className="pt-28 pb-12 md:pt-36 md:pb-16 border-b border-amber-500/20 bg-linear-to-b from-[#0a192f] to-[#112240] text-white">
+    <div className="pt-28 pb-12 md:pt-36 md:pb-16 border-b border-amber-500/20 bg-linear-to-b from-[#050c18] via-[#071324] to-[#0d1f38] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {breadcrumb && (
-          <div className="flex items-center gap-1.5 text-xs text-amber-300/80 mb-4 font-mono">
+          <div className="flex items-center gap-1.5 text-xs text-amber-300 mb-4 font-mono">
             <Link href="/" className="hover:text-amber-200 transition-colors">
               Home
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-amber-500/60" />
+            <ChevronRight className="w-3.5 h-3.5 text-amber-400/60" />
             <span className="text-white font-semibold">{breadcrumb}</span>
           </div>
         )}
 
         {badge && (
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/50 text-amber-300 text-xs font-mono font-bold tracking-wide mb-3 shadow-xs">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/10 border border-amber-400 text-amber-300 text-xs font-mono font-bold tracking-wide mb-3 shadow-[0_0_12px_rgba(245,158,11,0.2)]">
             {badge}
           </div>
         )}
@@ -38,7 +38,7 @@ export default function PageHeader({
           {title}
         </h1>
 
-        <p className="mt-4 text-base sm:text-lg text-neutral-300 max-w-2xl leading-relaxed">
+        <p className="mt-4 text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
           {description}
         </p>
       </div>

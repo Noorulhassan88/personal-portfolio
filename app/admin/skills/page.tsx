@@ -100,19 +100,19 @@ export default function AdminSkillsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-amber-500/30">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
             Technical Skills Manager
           </h1>
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="text-xs text-amber-200/80 mt-1">
             Organize technologies across categories (Frontend, Backend, AI/ML, Database, Tools).
           </p>
         </div>
 
         <button
           onClick={handleOpenNew}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide transition-all shadow-xs"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base px-6 py-3 border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs"
         >
           <Plus className="w-4 h-4" />
           <span>Add Skill</span>
@@ -133,11 +133,11 @@ export default function AdminSkillsPage() {
           return (
             <div
               key={cat.id}
-              className="bg-white rounded-2xl border border-neutral-200 shadow-2xs p-5"
+              className="bg-[#0d1f38] rounded-2xl border border-amber-500/30 shadow-2xs p-5"
             >
-              <div className="flex items-center justify-between border-b border-neutral-100 pb-3 mb-4">
-                <h3 className="text-sm font-bold text-neutral-900">{cat.name}</h3>
-                <span className="text-[11px] font-mono text-neutral-400">
+              <div className="flex items-center justify-between border-b border-amber-500/20 pb-3 mb-4">
+                <h3 className="text-sm font-bold text-white">{cat.name}</h3>
+                <span className="text-[11px] font-mono text-slate-400">
                   {catSkills.length} items
                 </span>
               </div>
@@ -148,15 +148,15 @@ export default function AdminSkillsPage() {
                     key={s.id}
                     className={`p-3 rounded-xl border flex items-center justify-between transition-colors ${
                       s.is_active
-                        ? "bg-neutral-50/50 border-neutral-200"
-                        : "bg-neutral-100/40 border-neutral-200 opacity-60"
+                        ? "bg-[#071324]/50 border-amber-500/30"
+                        : "bg-[#142c50]/40 border-amber-500/30 opacity-60"
                     }`}
                   >
                     <div>
-                      <div className="text-xs font-bold text-neutral-900">
+                      <div className="text-xs font-bold text-white">
                         {s.name}
                       </div>
-                      <div className="text-[10px] text-neutral-400 font-mono">
+                      <div className="text-[10px] text-slate-400 font-mono">
                         Icon: {s.icon || "Code"}
                       </div>
                     </div>
@@ -169,7 +169,7 @@ export default function AdminSkillsPage() {
                         className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
                           s.is_active
                             ? "bg-emerald-100 text-emerald-700"
-                            : "bg-neutral-200 text-neutral-600"
+                            : "bg-[#071324] text-slate-400"
                         }`}
                       >
                         {s.is_active ? "Active" : "Off"}
@@ -179,13 +179,13 @@ export default function AdminSkillsPage() {
                           setEditingSkill({ ...s });
                           setIsModalOpen(true);
                         }}
-                        className="p-1 text-neutral-400 hover:text-blue-600 rounded"
+                        className="p-1 text-slate-400 hover:text-blue-600 rounded"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDelete(s.id)}
-                        className="p-1 text-neutral-400 hover:text-red-600 rounded"
+                        className="p-1 text-slate-400 hover:text-red-600 rounded"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -201,14 +201,14 @@ export default function AdminSkillsPage() {
       {/* Modal */}
       {isModalOpen && editingSkill && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/50 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl border border-neutral-200 shadow-2xl w-full max-w-md p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-              <h3 className="text-sm font-bold text-neutral-900">
+          <div className="bg-[#0d1f38] rounded-3xl border border-amber-500/30 shadow-2xl w-full max-w-md p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+              <h3 className="text-sm font-bold text-white">
                 {editingSkill.id.startsWith("s-") ? "Add Skill" : "Edit Skill"}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 text-neutral-400 hover:text-neutral-900"
+                className="p-1 text-slate-400 hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -216,7 +216,7 @@ export default function AdminSkillsPage() {
 
             <form onSubmit={handleSaveModal} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-neutral-700 mb-1">
+                <label className="block font-semibold text-amber-300 mb-1">
                   Technology Name *
                 </label>
                 <input
@@ -226,12 +226,12 @@ export default function AdminSkillsPage() {
                   onChange={(e) =>
                     setEditingSkill({ ...editingSkill, name: e.target.value })
                   }
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-neutral-700 mb-1">
+                <label className="block font-semibold text-amber-300 mb-1">
                   Category *
                 </label>
                 <select
@@ -239,7 +239,7 @@ export default function AdminSkillsPage() {
                   onChange={(e) =>
                     setEditingSkill({ ...editingSkill, category_id: e.target.value })
                   }
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200 bg-white"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38]"
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -250,7 +250,7 @@ export default function AdminSkillsPage() {
               </div>
 
               <div>
-                <label className="block font-semibold text-neutral-700 mb-1">
+                <label className="block font-semibold text-amber-300 mb-1">
                   Icon Identifier
                 </label>
                 <input
@@ -260,15 +260,15 @@ export default function AdminSkillsPage() {
                     setEditingSkill({ ...editingSkill, icon: e.target.value })
                   }
                   placeholder="Code, Cpu, Brain, Layers, Database..."
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-amber-500/20">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-neutral-200 text-neutral-700 font-semibold"
+                  className="px-4 py-2 rounded-xl border border-amber-500/30 text-amber-300 font-semibold"
                 >
                   Cancel
                 </button>

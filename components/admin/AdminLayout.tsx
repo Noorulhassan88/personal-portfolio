@@ -33,11 +33,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }, [isLoginPage, router]);
 
   if (isLoginPage) {
-    return <div className="min-h-screen bg-neutral-100">{children}</div>;
+    return <div className="min-h-screen bg-[#071324] text-white">{children}</div>;
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-neutral-900 flex">
+    <div className="min-h-screen bg-[#071324] text-white flex">
       {/* Sidebar */}
       <AdminSidebar
         isOpen={sidebarOpen}
@@ -46,9 +46,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       />
 
       {/* Main Area */}
-      <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
+      <div className="flex-1 lg:pl-64 flex flex-col min-w-0 bg-[#071324]">
         <AdminTopNav onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto bg-[#071324] text-white">
           {children}
         </main>
       </div>

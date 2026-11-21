@@ -86,7 +86,7 @@ export default async function SkillsPage() {
   ]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fcfbf9]">
+    <div className="min-h-screen flex flex-col bg-[#071324] text-white">
       <Navbar name={settings.name} designation={settings.designation} />
 
       <main className="flex-1">
@@ -107,14 +107,14 @@ export default async function SkillsPage() {
               return (
                 <section key={category.id} className="space-y-6">
                   {/* Category Header with Gold/Navy accents */}
-                  <div className="flex items-center justify-between border-b-2 border-amber-200 pb-3">
+                  <div className="flex items-center justify-between border-b border-amber-500/30 pb-3">
                     <div className="flex items-center gap-2.5">
-                      <span className="w-3 h-3 rounded-full bg-amber-500 shadow-xs" />
-                      <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#0a192f]">
+                      <span className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]" />
+                      <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
                         {category.name}
                       </h2>
                     </div>
-                    <span className="text-xs font-mono font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                    <span className="text-xs font-mono font-bold text-amber-300 bg-[#0d1f38] px-3 py-1 rounded-full border border-amber-400/40">
                       {categorySkills.length} technologies
                     </span>
                   </div>
@@ -126,13 +126,13 @@ export default async function SkillsPage() {
                       return (
                         <div
                           key={skill.id}
-                          className="group p-4 rounded-xl bg-white border border-neutral-200/90 shadow-2xs hover:shadow-md hover:border-amber-400 hover:translate-y-[-2px] transition-all duration-200 flex flex-col items-center justify-center text-center gap-3"
+                          className="group p-4 rounded-xl bg-[#0d1f38] border border-amber-500/30 hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:translate-y-[-2px] transition-all duration-200 flex flex-col items-center justify-center text-center gap-3 shadow-lg"
                         >
-                          <div className="w-11 h-11 rounded-xl bg-[#0a192f] text-amber-400 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-[#0a192f] transition-all duration-200 shadow-xs">
-                            <Icon className="w-5 h-5" />
+                          <div className="w-12 h-12 rounded-xl bg-[#071324] text-amber-400 flex items-center justify-center group-hover:bg-amber-400 group-hover:text-[#071324] transition-all duration-200 border border-amber-500/40 shadow-xs">
+                            <Icon className="w-6 h-6" />
                           </div>
 
-                          <span className="text-xs sm:text-sm font-bold text-[#0a192f] tracking-tight">
+                          <span className="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-amber-300 tracking-tight transition-colors">
                             {skill.name}
                           </span>
                         </div>

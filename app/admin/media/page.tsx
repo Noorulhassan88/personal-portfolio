@@ -93,17 +93,17 @@ export default function AdminMediaPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-amber-500/30">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
             Media Library & Storage
           </h1>
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="text-xs text-amber-200/80 mt-1">
             Centralized file assets across profile photos, project screenshots, and PDF certificates.
           </p>
         </div>
 
-        <label className="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide transition-all shadow-xs">
+        <label className="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base px-6 py-3 border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs">
           <Upload className="w-4 h-4" />
           <span>Upload File</span>
           <input
@@ -116,18 +116,18 @@ export default function AdminMediaPage() {
       </div>
 
       {/* Search & Filter */}
-      <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-neutral-200 shadow-2xs">
+      <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs">
         <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
             placeholder="Search media files..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-neutral-200 text-xs text-neutral-900"
+            className="w-full pl-9 pr-4 py-2 rounded-xl border border-amber-500/30 text-xs text-white"
           />
         </div>
-        <span className="text-xs text-neutral-500 font-mono">
+        <span className="text-xs text-amber-200/80 font-mono">
           {filteredMedia.length} files stored
         </span>
       </div>
@@ -137,10 +137,10 @@ export default function AdminMediaPage() {
         {filteredMedia.map((item) => (
           <div
             key={item.id}
-            className="group bg-white rounded-2xl border border-neutral-200 shadow-2xs overflow-hidden flex flex-col justify-between"
+            className="group bg-[#0d1f38] rounded-2xl border border-amber-500/30 shadow-2xs overflow-hidden flex flex-col justify-between"
           >
             {/* Preview Box */}
-            <div className="relative h-40 w-full bg-neutral-100 flex items-center justify-center overflow-hidden">
+            <div className="relative h-40 w-full bg-[#142c50] flex items-center justify-center overflow-hidden">
               {item.file_type === "image" ? (
                 <Image
                   src={item.url}
@@ -149,7 +149,7 @@ export default function AdminMediaPage() {
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center p-4 text-neutral-500">
+                <div className="flex flex-col items-center justify-center p-4 text-amber-200/80">
                   <FileText className="w-10 h-10 text-red-500 mb-2" />
                   <span className="text-[10px] font-mono font-bold uppercase">
                     PDF Document
@@ -157,22 +157,22 @@ export default function AdminMediaPage() {
                 </div>
               )}
 
-              <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-mono font-semibold bg-white/90 text-neutral-800 shadow-2xs">
+              <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-mono font-semibold bg-[#0d1f38]/90 text-slate-100 shadow-2xs">
                 {item.bucket}
               </span>
             </div>
 
             {/* Meta */}
             <div className="p-4 space-y-2">
-              <div className="text-xs font-bold text-neutral-900 truncate" title={item.name}>
+              <div className="text-xs font-bold text-white truncate" title={item.name}>
                 {item.name}
               </div>
-              <div className="flex items-center justify-between text-[10px] text-neutral-400 font-mono">
+              <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
                 <span>{formatBytes(item.size)}</span>
                 <span>{formatDateTime(item.created_at)}</span>
               </div>
 
-              <div className="pt-2 border-t border-neutral-100 flex items-center justify-between">
+              <div className="pt-2 border-t border-amber-500/20 flex items-center justify-between">
                 <button
                   onClick={() => handleCopyUrl(item)}
                   className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700"
@@ -183,7 +183,7 @@ export default function AdminMediaPage() {
 
                 <button
                   onClick={() => handleDelete(item.id)}
-                  className="p-1 text-neutral-400 hover:text-red-600 rounded"
+                  className="p-1 text-slate-400 hover:text-red-600 rounded"
                   title="Delete file"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
