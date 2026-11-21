@@ -571,6 +571,28 @@ export async function deleteExperience(id: string): Promise<boolean> {
   return true;
 }
 
+export async function saveAllExperience(entries: ExperienceEntry[]): Promise<ExperienceEntry[]> {
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("experience")
+        .upsert(entries)
+        .select();
+      if (!error && data) {
+        localStore.experience = data as ExperienceEntry[];
+        persistChanges();
+        return data as ExperienceEntry[];
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase saveAllExperience fallback:", err);
+  }
+  localStore.experience = [...entries];
+  persistChanges();
+  return entries;
+}
+
 export async function getCertifications(onlyPublished = true): Promise<Certification[]> {
   try {
     const supabase = await createServerSupabaseClient();

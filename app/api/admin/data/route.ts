@@ -15,6 +15,7 @@ import {
   deleteProject,
   getExperience,
   saveExperience,
+  saveAllExperience,
   deleteExperience,
   getCertifications,
   saveCertification,
@@ -186,6 +187,11 @@ export async function POST(request: Request) {
 
       case "saveExperience": {
         const result = await saveExperience(payload);
+        return NextResponse.json({ success: true, data: result });
+      }
+
+      case "saveAllExperience": {
+        const result = await saveAllExperience(payload);
         return NextResponse.json({ success: true, data: result });
       }
 
