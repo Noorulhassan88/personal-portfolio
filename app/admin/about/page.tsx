@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import {
   Save,
   CheckCircle2,
@@ -8,19 +9,45 @@ import {
   Plus,
   Trash2,
   GraduationCap,
+  Upload,
+  X,
+  Layers,
+  Cpu,
+  Binary,
+  Database,
+  Brain,
+  Terminal,
+  Code,
+  Sparkles,
+  Tag,
+  BookOpen,
+  Image as ImageIcon,
 } from "lucide-react";
 import { AboutContent, EducationEntry } from "@/types/portfolio";
 import { initialAboutContent } from "@/data/initialData";
 
+const availableIcons = [
+  "Layers",
+  "Cpu",
+  "Binary",
+  "Database",
+  "Brain",
+  "Terminal",
+  "Code",
+  "Sparkles",
+];
+
 export default function AdminAboutEditor() {
   const [content, setContent] = useState<AboutContent>(initialAboutContent);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [uploading, setUploading] = useState(false);
+  const [newInterest, setNewInterest] = useState("");
 
   useEffect(() => {
     try {
       const local = localStorage.getItem("portfolio_about");
       if (local) {
-        setContent(JSON.parse(local));
+        setContent((prev) => ({ ...prev, ...JSON.parse(local) }));
       }
     } catch (e) {
       console.error(e);
@@ -30,7 +57,7 @@ export default function AdminAboutEditor() {
       .then((res) => res.json())
       .then((res) => {
         if (res.success && res.data) {
-          setContent(res.data);
+          setContent((prev) => ({ ...prev, ...res.data }));
           try {
             localStorage.setItem("portfolio_about", JSON.stringify(res.data));
           } catch {}
@@ -66,6 +93,91 @@ export default function AdminAboutEditor() {
     }
   };
 
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        const updated = { ...content, photo_url: data.url };
+        setContent(updated);
+        try {
+          localStorage.setItem("portfolio_about", JSON.stringify(updated));
+        } catch {}
+      } else {
+        alert(data.error || "Failed to upload photo");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error uploading image");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Specialization helpers
+  const addSpecialization = () => {
+    const newSpec = {
+      title: "New Specialization",
+      description: "Describe this area of technical specialization.",
+      icon: "Sparkles",
+    };
+    setContent({
+      ...content,
+      areas_of_specialization: [...content.areas_of_specialization, newSpec],
+    });
+  };
+
+  const updateSpecialization = (
+    index: number,
+    field: "title" | "description" | "icon",
+    val: string
+  ) => {
+    const updated = [...content.areas_of_specialization];
+    updated[index] = { ...updated[index], [field]: val };
+    setContent({ ...content, areas_of_specialization: updated });
+  };
+
+  const removeSpecialization = (index: number) => {
+    setContent({
+      ...content,
+      areas_of_specialization: content.areas_of_specialization.filter((_, i) => i !== index),
+    });
+  };
+
+  // Interests helpers
+  const handleAddInterest = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newInterest.trim();
+    if (!trimmed) return;
+    if (content.technical_interests.includes(trimmed)) {
+      setNewInterest("");
+      return;
+    }
+    setContent({
+      ...content,
+      technical_interests: [...content.technical_interests, trimmed],
+    });
+    setNewInterest("");
+  };
+
+  const handleRemoveInterest = (item: string) => {
+    setContent({
+      ...content,
+      technical_interests: content.technical_interests.filter((i) => i !== item),
+    });
+  };
+
+  // Biography helpers
   const handleParagraphChange = (index: number, val: string) => {
     const updated = [...content.bio_paragraphs];
     updated[index] = val;
@@ -87,7 +199,7 @@ export default function AdminAboutEditor() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-12">
       {/* Top Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-amber-500/30">
         <div>
@@ -95,14 +207,14 @@ export default function AdminAboutEditor() {
             About Me Content Editor
           </h1>
           <p className="text-xs text-amber-200/80 mt-1">
-            Manage your biography paragraphs, education credentials, philosophy, and specializations.
+            Customize the header text, photo, biography, education, areas of specialization, and core interests.
           </p>
         </div>
 
         <button
           onClick={handleSave}
           disabled={status === "saving"}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base px-6 py-3 border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs disabled:opacity-70"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs disabled:opacity-70 cursor-pointer active:scale-95"
         >
           <Save className="w-4 h-4" />
           <span>{status === "saving" ? "Saving..." : "Save About Content"}</span>
@@ -110,21 +222,257 @@ export default function AdminAboutEditor() {
       </div>
 
       {status === "saved" && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          <span>About Me content updated successfully!</span>
+        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-400/40 text-emerald-300 text-xs font-semibold flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span>About Me content saved successfully!</span>
         </div>
       )}
 
-      {/* Biography Paragraphs */}
+      {/* 1. Header & Banner Text Section */}
+      <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-5">
+        <div className="flex items-center gap-2 border-b border-amber-500/20 pb-3">
+          <Sparkles className="w-4 h-4 text-amber-400" />
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            Page Header & Subtitle Text
+          </h3>
+        </div>
+
+        <div className="space-y-4 text-xs">
+          <div>
+            <label className="block text-amber-300 font-semibold mb-1 uppercase tracking-wider text-[11px]">
+              Page Main Heading
+            </label>
+            <input
+              type="text"
+              value={content.header_title || ""}
+              onChange={(e) => setContent({ ...content, header_title: e.target.value })}
+              placeholder="e.g. Bridging Artificial Intelligence with Modern Web Architecture."
+              className="w-full px-4 py-2.5 rounded-xl border border-amber-500/30 bg-[#071324] text-white text-sm font-bold focus:outline-none focus:border-amber-400"
+            />
+          </div>
+
+          <div>
+            <label className="block text-amber-300 font-semibold mb-1 uppercase tracking-wider text-[11px]">
+              Header Description Subtitle
+            </label>
+            <textarea
+              rows={2}
+              value={content.header_description || ""}
+              onChange={(e) => setContent({ ...content, header_description: e.target.value })}
+              placeholder="e.g. Discover my background, education, and technical expertise in building scalable software systems and applied AI."
+              className="w-full px-4 py-2.5 rounded-xl border border-amber-500/30 bg-[#071324] text-white text-xs resize-none focus:outline-none focus:border-amber-400 leading-relaxed"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 2. About Photo / Portrait Image */}
+      <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-5">
+        <div className="flex items-center gap-2 border-b border-amber-500/20 pb-3">
+          <ImageIcon className="w-4 h-4 text-amber-400" />
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            About Page Photo / Image
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <div className="md:col-span-4 flex justify-center">
+            <div className="relative w-44 h-56 rounded-2xl overflow-hidden border-2 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.3)] bg-[#071324]">
+              {content.photo_url ? (
+                <Image
+                  src={content.photo_url}
+                  alt={content.full_name || "About Photo"}
+                  fill
+                  unoptimized={
+                    content.photo_url.startsWith("data:") ||
+                    content.photo_url.startsWith("http")
+                  }
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-amber-400/60 p-4 text-center text-xs">
+                  <ImageIcon className="w-10 h-10 mb-2 opacity-50" />
+                  <span>No photo selected</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="md:col-span-8 space-y-4">
+            <div>
+              <label className="block text-amber-300 font-semibold mb-1 text-xs">
+                Upload New Image File
+              </label>
+              <label className="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#071324] text-xs font-extrabold shadow-md transition-all active:scale-95">
+                <Upload className="w-4 h-4" />
+                <span>{uploading ? "Uploading..." : "Select & Upload Photo"}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  disabled={uploading}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            <div>
+              <label className="block text-amber-300 font-semibold mb-1 text-xs">
+                Or Direct Image URL
+              </label>
+              <input
+                type="text"
+                value={content.photo_url || ""}
+                onChange={(e) => setContent({ ...content, photo_url: e.target.value })}
+                placeholder="/profile.png or https://..."
+                className="w-full px-3.5 py-2 rounded-xl border border-amber-500/30 bg-[#071324] text-xs text-white"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Areas of Specialization */}
+      <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-5">
+        <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+          <div className="flex items-center gap-2">
+            <Layers className="w-4 h-4 text-amber-400" />
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+              Areas of Specialization ({content.areas_of_specialization.length})
+            </h3>
+          </div>
+          <button
+            onClick={addSpecialization}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-bold transition-colors cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add Specialization</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {content.areas_of_specialization.map((spec, idx) => (
+            <div
+              key={idx}
+              className="p-4 rounded-xl border border-amber-500/30 bg-[#071324]/50 space-y-3 relative group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono text-amber-300 font-bold">
+                  Card #{idx + 1}
+                </span>
+                <button
+                  onClick={() => removeSpecialization(idx)}
+                  className="p-1 rounded-md text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                  title="Remove specialization"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-semibold text-amber-300/80 mb-1">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  value={spec.title}
+                  onChange={(e) => updateSpecialization(idx, "title", e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-lg border border-amber-500/30 bg-[#0d1f38] text-xs text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-semibold text-amber-300/80 mb-1">
+                  Description
+                </label>
+                <textarea
+                  rows={2}
+                  value={spec.description}
+                  onChange={(e) => updateSpecialization(idx, "description", e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-lg border border-amber-500/30 bg-[#0d1f38] text-xs text-white resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-semibold text-amber-300/80 mb-1">
+                  Icon
+                </label>
+                <select
+                  value={spec.icon}
+                  onChange={(e) => updateSpecialization(idx, "icon", e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-lg border border-amber-500/30 bg-[#0d1f38] text-xs text-white"
+                >
+                  {availableIcons.map((ic) => (
+                    <option key={ic} value={ic}>
+                      {ic}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 4. Core Technical Interests */}
+      <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-5">
+        <div className="flex items-center gap-2 border-b border-amber-500/20 pb-3">
+          <Tag className="w-4 h-4 text-amber-400" />
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            Core Technical Interests ({content.technical_interests.length})
+          </h3>
+        </div>
+
+        {/* Existing Tags Cloud with Delete Pill */}
+        <div className="flex flex-wrap gap-2">
+          {content.technical_interests.map((interest) => (
+            <span
+              key={interest}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#071324] border border-amber-400/50 text-amber-300 text-xs font-semibold shadow-xs"
+            >
+              <span>{interest}</span>
+              <button
+                type="button"
+                onClick={() => handleRemoveInterest(interest)}
+                className="hover:text-red-400 cursor-pointer ml-0.5"
+                title={`Remove ${interest}`}
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+
+        {/* Add New Interest Form */}
+        <form onSubmit={handleAddInterest} className="flex gap-2 max-w-md pt-2">
+          <input
+            type="text"
+            value={newInterest}
+            onChange={(e) => setNewInterest(e.target.value)}
+            placeholder="Add new technical interest (e.g. Distributed Systems)..."
+            className="flex-1 px-3.5 py-2 rounded-xl border border-amber-500/30 bg-[#071324] text-xs text-white focus:outline-none focus:border-amber-400"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 rounded-xl bg-linear-to-r from-amber-400 to-amber-500 text-[#071324] font-extrabold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
+          >
+            Add
+          </button>
+        </form>
+      </div>
+
+      {/* 5. Professional Biography Paragraphs */}
       <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-4">
         <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
-          <h3 className="text-sm font-bold text-white">
-            Professional Biography Paragraphs
-          </h3>
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-amber-400" />
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+              Professional Biography Paragraphs
+            </h3>
+          </div>
           <button
             onClick={addParagraph}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#142c50] hover:bg-[#1b3a6b] text-xs font-semibold text-slate-100 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-bold transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Paragraph</span>
@@ -139,11 +487,11 @@ export default function AdminAboutEditor() {
                 value={p}
                 onChange={(e) => handleParagraphChange(idx, e.target.value)}
                 placeholder={`Paragraph ${idx + 1}...`}
-                className="flex-1 px-3.5 py-2.5 rounded-xl border border-amber-500/30 text-xs text-white focus:outline-none focus:border-amber-400 resize-none"
+                className="flex-1 px-3.5 py-2.5 rounded-xl border border-amber-500/30 bg-[#071324] text-xs text-white focus:outline-none focus:border-amber-400 resize-none leading-relaxed"
               />
               <button
                 onClick={() => removeParagraph(idx)}
-                className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors h-fit"
+                className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors h-fit cursor-pointer"
                 title="Remove paragraph"
               >
                 <Trash2 className="w-4 h-4" />
@@ -153,15 +501,13 @@ export default function AdminAboutEditor() {
         </div>
       </div>
 
-      {/* Education Credentials */}
+      {/* 6. Education Credentials */}
       <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-6">
-        <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
-          <div className="flex items-center gap-2">
-            <GraduationCap className="w-4 h-4 text-blue-600" />
-            <h3 className="text-sm font-bold text-white">
-              Education History
-            </h3>
-          </div>
+        <div className="flex items-center gap-2 border-b border-amber-500/20 pb-3">
+          <GraduationCap className="w-4 h-4 text-amber-400" />
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            Academic Credentials & Education
+          </h3>
         </div>
 
         {content.education.map((edu, idx) => (
@@ -182,7 +528,7 @@ export default function AdminAboutEditor() {
                     updated[idx].degree = e.target.value;
                     setContent({ ...content, education: updated });
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs text-white"
                 />
               </div>
 
@@ -198,7 +544,7 @@ export default function AdminAboutEditor() {
                     updated[idx].institution = e.target.value;
                     setContent({ ...content, education: updated });
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs text-white"
                 />
               </div>
             </div>
@@ -216,7 +562,7 @@ export default function AdminAboutEditor() {
                     updated[idx].start_year = e.target.value;
                     setContent({ ...content, education: updated });
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs text-white"
                 />
               </div>
 
@@ -232,7 +578,7 @@ export default function AdminAboutEditor() {
                     updated[idx].end_year = e.target.value;
                     setContent({ ...content, education: updated });
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs text-white"
                 />
               </div>
 
@@ -248,41 +594,12 @@ export default function AdminAboutEditor() {
                     updated[idx].grade = e.target.value;
                     setContent({ ...content, education: updated });
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-[#0d1f38] text-xs text-white"
                 />
               </div>
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Philosophy and Career Objectives */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div className="p-6 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-3">
-          <h3 className="text-sm font-bold text-white">
-            Development Philosophy
-          </h3>
-          <textarea
-            rows={4}
-            value={content.development_philosophy}
-            onChange={(e) =>
-              setContent({ ...content, development_philosophy: e.target.value })
-            }
-            className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs resize-none"
-          />
-        </div>
-
-        <div className="p-6 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xs space-y-3">
-          <h3 className="text-sm font-bold text-white">Career Objectives</h3>
-          <textarea
-            rows={4}
-            value={content.career_objectives}
-            onChange={(e) =>
-              setContent({ ...content, career_objectives: e.target.value })
-            }
-            className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs resize-none"
-          />
-        </div>
       </div>
     </div>
   );

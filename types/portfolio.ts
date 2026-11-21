@@ -31,11 +31,14 @@ export interface HomepageSettings {
 export interface AboutContent {
   id: string;
   full_name: string;
+  header_title?: string;
+  header_description?: string;
+  photo_url?: string;
   bio_paragraphs: string[];
   education: EducationEntry[];
   technical_interests: string[];
-  development_philosophy: string;
-  career_objectives: string;
+  development_philosophy?: string;
+  career_objectives?: string;
   areas_of_specialization: {
     title: string;
     description: string;

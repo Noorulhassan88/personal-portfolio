@@ -50,6 +50,10 @@ export const initialHomepageSettings: HomepageSettings = {
 export const initialAboutContent: AboutContent = {
   id: "default-about",
   full_name: "Noorul Hassan",
+  header_title: "Bridging Artificial Intelligence with Modern Web Architecture.",
+  header_description:
+    "Discover my background, education, and technical expertise in building scalable software systems and applied AI.",
+  photo_url: "/profile.png",
   bio_paragraphs: [
     "I'm a Full Stack Developer and AI Engineer passionate about building scalable applications, intelligent systems and innovative digital experiences using modern web technologies and artificial intelligence.",
     "With a strong foundation in Artificial Intelligence and Data Science, I bridge the gap between machine learning research and production web engineering. I design end-to-end architectures that integrate cutting-edge LLMs, retrieval-augmented generation pipelines, and high-performance vector stores with clean, responsive user interfaces.",
