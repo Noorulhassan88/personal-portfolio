@@ -22,7 +22,7 @@ export default async function CertificationsPage() {
   ]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fafafa]">
+    <div className="min-h-screen flex flex-col bg-[#fcfbf9]">
       <Navbar name={settings.name} designation={settings.designation} />
 
       <main className="flex-1">
@@ -38,11 +38,11 @@ export default async function CertificationsPage() {
             {certifications.map((cert) => (
               <div
                 key={cert.id}
-                className="group bg-white rounded-2xl border border-neutral-200/90 overflow-hidden shadow-xs hover:shadow-xl hover:border-neutral-300 transition-all duration-300 flex flex-col justify-between"
+                className="group bg-white rounded-2xl border border-amber-200/90 overflow-hidden shadow-md hover:shadow-2xl hover:border-amber-400 transition-all duration-300 flex flex-col justify-between"
               >
-                {/* Certificate image preview if present */}
+                {/* Certificate image preview */}
                 {cert.image_url && (
-                  <div className="relative h-44 w-full overflow-hidden bg-neutral-900 border-b border-neutral-100">
+                  <div className="relative h-44 w-full overflow-hidden bg-[#0a192f] border-b border-amber-500/30">
                     <Image
                       src={cert.image_url}
                       alt={cert.title}
@@ -50,8 +50,8 @@ export default async function CertificationsPage() {
                       sizes="(max-width: 768px) 100vw, 400px"
                       className="object-cover opacity-90 transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-white/90 text-neutral-900 text-[10px] font-mono font-medium flex items-center gap-1 shadow-xs">
-                      <CheckCircle className="w-3 h-3 text-emerald-600" />
+                    <div className="absolute top-3 right-3 px-2.5 py-0.5 rounded-full bg-[#0a192f]/90 border border-amber-400 text-amber-300 text-[10px] font-mono font-bold flex items-center gap-1 shadow-md">
+                      <CheckCircle className="w-3 h-3 text-amber-400" />
                       <span>Verified</span>
                     </div>
                   </div>
@@ -59,23 +59,23 @@ export default async function CertificationsPage() {
 
                 <div className="p-6 flex-1 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center gap-2 text-xs font-mono text-blue-600 mb-2">
-                      <Award className="w-4 h-4 shrink-0" />
+                    <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-700 uppercase mb-2">
+                      <Award className="w-4 h-4 shrink-0 text-amber-600" />
                       <span>{cert.issuing_organization}</span>
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-neutral-900 tracking-tight leading-snug">
+                    <h3 className="text-base sm:text-lg font-bold text-[#0a192f] tracking-tight leading-snug">
                       {cert.title}
                     </h3>
 
                     <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-mono mt-3">
-                      <Calendar className="w-3.5 h-3.5" />
+                      <Calendar className="w-3.5 h-3.5 text-amber-600" />
                       <span>Issued: {formatDate(cert.issue_date)}</span>
                     </div>
 
                     {cert.credential_id && (
                       <div className="mt-2 text-[11px] font-mono text-neutral-500">
-                        ID: <span className="text-neutral-700">{cert.credential_id}</span>
+                        ID: <span className="text-[#0a192f] font-bold">{cert.credential_id}</span>
                       </div>
                     )}
                   </div>
@@ -86,10 +86,10 @@ export default async function CertificationsPage() {
                         href={cert.verification_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center justify-center gap-1.5 w-full py-2 px-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold transition-colors"
+                        className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-4 rounded-xl bg-[#0a192f] hover:bg-[#112240] text-amber-300 text-xs font-bold transition-colors shadow-xs border border-amber-400/40"
                       >
                         <span>Verify Credential</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
+                        <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
                       </a>
                     ) : (
                       <span className="text-xs text-neutral-400 font-mono">

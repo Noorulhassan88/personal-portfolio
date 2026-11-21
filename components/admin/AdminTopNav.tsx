@@ -5,12 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Menu,
-  Bell,
-  Search,
   ExternalLink,
   LogOut,
-  User,
-  ShieldCheck,
 } from "lucide-react";
 
 interface AdminTopNavProps {
@@ -28,18 +24,18 @@ export default function AdminTopNav({ onMenuToggle, title }: AdminTopNavProps) {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-neutral-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
+    <header className="h-16 bg-white border-b border-amber-500/20 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuToggle}
-          className="lg:hidden p-2 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100"
+          className="lg:hidden p-2 rounded-lg text-[#0a192f] hover:bg-amber-50"
           aria-label="Toggle navigation"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         {title && (
-          <h1 className="text-base sm:text-lg font-bold text-neutral-900 tracking-tight">
+          <h1 className="text-base sm:text-lg font-bold text-[#0a192f] tracking-tight">
             {title}
           </h1>
         )}
@@ -50,22 +46,22 @@ export default function AdminTopNav({ onMenuToggle, title }: AdminTopNavProps) {
         <Link
           href="/"
           target="_blank"
-          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-neutral-200 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 transition-colors"
+          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-300 text-xs font-semibold text-[#0a192f] hover:bg-amber-50 transition-colors"
         >
           <span>View Site</span>
-          <ExternalLink className="w-3.5 h-3.5 text-neutral-400" />
+          <ExternalLink className="w-3.5 h-3.5 text-amber-600" />
         </Link>
 
-        {/* Admin Monogram Profile */}
+        {/* Admin Monogram Profile - Navy & Gold */}
         <div className="flex items-center gap-2 pl-2 border-l border-neutral-200">
-          <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+          <div className="w-8 h-8 rounded-full bg-[#0a192f] border border-amber-400 text-amber-400 flex items-center justify-center font-bold text-xs shadow-xs">
             NH
           </div>
           <div className="hidden md:flex flex-col text-left">
-            <span className="text-xs font-semibold text-neutral-900 leading-none">
+            <span className="text-xs font-bold text-[#0a192f] leading-none">
               Noorul Hassan
             </span>
-            <span className="text-[10px] text-neutral-500 font-mono mt-0.5">
+            <span className="text-[10px] text-amber-700 font-mono font-medium mt-0.5">
               Superadmin
             </span>
           </div>

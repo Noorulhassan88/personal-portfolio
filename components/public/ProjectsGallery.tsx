@@ -34,17 +34,17 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
   return (
     <div className="space-y-10">
       {/* Filters and Search Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-amber-200/80">
         {/* Category Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+              className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 ${
                 selectedCategory === cat
-                  ? "bg-neutral-900 text-white shadow-xs"
-                  : "bg-white text-neutral-600 hover:text-neutral-900 border border-neutral-200/80 hover:border-neutral-300"
+                  ? "bg-[#0a192f] text-amber-300 border border-amber-400 shadow-md"
+                  : "bg-white text-neutral-700 hover:text-[#0a192f] border border-neutral-200 hover:border-amber-400 hover:bg-amber-50/50"
               }`}
             >
               {cat}
@@ -54,13 +54,13 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
 
         {/* Search Input */}
         <div className="relative w-full md:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-600" />
           <input
             type="text"
             placeholder="Search projects or stack..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-xs rounded-full bg-white border border-neutral-200 focus:outline-none focus:border-blue-600 transition-colors shadow-2xs"
+            className="w-full pl-9 pr-4 py-2 text-xs rounded-full bg-white border border-neutral-300 focus:outline-none focus:border-amber-500 transition-colors shadow-2xs"
           />
         </div>
       </div>
@@ -68,7 +68,7 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
       {/* Projects Grid */}
       {filteredProjects.length === 0 ? (
         <div className="py-20 text-center bg-white rounded-2xl border border-neutral-200">
-          <p className="text-sm font-medium text-neutral-600">
+          <p className="text-sm font-semibold text-neutral-600">
             No projects found matching the selected filter or search query.
           </p>
           <button
@@ -76,7 +76,7 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
               setSelectedCategory("All");
               setSearchQuery("");
             }}
-            className="mt-4 text-xs font-semibold text-blue-600 hover:underline"
+            className="mt-4 text-xs font-bold text-amber-600 hover:underline"
           >
             Reset Filters
           </button>
@@ -86,12 +86,12 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className="group bg-white rounded-2xl border border-neutral-200/90 overflow-hidden shadow-xs hover:shadow-xl hover:border-neutral-300 transition-all duration-300 flex flex-col"
+              className="group bg-white rounded-2xl border border-neutral-200 hover:border-amber-400/80 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col"
             >
               {/* Thumbnail */}
               <Link
                 href={`/projects/${project.slug}`}
-                className="relative block h-52 w-full overflow-hidden bg-neutral-100"
+                className="relative block h-52 w-full overflow-hidden bg-[#0a192f]"
               >
                 {project.thumbnail_url ? (
                   <Image
@@ -102,12 +102,12 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-neutral-100 text-neutral-400">
+                  <div className="w-full h-full flex items-center justify-center bg-[#0a192f] text-amber-400">
                     <Cpu className="w-8 h-8" />
                   </div>
                 )}
                 <div className="absolute top-3 left-3">
-                  <span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-white/95 backdrop-blur-xs text-neutral-900 shadow-xs border border-neutral-200">
+                  <span className="px-3 py-1 text-[11px] font-bold rounded-full bg-[#0a192f]/90 backdrop-blur-xs text-amber-300 border border-amber-400/50 shadow-xs">
                     {project.category}
                   </span>
                 </div>
@@ -116,7 +116,7 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
               {/* Content */}
               <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-neutral-900 tracking-tight group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-lg font-bold text-[#0a192f] tracking-tight group-hover:text-amber-600 transition-colors">
                     <Link href={`/projects/${project.slug}`}>{project.title}</Link>
                   </h3>
                   <p className="mt-2 text-xs sm:text-sm text-neutral-600 line-clamp-3 leading-relaxed">
@@ -130,13 +130,13 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
                     {project.technologies.slice(0, 4).map((tech) => (
                       <span
                         key={tech}
-                        className="text-[10px] font-medium px-2 py-0.5 rounded bg-neutral-100 text-neutral-700"
+                        className="text-[10px] font-semibold px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-900 border border-amber-200"
                       >
                         {tech}
                       </span>
                     ))}
                     {project.technologies.length > 4 && (
-                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-500">
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-600">
                         +{project.technologies.length - 4}
                       </span>
                     )}
@@ -146,19 +146,19 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
                   <div className="flex items-center justify-between text-xs">
                     <Link
                       href={`/projects/${project.slug}`}
-                      className="font-semibold text-neutral-900 hover:text-blue-600 transition-colors inline-flex items-center gap-1"
+                      className="font-bold text-[#0a192f] hover:text-amber-600 transition-colors inline-flex items-center gap-1.5"
                     >
-                      <span>View Details</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <span>View Deep Dive</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-amber-500" />
                     </Link>
 
-                    <div className="flex items-center gap-3 text-neutral-500">
+                    <div className="flex items-center gap-3 text-neutral-600">
                       {project.github_url && (
                         <a
                           href={project.github_url}
                           target="_blank"
                           rel="noreferrer"
-                          className="hover:text-neutral-900 transition-colors"
+                          className="hover:text-amber-600 transition-colors"
                           title="GitHub Repository"
                         >
                           <GithubIcon className="w-4 h-4" />
@@ -169,7 +169,7 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
                           href={project.live_demo_url}
                           target="_blank"
                           rel="noreferrer"
-                          className="hover:text-neutral-900 transition-colors"
+                          className="hover:text-amber-600 transition-colors"
                           title="Live Demo"
                         >
                           <ExternalLink className="w-4 h-4" />

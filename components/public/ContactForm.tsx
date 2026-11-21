@@ -45,10 +45,10 @@ export default function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-8 sm:p-10 rounded-2xl bg-white border border-neutral-200/90 shadow-sm space-y-6"
+      className="p-8 sm:p-10 rounded-2xl bg-white border border-amber-200/90 shadow-md space-y-6"
     >
       <div className="border-b border-neutral-100 pb-4">
-        <h2 className="text-xl font-bold tracking-tight text-neutral-900">
+        <h2 className="text-xl font-bold tracking-tight text-[#0a192f]">
           Send a Direct Message
         </h2>
         <p className="text-xs text-neutral-500 mt-1">
@@ -57,11 +57,11 @@ export default function ContactForm() {
       </div>
 
       {status === "success" && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-start gap-3">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 flex items-start gap-3">
+          <CheckCircle2 className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <div className="text-xs sm:text-sm">
             <p className="font-semibold">Message delivered successfully!</p>
-            <p className="text-emerald-700 mt-0.5">
+            <p className="text-amber-800 mt-0.5">
               Thank you for reaching out. Your message is safely stored and I will get back to you shortly.
             </p>
           </div>
@@ -80,7 +80,7 @@ export default function ContactForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label className="block text-xs font-semibold text-neutral-800 mb-1.5 uppercase tracking-wider">
+          <label className="block text-xs font-semibold text-[#0a192f] mb-1.5 uppercase tracking-wider">
             Your Name *
           </label>
           <input
@@ -89,12 +89,12 @@ export default function ContactForm() {
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="John Doe"
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-blue-600 transition-colors"
+            className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-amber-500 transition-colors"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-neutral-800 mb-1.5 uppercase tracking-wider">
+          <label className="block text-xs font-semibold text-[#0a192f] mb-1.5 uppercase tracking-wider">
             Your Email *
           </label>
           <input
@@ -103,13 +103,13 @@ export default function ContactForm() {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             placeholder="john@example.com"
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-blue-600 transition-colors"
+            className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-amber-500 transition-colors"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-semibold text-neutral-800 mb-1.5 uppercase tracking-wider">
+        <label className="block text-xs font-semibold text-[#0a192f] mb-1.5 uppercase tracking-wider">
           Subject *
         </label>
         <input
@@ -118,12 +118,12 @@ export default function ContactForm() {
           value={formData.subject}
           onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
           placeholder="Collaboration on AI / Full Stack Opportunity"
-          className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-blue-600 transition-colors"
+          className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-amber-500 transition-colors"
         />
       </div>
 
       <div>
-        <label className="block text-xs font-semibold text-neutral-800 mb-1.5 uppercase tracking-wider">
+        <label className="block text-xs font-semibold text-[#0a192f] mb-1.5 uppercase tracking-wider">
           Message *
         </label>
         <textarea
@@ -132,23 +132,23 @@ export default function ContactForm() {
           value={formData.message}
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
           placeholder="Describe your project, timeline, or engineering opportunity..."
-          className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-blue-600 transition-colors resize-none"
+          className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-amber-500 transition-colors resize-none"
         />
       </div>
 
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide transition-all duration-150 shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-[#0a192f] hover:bg-[#112240] text-amber-300 font-bold text-xs tracking-wide transition-all duration-150 shadow-md border border-amber-400/50 disabled:opacity-70 disabled:cursor-not-allowed"
       >
         {status === "loading" ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
             <span>Sending Message...</span>
           </>
         ) : (
           <>
-            <Send className="w-4 h-4" />
+            <Send className="w-4 h-4 text-amber-400" />
             <span>Send Message</span>
           </>
         )}

@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   AlertCircle,
   TrendingUp,
-  Cpu,
   Layers,
   ArrowLeft,
 } from "lucide-react";
@@ -45,49 +44,49 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fafafa]">
+    <div className="min-h-screen flex flex-col bg-[#fcfbf9]">
       <Navbar name={settings.name} designation={settings.designation} />
 
       <main className="flex-1">
-        {/* Header Breadcrumb & Title */}
-        <div className="pt-28 pb-10 md:pt-36 md:pb-12 border-b border-neutral-200 bg-white">
+        {/* Header Breadcrumb & Title: Navy & Gold Gradient */}
+        <div className="pt-28 pb-10 md:pt-36 md:pb-12 border-b border-amber-500/20 bg-linear-to-b from-[#0a192f] to-[#112240] text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-1.5 text-xs text-neutral-500 mb-4">
-              <Link href="/" className="hover:text-neutral-900 transition-colors">
+            <div className="flex items-center gap-1.5 text-xs text-amber-300/80 mb-4 font-mono">
+              <Link href="/" className="hover:text-amber-200 transition-colors">
                 Home
               </Link>
-              <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
-              <Link href="/projects" className="hover:text-neutral-900 transition-colors">
+              <ChevronRight className="w-3.5 h-3.5 text-amber-500/60" />
+              <Link href="/projects" className="hover:text-amber-200 transition-colors">
                 Projects
               </Link>
-              <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
-              <span className="text-neutral-900 font-medium">{project.title}</span>
+              <ChevronRight className="w-3.5 h-3.5 text-amber-500/60" />
+              <span className="text-white font-semibold">{project.title}</span>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-mono font-medium">
+              <span className="px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400 text-amber-300 text-xs font-mono font-bold">
                 {project.category}
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-neutral-900 max-w-4xl">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white max-w-4xl">
               {project.title}
             </h1>
 
-            <p className="mt-4 text-base sm:text-lg text-neutral-600 max-w-3xl leading-relaxed">
+            <p className="mt-4 text-base sm:text-lg text-neutral-300 max-w-3xl leading-relaxed">
               {project.short_description}
             </p>
 
             {/* Links Bar */}
-            <div className="flex flex-wrap items-center gap-4 mt-6 pt-6 border-t border-neutral-100">
+            <div className="flex flex-wrap items-center gap-4 mt-6 pt-6 border-t border-amber-500/20">
               {project.live_demo_url && (
                 <a
                   href={project.live_demo_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors shadow-xs"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-[#0a192f] text-xs font-bold transition-colors shadow-md"
                 >
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-4 h-4 stroke-[2.5]" />
                   <span>Launch Live Demo</span>
                 </a>
               )}
@@ -96,9 +95,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   href={project.github_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-neutral-50 text-neutral-900 border border-neutral-300 text-xs font-semibold transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1b2f56] hover:bg-[#233e70] text-amber-200 border border-amber-400/50 text-xs font-bold transition-colors"
                 >
-                  <GithubIcon className="w-4 h-4" />
+                  <GithubIcon className="w-4 h-4 text-amber-400" />
                   <span>View Repository</span>
                 </a>
               )}
@@ -113,7 +112,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             <div className="lg:col-span-8 space-y-14">
               {/* Main Showcase Image */}
               {project.thumbnail_url && (
-                <div className="relative w-full h-80 sm:h-96 rounded-2xl overflow-hidden border border-neutral-200 shadow-md bg-neutral-900">
+                <div className="relative w-full h-80 sm:h-96 rounded-2xl overflow-hidden border-2 border-amber-400/40 shadow-xl bg-[#0a192f]">
                   <Image
                     src={project.thumbnail_url}
                     alt={project.title}
@@ -127,19 +126,19 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
               {/* Overview & Problem Statement */}
               <section className="space-y-4">
-                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
+                <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#0a192f]">
                   Project Overview
                 </h2>
-                <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
+                <p className="text-neutral-700 leading-relaxed text-sm sm:text-base">
                   {project.full_description}
                 </p>
               </section>
 
               {/* Problem & Solution Grid */}
               <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-2xs">
-                  <div className="flex items-center gap-2 text-amber-600 font-semibold text-sm mb-3">
-                    <AlertCircle className="w-4 h-4" />
+                <div className="p-6 rounded-2xl bg-white border border-amber-200/80 shadow-xs">
+                  <div className="flex items-center gap-2 text-amber-700 font-bold text-sm mb-3">
+                    <AlertCircle className="w-4 h-4 text-amber-600" />
                     <span>The Problem Statement</span>
                   </div>
                   <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
@@ -147,9 +146,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   </p>
                 </div>
 
-                <div className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-2xs">
-                  <div className="flex items-center gap-2 text-blue-600 font-semibold text-sm mb-3">
-                    <CheckCircle2 className="w-4 h-4" />
+                <div className="p-6 rounded-2xl bg-white border border-amber-200/80 shadow-xs">
+                  <div className="flex items-center gap-2 text-[#0a192f] font-bold text-sm mb-3">
+                    <CheckCircle2 className="w-4 h-4 text-amber-600" />
                     <span>Proposed Solution</span>
                   </div>
                   <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
@@ -160,16 +159,16 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
               {/* Architecture Section */}
               {(project.architecture_notes || project.architecture_diagram_url) && (
-                <section className="p-6 sm:p-8 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-6">
+                <section className="p-6 sm:p-8 rounded-2xl bg-white border border-amber-200/80 shadow-xs space-y-6">
                   <div className="flex items-center gap-2">
-                    <Layers className="w-5 h-5 text-blue-600" />
-                    <h2 className="text-lg sm:text-xl font-bold tracking-tight text-neutral-900">
+                    <Layers className="w-5 h-5 text-amber-600" />
+                    <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#0a192f]">
                       System Architecture & Pipeline
                     </h2>
                   </div>
 
                   {project.architecture_notes && (
-                    <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200 font-mono text-xs sm:text-sm text-neutral-700 leading-relaxed">
+                    <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-200 font-mono text-xs sm:text-sm text-neutral-800 leading-relaxed">
                       {project.architecture_notes}
                     </div>
                   )}
@@ -191,17 +190,17 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               {/* Key Features */}
               {project.key_features && project.key_features.length > 0 && (
                 <section className="space-y-4">
-                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
+                  <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#0a192f]">
                     Key Features & Capabilities
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {project.key_features.map((feature, idx) => (
                       <div
                         key={idx}
-                        className="p-4 rounded-xl bg-white border border-neutral-200 flex items-start gap-3"
+                        className="p-4 rounded-xl bg-white border border-neutral-200 hover:border-amber-300 flex items-start gap-3 transition-colors"
                       >
-                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                        <span className="text-xs sm:text-sm text-neutral-700">
+                        <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                        <span className="text-xs sm:text-sm text-neutral-800 font-medium">
                           {feature}
                         </span>
                       </div>
@@ -213,10 +212,10 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               {/* Technical Implementation */}
               {project.technical_implementation && (
                 <section className="space-y-4">
-                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
+                  <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#0a192f]">
                     Technical Implementation
                   </h2>
-                  <div className="p-6 rounded-2xl bg-white border border-neutral-200 text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                  <div className="p-6 rounded-2xl bg-white border border-neutral-200 text-xs sm:text-sm text-neutral-700 leading-relaxed">
                     {project.technical_implementation}
                   </div>
                 </section>
@@ -225,7 +224,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               {/* Challenges and Solutions */}
               {project.challenges_solutions && project.challenges_solutions.length > 0 && (
                 <section className="space-y-4">
-                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
+                  <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#0a192f]">
                     Challenges & Engineering Solutions
                   </h2>
                   <div className="space-y-4">
@@ -237,8 +236,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                         <div className="text-xs font-bold text-red-600 uppercase tracking-wider">
                           Challenge: {item.challenge}
                         </div>
-                        <div className="text-xs sm:text-sm text-neutral-700 leading-relaxed pl-3 border-l-2 border-emerald-500">
-                          <strong className="text-emerald-700 font-semibold">Solution: </strong>
+                        <div className="text-xs sm:text-sm text-neutral-700 leading-relaxed pl-3 border-l-2 border-amber-500">
+                          <strong className="text-amber-800 font-semibold">Solution: </strong>
                           {item.solution}
                         </div>
                       </div>
@@ -249,9 +248,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
               {/* Results and Metrics */}
               {project.results_metrics && project.results_metrics.length > 0 && (
-                <section className="p-6 rounded-2xl bg-linear-to-br from-blue-50/50 to-white border border-blue-100 space-y-4">
-                  <div className="flex items-center gap-2 text-blue-700">
-                    <TrendingUp className="w-5 h-5" />
+                <section className="p-6 rounded-2xl bg-linear-to-br from-amber-50 to-white border border-amber-300 space-y-4 shadow-2xs">
+                  <div className="flex items-center gap-2 text-amber-800">
+                    <TrendingUp className="w-5 h-5 text-amber-600" />
                     <h2 className="text-lg sm:text-xl font-bold">
                       Key Results & Empirical Metrics
                     </h2>
@@ -260,9 +259,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                     {project.results_metrics.map((metric, i) => (
                       <li
                         key={i}
-                        className="flex items-start gap-2 text-xs sm:text-sm text-neutral-700 font-medium"
+                        className="flex items-start gap-2 text-xs sm:text-sm text-neutral-800 font-medium"
                       >
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 mt-2" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0 mt-2" />
                         <span>{metric}</span>
                       </li>
                     ))}
@@ -271,19 +270,18 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               )}
             </div>
 
-            {/* Right 4 Cols: Sidebar Tech Specs & Navigation */}
+            {/* Right 4 Cols: Sidebar Tech Specs */}
             <div className="lg:col-span-4 space-y-8">
-              {/* Tech Stack Details */}
-              <div className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-xs space-y-6">
+              <div className="p-6 rounded-2xl bg-white border border-amber-200/80 shadow-md space-y-6">
                 <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-900 mb-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#0a192f] mb-3">
                     Technology Stack
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {project.technologies.map((tech) => (
                       <span
                         key={tech}
-                        className="px-2.5 py-1 text-xs font-medium rounded-lg bg-neutral-100 text-neutral-800"
+                        className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-amber-50 border border-amber-200 text-amber-900"
                       >
                         {tech}
                       </span>
@@ -294,15 +292,15 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                 <div className="pt-4 border-t border-neutral-100 space-y-3">
                   <div className="flex justify-between text-xs">
                     <span className="text-neutral-500">Domain</span>
-                    <span className="font-semibold text-neutral-900">{project.category}</span>
+                    <span className="font-bold text-[#0a192f]">{project.category}</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-neutral-500">Author</span>
-                    <span className="font-semibold text-neutral-900">Noorul Hassan</span>
+                    <span className="font-bold text-[#0a192f]">Noorul Hassan</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-neutral-500">Status</span>
-                    <span className="text-emerald-700 font-semibold">Published & Verified</span>
+                    <span className="text-amber-800 font-bold">Published & Verified</span>
                   </div>
                 </div>
 
@@ -312,7 +310,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                       href={project.live_demo_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold transition-colors"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#0a192f] hover:bg-[#112240] text-amber-300 text-xs font-bold transition-colors shadow-xs"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                       <span>Open Live Demo</span>
@@ -323,21 +321,20 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                       href={project.github_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-white hover:bg-neutral-50 text-neutral-800 border border-neutral-200 text-xs font-semibold transition-colors"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-white hover:bg-amber-50 text-[#0a192f] border border-amber-300 text-xs font-bold transition-colors"
                     >
-                      <GithubIcon className="w-3.5 h-3.5" />
+                      <GithubIcon className="w-3.5 h-3.5 text-amber-600" />
                       <span>Inspect Codebase</span>
                     </a>
                   )}
                 </div>
               </div>
 
-              {/* Return to projects link */}
               <Link
                 href="/projects"
-                className="inline-flex items-center gap-2 text-xs font-semibold text-neutral-600 hover:text-neutral-900 transition-colors p-2"
+                className="inline-flex items-center gap-2 text-xs font-bold text-[#0a192f] hover:text-amber-600 transition-colors p-2"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4 text-amber-600" />
                 <span>Back to All Projects</span>
               </Link>
             </div>
