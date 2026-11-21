@@ -66,6 +66,8 @@ export default function AdminAboutEditor() {
     setStatus("saving");
     try {
       localStorage.setItem("portfolio_about", JSON.stringify(content));
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent("portfolio_about_updated"));
     } catch (err) {
       console.error(err);
     }
@@ -80,12 +82,24 @@ export default function AdminAboutEditor() {
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to save About Me content.");
+      const resData = await res.json();
+      if (!res.ok || !resData.success) {
+        throw new Error(resData.error || "Failed to save About Me content.");
+      }
+
+      if (resData.data) {
+        setContent(resData.data);
+        try {
+          localStorage.setItem("portfolio_about", JSON.stringify(resData.data));
+        } catch {}
+      }
+
       setStatus("saved");
-      setTimeout(() => setStatus("idle"), 3000);
+      setTimeout(() => setStatus("idle"), 3500);
     } catch (err) {
       console.error(err);
       setStatus("error");
+      setTimeout(() => setStatus("idle"), 4000);
     }
   };
 
@@ -499,6 +513,24 @@ export default function AdminAboutEditor() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Bottom Save Bar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-md">
+        <div>
+          <h4 className="text-sm font-bold text-white">Ready to publish updates?</h4>
+          <p className="text-xs text-amber-200/80 mt-0.5">
+            Click <strong>Save Changes</strong> to store updates locally and sync with your database.
+          </p>
+        </div>
+        <button
+          onClick={handleSave}
+          disabled={status === "saving"}
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all active:scale-95 disabled:opacity-70 cursor-pointer"
+        >
+          <Save className="w-4 h-4" />
+          <span>{status === "saving" ? "Saving..." : "Save Changes"}</span>
+        </button>
       </div>
     </div>
   );

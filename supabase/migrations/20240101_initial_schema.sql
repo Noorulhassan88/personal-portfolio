@@ -68,6 +68,8 @@ CREATE TABLE IF NOT EXISTS public.about_content (
     'Backend Engineering',
     'Modern Web Applications'
   ],
+  header_title TEXT DEFAULT 'Bridging Artificial Intelligence with Modern Web Architecture.',
+  header_description TEXT DEFAULT 'Discover my background, education, and technical expertise in building scalable software systems and applied AI.',
   development_philosophy TEXT DEFAULT 'I believe software should be purposeful, scalable, and meticulously crafted. Code should be clean and maintainable, architecture should anticipate real-world constraints, and AI should augment human capability with transparency, precision, and speed.',
   career_objectives TEXT DEFAULT 'To architect and deploy cutting-edge AI-native applications and robust full-stack platforms that drive meaningful business transformation and delightful user experiences on a global scale.',
   areas_of_specialization JSONB DEFAULT '[

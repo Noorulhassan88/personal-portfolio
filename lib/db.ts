@@ -189,7 +189,41 @@ export async function getAboutContent(): Promise<AboutContent> {
         .from("about_content")
         .select("*")
         .single();
-      if (!error && data) return data as AboutContent;
+      if (!error && data) {
+        const row = data as any;
+        const result: AboutContent = {
+          ...localStore.about,
+          ...row,
+          header_title:
+            row.header_title ||
+            row.development_philosophy ||
+            localStore.about.header_title ||
+            "Bridging Artificial Intelligence with Modern Web Architecture.",
+          header_description:
+            row.header_description ||
+            row.career_objectives ||
+            localStore.about.header_description ||
+            "Discover my background, education, and technical expertise in building scalable software systems and applied AI.",
+          areas_of_specialization:
+            row.areas_of_specialization && row.areas_of_specialization.length > 0
+              ? row.areas_of_specialization
+              : localStore.about.areas_of_specialization,
+          technical_interests:
+            row.technical_interests && row.technical_interests.length > 0
+              ? row.technical_interests
+              : localStore.about.technical_interests,
+          bio_paragraphs:
+            row.bio_paragraphs && row.bio_paragraphs.length > 0
+              ? row.bio_paragraphs
+              : localStore.about.bio_paragraphs,
+          education:
+            row.education && row.education.length > 0
+              ? row.education
+              : localStore.about.education,
+        };
+        localStore.about = result;
+        return result;
+      }
     }
   } catch (err) {
     console.warn("Supabase about query fallback:", err);
@@ -200,28 +234,54 @@ export async function getAboutContent(): Promise<AboutContent> {
 export async function updateAboutContent(
   content: Partial<AboutContent>
 ): Promise<AboutContent> {
+  const merged: AboutContent = {
+    ...localStore.about,
+    ...content,
+    updated_at: new Date().toISOString(),
+  };
+
   try {
     const supabase = await createServerSupabaseClient();
     if (supabase) {
+      const supabasePayload: Record<string, any> = {
+        id: merged.id || "default-about",
+        full_name: merged.full_name || "Noorul Hassan",
+        bio_paragraphs: merged.bio_paragraphs || [],
+        education: merged.education || [],
+        technical_interests: merged.technical_interests || [],
+        areas_of_specialization: merged.areas_of_specialization || [],
+        development_philosophy:
+          merged.header_title || merged.development_philosophy || "",
+        career_objectives:
+          merged.header_description || merged.career_objectives || "",
+        additional_photos: merged.additional_photos || [],
+        updated_at: merged.updated_at,
+      };
+
       const { data, error } = await supabase
         .from("about_content")
-        .upsert({ ...content, updated_at: new Date().toISOString() })
+        .upsert(supabasePayload)
         .select()
         .single();
+
       if (!error && data) {
-        localStore.about = data as AboutContent;
+        const row = data as any;
+        localStore.about = {
+          ...row,
+          header_title: merged.header_title || row.development_philosophy,
+          header_description: merged.header_description || row.career_objectives,
+        };
         persistChanges();
-        return data as AboutContent;
+        return localStore.about;
+      } else if (error) {
+        console.error("Supabase about update error:", error);
       }
     }
   } catch (err) {
     console.warn("Supabase about update fallback:", err);
   }
-  localStore.about = {
-    ...localStore.about,
-    ...content,
-    updated_at: new Date().toISOString(),
-  };
+
+  localStore.about = merged;
   persistChanges();
   return localStore.about;
 }

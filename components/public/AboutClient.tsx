@@ -44,7 +44,8 @@ export default function AboutClient({ initialAbout, settings }: AboutClientProps
       try {
         const local = localStorage.getItem("portfolio_about");
         if (local) {
-          setAbout((prev) => ({ ...prev, ...JSON.parse(local) }));
+          const parsed = JSON.parse(local);
+          setAbout((prev) => ({ ...prev, ...parsed }));
         }
       } catch (e) {
         console.error(e);
@@ -65,13 +66,15 @@ export default function AboutClient({ initialAbout, settings }: AboutClientProps
       })
       .catch(console.error);
 
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "portfolio_about") {
-        syncLocal();
-      }
+    const handleStorageChange = (e: Event) => {
+      syncLocal();
     };
     window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    window.addEventListener("portfolio_about_updated", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("portfolio_about_updated", handleStorageChange);
+    };
   }, []);
 
   return (
