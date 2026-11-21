@@ -17,21 +17,28 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Save to public/uploads directory
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    // Try saving to public/uploads directory (works locally / Node server)
+    try {
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const ext = path.extname(file.name) || ".jpg";
+      const filename = `photo_${Date.now()}${ext}`;
+      const filePath = path.join(uploadDir, filename);
+
+      fs.writeFileSync(filePath, buffer);
+
+      const publicUrl = `/uploads/${filename}`;
+      return NextResponse.json({ success: true, url: publicUrl });
+    } catch {
+      // Fallback for Vercel Serverless (read-only filesystem): use Base64 Data URL
+      const base64 = buffer.toString("base64");
+      const mime = file.type || "image/jpeg";
+      const dataUrl = `data:${mime};base64,${base64}`;
+      return NextResponse.json({ success: true, url: dataUrl });
     }
-
-    // Sanitize filename and create unique timestamped name
-    const ext = path.extname(file.name) || ".jpg";
-    const filename = `photo_${Date.now()}${ext}`;
-    const filePath = path.join(uploadDir, filename);
-
-    fs.writeFileSync(filePath, buffer);
-
-    const publicUrl = `/uploads/${filename}`;
-    return NextResponse.json({ success: true, url: publicUrl });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(
