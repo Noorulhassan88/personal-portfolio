@@ -19,6 +19,53 @@ interface HeroProps {
   settings: HomepageSettings;
 }
 
+function formatHeroHeading(heading?: string) {
+  if (!heading) {
+    return (
+      <>
+        Building{" "}
+        <span className="bg-linear-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
+          Intelligent Products
+        </span>{" "}
+        & Digital Experiences.
+      </>
+    );
+  }
+
+  if (heading.includes("&")) {
+    const parts = heading.split("&");
+    return (
+      <>
+        <span>{parts[0]}</span>
+        <span className="bg-linear-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
+          & {parts.slice(1).join("&")}
+        </span>
+      </>
+    );
+  }
+
+  const words = heading.split(" ");
+  if (words.length > 2) {
+    const midpoint = Math.floor(words.length / 2);
+    const firstHalf = words.slice(0, midpoint).join(" ");
+    const secondHalf = words.slice(midpoint).join(" ");
+    return (
+      <>
+        <span>{firstHalf} </span>
+        <span className="bg-linear-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
+          {secondHalf}
+        </span>
+      </>
+    );
+  }
+
+  return (
+    <span className="bg-linear-to-r from-white via-amber-200 to-amber-400 bg-clip-text text-transparent">
+      {heading}
+    </span>
+  );
+}
+
 export default function Hero({ settings }: HeroProps) {
   const [photoUrl, setPhotoUrl] = useState(settings.profile_photo_url || "");
   const [photoPos, setPhotoPos] = useState(
@@ -27,29 +74,14 @@ export default function Hero({ settings }: HeroProps) {
   const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
-    // Sync with localStorage so uploaded photos reflect immediately across routes & serverless lambdas
-    try {
-      const localSettings = localStorage.getItem("portfolio_homepage_settings");
-      if (localSettings) {
-        const parsed = JSON.parse(localSettings);
-        if (parsed.profile_photo_url) {
-          setPhotoUrl(parsed.profile_photo_url);
-          setImgError(false);
-        }
-        if (parsed.profile_photo_position) {
-          setPhotoPos(parsed.profile_photo_position);
-        }
-      } else {
-        const directPhoto = localStorage.getItem("user_profile_photo");
-        if (directPhoto) {
-          setPhotoUrl(directPhoto);
-          setImgError(false);
-        }
-      }
-    } catch (e) {
-      console.error(e);
+    if (settings.profile_photo_url) {
+      setPhotoUrl(settings.profile_photo_url);
+      setImgError(false);
     }
-  }, [settings.profile_photo_url]);
+    if (settings.profile_photo_position) {
+      setPhotoPos(settings.profile_photo_position);
+    }
+  }, [settings.profile_photo_url, settings.profile_photo_position]);
 
   return (
     <section className="relative pt-24 pb-8 md:pt-28 md:pb-10 overflow-hidden bg-[#071324]">
@@ -70,11 +102,7 @@ export default function Hero({ settings }: HeroProps) {
 
             {/* Main Heading - High Contrast White with Gold Accent */}
             <h1 className="text-3xl sm:text-4xl lg:text-[3.25rem] font-extrabold tracking-tight text-white leading-[1.14]">
-              Building{" "}
-              <span className="bg-linear-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
-                Intelligent Products
-              </span>{" "}
-              & Digital Experiences.
+              {formatHeroHeading(settings.hero_heading)}
             </h1>
 
             {/* Professional Designation - Luminous Gold */}

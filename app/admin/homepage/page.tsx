@@ -36,6 +36,18 @@ export default function AdminHomepageEditor() {
     } catch (e) {
       console.error(e);
     }
+
+    fetch("/api/admin/data?section=homepage")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setSettings((prev) => ({ ...prev, ...res.data }));
+          try {
+            localStorage.setItem("portfolio_homepage_settings", JSON.stringify(res.data));
+          } catch {}
+        }
+      })
+      .catch(console.error);
   }, []);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
