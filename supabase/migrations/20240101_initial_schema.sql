@@ -203,6 +203,17 @@ CREATE TABLE IF NOT EXISTS public.website_settings (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 12. SEO SETTINGS TABLE
+CREATE TABLE IF NOT EXISTS public.seo_settings (
+  id TEXT PRIMARY KEY DEFAULT 'default-seo',
+  global_title TEXT NOT NULL DEFAULT 'Noorul Hassan | Full Stack Developer & AI Engineer',
+  global_description TEXT NOT NULL DEFAULT 'Portfolio of Noorul Hassan - Full Stack Developer and AI Engineer specializing in modern web applications, LLMs, RAG, and intelligent systems.',
+  og_image_url TEXT DEFAULT '/profile.png',
+  page_meta JSONB DEFAULT '{"/": {"title": "Noorul Hassan | Full Stack Developer & AI Engineer", "description": "Portfolio of Noorul Hassan - Full Stack Developer and AI Engineer."}}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ==============================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- ==============================================================================

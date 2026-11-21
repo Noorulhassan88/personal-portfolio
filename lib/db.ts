@@ -756,17 +756,88 @@ export async function updateAppearanceSettings(
 }
 
 export async function getSeoSettings(): Promise<SeoSettings> {
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      // 1. Try dedicated seo_settings table if created
+      const { data: seoTableData, error: seoTableError } = await supabase
+        .from("seo_settings")
+        .select("*")
+        .single();
+      if (!seoTableError && seoTableData) {
+        localStore.seo = { ...localStore.seo, ...seoTableData };
+        return localStore.seo;
+      }
+
+      // 2. Read from homepage_settings.sections_enabled.seo (native JSONB column)
+      const { data: hpData, error: hpError } = await supabase
+        .from("homepage_settings")
+        .select("sections_enabled")
+        .eq("id", "default-homepage")
+        .single();
+      if (!hpError && hpData?.sections_enabled?.seo) {
+        localStore.seo = {
+          ...localStore.seo,
+          ...hpData.sections_enabled.seo,
+        };
+        return localStore.seo;
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase getSeoSettings fallback:", err);
+  }
   return localStore.seo;
 }
 
 export async function updateSeoSettings(
   settings: Partial<SeoSettings>
 ): Promise<SeoSettings> {
-  localStore.seo = {
+  const merged: SeoSettings = {
     ...localStore.seo,
     ...settings,
     updated_at: new Date().toISOString(),
   };
+
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      // 1. Try dedicated seo_settings table
+      try {
+        await supabase
+          .from("seo_settings")
+          .upsert({ ...merged, id: "default-seo" });
+      } catch {}
+
+      // 2. Persist to homepage_settings.sections_enabled.seo
+      const { data: currHp } = await supabase
+        .from("homepage_settings")
+        .select("sections_enabled")
+        .eq("id", "default-homepage")
+        .single();
+
+      const currSections = currHp?.sections_enabled || {
+        hero: true,
+        domains: true,
+        featured_projects: true,
+        quick_contact: true,
+      };
+
+      await supabase
+        .from("homepage_settings")
+        .update({
+          sections_enabled: {
+            ...currSections,
+            seo: merged,
+          },
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", "default-homepage");
+    }
+  } catch (err) {
+    console.warn("Supabase updateSeoSettings fallback:", err);
+  }
+
+  localStore.seo = merged;
   persistChanges();
   return localStore.seo;
 }

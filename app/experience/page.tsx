@@ -2,17 +2,22 @@ import React from "react";
 import Navbar from "@/components/public/Navbar";
 import Footer from "@/components/public/Footer";
 import PageHeader from "@/components/public/PageHeader";
-import { getExperience, getHomepageSettings } from "@/lib/db";
+import { getExperience, getHomepageSettings, getSeoSettings } from "@/lib/db";
 import { Briefcase, Calendar, MapPin, CheckCircle2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
 export const revalidate = 0;
 
-export const metadata = {
-  title: "Experience & Timeline | Noorul Hassan",
-  description:
-    "Professional journey, internships, technical training, and engineering contributions in AI and Full Stack Development.",
-};
+export async function generateMetadata() {
+  const seo = await getSeoSettings();
+  const expMeta = seo.page_meta?.["/experience"] || {};
+  return {
+    title: expMeta.title || "Experience & Timeline | Noorul Hassan",
+    description:
+      expMeta.description ||
+      "Professional journey, internships, technical training, and engineering contributions in AI and Full Stack Development.",
+  };
+}
 
 export default async function ExperiencePage() {
   const [experience, settings] = await Promise.all([

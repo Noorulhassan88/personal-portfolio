@@ -19,6 +19,14 @@ export default function HomePageClient({ initialSettings }: HomePageClientProps)
         if (local) {
           setSettings((prev) => ({ ...prev, ...JSON.parse(local) }));
         }
+        const seoLocal = localStorage.getItem("portfolio_seo");
+        if (seoLocal) {
+          const parsedSeo = JSON.parse(seoLocal);
+          const customTitle = parsedSeo.page_meta?.["/"]?.title || parsedSeo.global_title;
+          if (customTitle && typeof document !== "undefined") {
+            document.title = customTitle;
+          }
+        }
       } catch (e) {
         console.error(e);
       }
@@ -38,13 +46,15 @@ export default function HomePageClient({ initialSettings }: HomePageClientProps)
       })
       .catch(console.error);
 
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "portfolio_homepage_settings") {
-        syncLocal();
-      }
+    const handleStorageChange = () => {
+      syncLocal();
     };
     window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    window.addEventListener("portfolio_seo_updated", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("portfolio_seo_updated", handleStorageChange);
+    };
   }, []);
 
   return (

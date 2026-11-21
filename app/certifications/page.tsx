@@ -2,18 +2,23 @@ import React from "react";
 import Navbar from "@/components/public/Navbar";
 import Footer from "@/components/public/Footer";
 import PageHeader from "@/components/public/PageHeader";
-import { getCertifications, getHomepageSettings } from "@/lib/db";
+import { getCertifications, getHomepageSettings, getSeoSettings } from "@/lib/db";
 import { Award, ExternalLink, Calendar, CheckCircle } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import Image from "next/image";
 
 export const revalidate = 0;
 
-export const metadata = {
-  title: "Certifications | Noorul Hassan",
-  description:
-    "Verified credentials and certifications in Deep Learning, Full Stack Engineering, and Machine Learning.",
-};
+export async function generateMetadata() {
+  const seo = await getSeoSettings();
+  const certMeta = seo.page_meta?.["/certifications"] || {};
+  return {
+    title: certMeta.title || "Certifications | Noorul Hassan",
+    description:
+      certMeta.description ||
+      "Verified credentials and certifications in Deep Learning, Full Stack Engineering, and Machine Learning.",
+  };
+}
 
 export default async function CertificationsPage() {
   const [certifications, settings] = await Promise.all([

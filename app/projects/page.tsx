@@ -2,16 +2,21 @@ import React from "react";
 import Navbar from "@/components/public/Navbar";
 import Footer from "@/components/public/Footer";
 import PageHeader from "@/components/public/PageHeader";
-import { getProjects, getHomepageSettings } from "@/lib/db";
+import { getProjects, getHomepageSettings, getSeoSettings } from "@/lib/db";
 import ProjectsGallery from "@/components/public/ProjectsGallery";
 
 export const revalidate = 0;
 
-export const metadata = {
-  title: "Projects Showcase | Noorul Hassan",
-  description:
-    "Explore CalQuity, RAG Chatbot with Voice & Emotion Detection, Heart Disease Prediction, Stock Price Prediction, and MNIST Digit Recognition.",
-};
+export async function generateMetadata() {
+  const seo = await getSeoSettings();
+  const projectsMeta = seo.page_meta?.["/projects"] || {};
+  return {
+    title: projectsMeta.title || "Projects Showcase | Noorul Hassan",
+    description:
+      projectsMeta.description ||
+      "Explore CalQuity, RAG Chatbot with Voice & Emotion Detection, Heart Disease Prediction, Stock Price Prediction, and MNIST Digit Recognition.",
+  };
+}
 
 export default async function ProjectsPage() {
   const [projects, settings] = await Promise.all([

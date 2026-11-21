@@ -1,16 +1,21 @@
 import React from "react";
 import AboutClient from "@/components/public/AboutClient";
-import { getAboutContent, getHomepageSettings } from "@/lib/db";
+import { getAboutContent, getHomepageSettings, getSeoSettings } from "@/lib/db";
 
 export const revalidate = 0;
 
 export async function generateMetadata() {
-  const about = await getAboutContent();
+  const [about, seo] = await Promise.all([
+    getAboutContent(),
+    getSeoSettings(),
+  ]);
+  const aboutMeta = seo.page_meta?.["/about"] || {};
   return {
-    title: "About Me | Noorul Hassan",
+    title: aboutMeta.title || "About Me | Noorul Hassan",
     description:
+      aboutMeta.description ||
       about.header_description ||
-      "Biography, education at B.S. Abdur Rahman Crescent Institute of Science and Technology, and areas of specialization.",
+      "Biography, academic foundation, areas of specialization, and technical engineering expertise.",
   };
 }
 
