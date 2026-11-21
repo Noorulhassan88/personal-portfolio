@@ -63,12 +63,12 @@ export default function Hero({ settings }: HeroProps) {
               {settings.description}
             </p>
 
-            {/* Action Buttons - Navy & Gold Styling with High Visibility */}
+            {/* Action Buttons - Navy & Gold Styling with High Visibility & Click Interactions */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
               {/* Primary: Luminous Gold with Deep Navy text */}
               <Link
                 href={settings.button_explore_link || "/projects"}
-                className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base shadow-[0_0_25px_rgba(245,158,11,0.45)] hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] hover:scale-[1.03] transition-all duration-200 border-2 border-amber-300 tracking-wide"
+                className="btn-shine inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base shadow-[0_0_25px_rgba(245,158,11,0.45)] hover:shadow-[0_0_35px_rgba(245,158,11,0.65)] hover:scale-[1.03] active:scale-95 transition-all duration-200 border-2 border-amber-300 tracking-wide cursor-pointer"
               >
                 <span>{settings.button_explore_label || "Explore My Work"}</span>
                 <ArrowRight className="w-5 h-5 stroke-[2.5]" />
@@ -77,7 +77,7 @@ export default function Hero({ settings }: HeroProps) {
               {/* Secondary: Navy Card with Gold Border */}
               <Link
                 href={settings.button_about_link || "/about"}
-                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-[#0d1f38] text-amber-300 border-2 border-amber-400/80 hover:bg-[#142c50] hover:border-amber-300 font-bold text-sm sm:text-base transition-all duration-200 shadow-md tracking-wide"
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-[#0d1f38] text-amber-300 border-2 border-amber-400/80 hover:bg-[#142c50] hover:border-amber-300 hover:scale-[1.02] active:scale-95 font-bold text-sm sm:text-base transition-all duration-200 shadow-md tracking-wide cursor-pointer"
               >
                 <span>{settings.button_about_label || "About Me"}</span>
               </Link>
@@ -88,7 +88,7 @@ export default function Hero({ settings }: HeroProps) {
                   href={settings.resume_url || "/resume.pdf"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border-2 border-amber-400/80 font-bold text-sm sm:text-base transition-all duration-200 shadow-sm tracking-wide"
+                  className="btn-shine inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border-2 border-amber-400/80 hover:scale-[1.02] active:scale-95 font-bold text-sm sm:text-base transition-all duration-200 shadow-sm tracking-wide cursor-pointer"
                 >
                   <Download className="w-4 h-4 text-amber-400 stroke-[2.5]" />
                   <span>{settings.button_resume_label || "Download Resume"}</span>
@@ -142,7 +142,7 @@ export default function Hero({ settings }: HeroProps) {
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
             <div className="relative w-72 h-[380px] sm:w-80 sm:h-[430px] md:w-[350px] md:h-[470px] lg:w-[380px] lg:h-[500px] max-w-full">
               {/* Outer Glowing Golden Aura */}
-              <div className="absolute -inset-2 rounded-3xl bg-linear-to-tr from-amber-400 via-amber-500 to-amber-300 opacity-50 blur-md -z-10 animate-pulse" />
+              <div className="absolute -inset-2.5 rounded-3xl bg-linear-to-tr from-amber-400 via-amber-500 to-amber-300 opacity-60 blur-md -z-10 ambient-pulse" />
 
               {/* Decorative Frame */}
               <div className="absolute inset-0 rounded-3xl bg-[#0d1f38] border-2 border-amber-400/90 shadow-2xl" />

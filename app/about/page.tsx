@@ -82,7 +82,7 @@ export default async function AboutPage() {
                   {about.education.map((edu) => (
                     <div
                       key={edu.id}
-                      className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-xl hover:border-amber-400 transition-colors"
+                      className="interactive-card p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-xl transition-all"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-2">
                         <h3 className="text-lg font-bold text-white">
@@ -211,10 +211,10 @@ export default async function AboutPage() {
                 </p>
                 <Link
                   href="/skills"
-                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] text-xs font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.35)]"
+                  className="btn-shine active:scale-95 cursor-pointer w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] text-sm font-extrabold transition-all shadow-[0_0_15px_rgba(245,158,11,0.35)] border border-amber-300"
                 >
                   <span>Explore Technical Skills</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
                 </Link>
               </div>
             </div>

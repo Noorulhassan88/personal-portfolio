@@ -41,7 +41,7 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 ${
+              className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer ${
                 selectedCategory === cat
                   ? "bg-linear-to-r from-amber-400 to-amber-500 text-[#071324] font-extrabold shadow-[0_0_15px_rgba(245,158,11,0.4)]"
                   : "bg-[#0d1f38] text-neutral-300 hover:text-amber-300 border border-amber-500/30 hover:border-amber-400"
@@ -86,7 +86,7 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className="group bg-[#0d1f38] rounded-2xl border border-amber-500/30 hover:border-amber-400 overflow-hidden shadow-xl hover:shadow-[0_10px_30px_rgba(245,158,11,0.15)] transition-all duration-300 flex flex-col"
+              className="interactive-card group bg-[#0d1f38] rounded-2xl border border-amber-500/30 hover:border-amber-400 overflow-hidden shadow-xl transition-all duration-300 flex flex-col"
             >
               {/* Thumbnail */}
               <Link

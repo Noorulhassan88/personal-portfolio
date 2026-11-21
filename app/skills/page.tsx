@@ -126,7 +126,7 @@ export default async function SkillsPage() {
                       return (
                         <div
                           key={skill.id}
-                          className="group p-4 rounded-xl bg-[#0d1f38] border border-amber-500/30 hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:translate-y-[-2px] transition-all duration-200 flex flex-col items-center justify-center text-center gap-3 shadow-lg"
+                          className="interactive-card active:scale-95 cursor-pointer group p-4 rounded-xl bg-[#0d1f38] border border-amber-500/30 hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.25)] flex flex-col items-center justify-center text-center gap-3 shadow-lg"
                         >
                           <div className="w-12 h-12 rounded-xl bg-[#071324] text-amber-400 flex items-center justify-center group-hover:bg-amber-400 group-hover:text-[#071324] transition-all duration-200 border border-amber-500/40 shadow-xs">
                             <Icon className="w-6 h-6" />

@@ -84,7 +84,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   href={project.live_demo_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2.5 px-7 py-3 rounded-full bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] text-sm sm:text-base font-extrabold transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)] border-2 border-amber-300"
+                  className="btn-shine active:scale-95 cursor-pointer inline-flex items-center gap-2.5 px-7 py-3 rounded-full bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] text-sm sm:text-base font-extrabold transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)] border-2 border-amber-300"
                 >
                   <ExternalLink className="w-4 h-4 stroke-[2.5]" />
                   <span>Launch Live Demo</span>
@@ -95,7 +95,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   href={project.github_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#142c50] hover:bg-[#1b3a6b] text-amber-300 border-2 border-amber-400/60 text-sm sm:text-base font-bold transition-colors"
+                  className="active:scale-95 cursor-pointer inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#142c50] hover:bg-[#1b3a6b] text-amber-300 border-2 border-amber-400/60 text-sm sm:text-base font-bold transition-colors"
                 >
                   <GithubIcon className="w-4 h-4 text-amber-400" />
                   <span>View Repository</span>

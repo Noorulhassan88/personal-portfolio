@@ -46,7 +46,7 @@ export default async function ExperiencePage() {
                 />
 
                 {/* Entry Card */}
-                <div className="p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-xl hover:border-amber-400 transition-all duration-200">
+                <div className="interactive-card p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-xl transition-all duration-200">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                     <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-[#142c50] text-amber-300 border border-amber-400/50 w-fit">
                       {entry.type}

@@ -38,7 +38,7 @@ export default async function CertificationsPage() {
             {certifications.map((cert) => (
               <div
                 key={cert.id}
-                className="group bg-[#0d1f38] rounded-2xl border border-amber-500/30 overflow-hidden shadow-xl hover:shadow-[0_0_25px_rgba(245,158,11,0.25)] hover:border-amber-400 transition-all duration-300 flex flex-col justify-between"
+                className="interactive-card group bg-[#0d1f38] rounded-2xl border border-amber-500/30 overflow-hidden shadow-xl transition-all duration-300 flex flex-col justify-between"
               >
                 {/* Certificate image preview */}
                 {cert.image_url && (
@@ -86,7 +86,7 @@ export default async function CertificationsPage() {
                         href={cert.verification_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] text-sm font-extrabold transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)] border border-amber-300"
+                        className="btn-shine active:scale-95 cursor-pointer inline-flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] text-sm font-extrabold transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)] border border-amber-300"
                       >
                         <span>Verify Credential</span>
                         <ExternalLink className="w-4 h-4 text-[#071324] stroke-[2.5]" />

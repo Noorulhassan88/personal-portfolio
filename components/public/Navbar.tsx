@@ -72,7 +72,7 @@ export default function Navbar({ name = "Noorul Hassan" }: NavbarProps) {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 ${
+                  className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 active:scale-95 cursor-pointer ${
                     isActive
                       ? "bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 text-[#071324] font-extrabold shadow-md"
                       : "text-slate-200 hover:text-amber-300 hover:bg-[#142c50]/80"
@@ -88,7 +88,7 @@ export default function Navbar({ name = "Noorul Hassan" }: NavbarProps) {
           <div className="hidden md:flex items-center">
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 text-sm sm:text-base font-extrabold bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] px-6 py-2.5 rounded-full shadow-[0_0_22px_rgba(245,158,11,0.4)] hover:shadow-[0_0_30px_rgba(245,158,11,0.65)] hover:scale-[1.02] transition-all duration-150 border-2 border-amber-300"
+              className="btn-shine inline-flex items-center gap-2 text-sm sm:text-base font-extrabold bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] px-6 py-2.5 rounded-full shadow-[0_0_22px_rgba(245,158,11,0.4)] hover:shadow-[0_0_30px_rgba(245,158,11,0.65)] hover:scale-[1.02] active:scale-95 transition-all duration-150 border-2 border-amber-300 cursor-pointer"
             >
               <span>Get in Touch</span>
               <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
