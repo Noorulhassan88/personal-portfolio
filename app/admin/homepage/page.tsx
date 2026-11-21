@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Save,
@@ -21,6 +21,23 @@ export default function AdminHomepageEditor() {
   const [photoError, setPhotoError] = useState(false);
   const [uploading, setUploading] = useState(false);
 
+  useEffect(() => {
+    try {
+      const localSettings = localStorage.getItem("portfolio_homepage_settings");
+      if (localSettings) {
+        const parsed = JSON.parse(localSettings);
+        setSettings((prev) => ({ ...prev, ...parsed }));
+      } else {
+        const directPhoto = localStorage.getItem("user_profile_photo");
+        if (directPhoto) {
+          setSettings((prev) => ({ ...prev, profile_photo_url: directPhoto }));
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -37,10 +54,26 @@ export default function AdminHomepageEditor() {
       const data = await res.json();
       if (data.success && data.url) {
         setPhotoError(false);
-        setSettings((prev) => ({
-          ...prev,
+        const updated = {
+          ...settings,
           profile_photo_url: data.url,
-        }));
+        };
+        setSettings(updated);
+        try {
+          localStorage.setItem("user_profile_photo", data.url);
+          localStorage.setItem("portfolio_homepage_settings", JSON.stringify(updated));
+        } catch (err) {
+          console.error(err);
+        }
+        // Also sync with serverless backend
+        fetch("/api/admin/data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "updateHomepage",
+            payload: updated,
+          }),
+        }).catch(console.error);
       } else {
         alert(data.error || "Failed to upload photo");
       }
@@ -55,6 +88,15 @@ export default function AdminHomepageEditor() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("saving");
+
+    try {
+      localStorage.setItem("portfolio_homepage_settings", JSON.stringify(settings));
+      if (settings.profile_photo_url) {
+        localStorage.setItem("user_profile_photo", settings.profile_photo_url);
+      }
+    } catch (err) {
+      console.error(err);
+    }
 
     try {
       const res = await fetch("/api/admin/data", {
@@ -336,6 +378,10 @@ export default function AdminHomepageEditor() {
                   src={settings.profile_photo_url}
                   alt={settings.name}
                   fill
+                  unoptimized={
+                    settings.profile_photo_url.startsWith("data:") ||
+                    settings.profile_photo_url.startsWith("http")
+                  }
                   sizes="300px"
                   className="object-cover"
                   style={{
@@ -344,7 +390,11 @@ export default function AdminHomepageEditor() {
                     }%`,
                     transform: `scale(${settings.profile_photo_position?.scale ?? 1})`,
                   }}
-                  onError={() => setPhotoError(true)}
+                  onError={() => {
+                    if (!settings.profile_photo_url.startsWith("data:")) {
+                      setPhotoError(true);
+                    }
+                  }}
                 />
               ) : (
                 <div className="text-center p-4">

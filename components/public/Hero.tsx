@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -20,9 +20,36 @@ interface HeroProps {
 }
 
 export default function Hero({ settings }: HeroProps) {
+  const [photoUrl, setPhotoUrl] = useState(settings.profile_photo_url || "");
+  const [photoPos, setPhotoPos] = useState(
+    settings.profile_photo_position || { x: 50, y: 50, scale: 1 }
+  );
   const [imgError, setImgError] = useState(false);
 
-  const photoPos = settings.profile_photo_position || { x: 50, y: 50, scale: 1 };
+  useEffect(() => {
+    // Sync with localStorage so uploaded photos reflect immediately across routes & serverless lambdas
+    try {
+      const localSettings = localStorage.getItem("portfolio_homepage_settings");
+      if (localSettings) {
+        const parsed = JSON.parse(localSettings);
+        if (parsed.profile_photo_url) {
+          setPhotoUrl(parsed.profile_photo_url);
+          setImgError(false);
+        }
+        if (parsed.profile_photo_position) {
+          setPhotoPos(parsed.profile_photo_position);
+        }
+      } else {
+        const directPhoto = localStorage.getItem("user_profile_photo");
+        if (directPhoto) {
+          setPhotoUrl(directPhoto);
+          setImgError(false);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [settings.profile_photo_url]);
 
   return (
     <section className="relative pt-24 pb-8 md:pt-28 md:pb-10 overflow-hidden bg-[#071324]">
@@ -149,18 +176,23 @@ export default function Hero({ settings }: HeroProps) {
 
               {/* Pure Portrait Photo Container - 100% Dedicated to Photo */}
               <div className="relative w-full h-full rounded-3xl overflow-hidden border-2 border-amber-400 bg-[#071324] shadow-[0_0_35px_rgba(245,158,11,0.3)] flex items-center justify-center">
-                {settings.profile_photo_url && !imgError ? (
+                {photoUrl && !imgError ? (
                   <Image
-                    src={settings.profile_photo_url}
+                    src={photoUrl}
                     alt={settings.name}
                     fill
+                    unoptimized={photoUrl.startsWith("data:") || photoUrl.startsWith("http")}
                     sizes="(max-width: 768px) 100vw, 450px"
                     className="object-cover w-full h-full transition-transform duration-700 hover:scale-105"
                     style={{
                       objectPosition: `${photoPos.x}% ${photoPos.y}%`,
                       transform: `scale(${photoPos.scale || 1})`,
                     }}
-                    onError={() => setImgError(true)}
+                    onError={() => {
+                      if (!photoUrl.startsWith("data:")) {
+                        setImgError(true);
+                      }
+                    }}
                     priority
                   />
                 ) : (
