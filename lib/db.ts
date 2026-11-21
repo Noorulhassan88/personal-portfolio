@@ -865,17 +865,76 @@ export async function updateSeoSettings(
 }
 
 export async function getWebsiteSettings(): Promise<WebsiteSettings> {
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("website_settings")
+        .select("*")
+        .single();
+      if (!error && data) {
+        localStore.settings = { ...localStore.settings, ...data };
+        return localStore.settings;
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase getWebsiteSettings fallback:", err);
+  }
   return localStore.settings;
 }
 
 export async function updateWebsiteSettings(
   settings: Partial<WebsiteSettings>
 ): Promise<WebsiteSettings> {
-  localStore.settings = {
+  const merged: WebsiteSettings = {
     ...localStore.settings,
     ...settings,
-    updated_at: new Date().toISOString(),
   };
+
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("website_settings")
+        .upsert({
+          ...merged,
+          id: (merged as any).id || "default-settings",
+          updated_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+
+      if (!error && data) {
+        localStore.settings = data as WebsiteSettings;
+        persistChanges();
+
+        // Also synchronize social fields into homepage_settings if provided
+        try {
+          const hpSync: Record<string, any> = {};
+          if (settings.contact_email) hpSync.social_email = settings.contact_email;
+          if (settings.github_url) hpSync.social_github = settings.github_url;
+          if (settings.linkedin_url) hpSync.social_linkedin = settings.linkedin_url;
+
+          if (Object.keys(hpSync).length > 0) {
+            await supabase
+              .from("homepage_settings")
+              .update(hpSync)
+              .eq("id", "default-homepage");
+            
+            localStore.homepage = { ...localStore.homepage, ...hpSync };
+          }
+        } catch {}
+
+        return localStore.settings;
+      } else if (error) {
+        console.error("Supabase updateWebsiteSettings error:", error);
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase updateWebsiteSettings fallback:", err);
+  }
+
+  localStore.settings = merged;
   persistChanges();
   return localStore.settings;
 }
