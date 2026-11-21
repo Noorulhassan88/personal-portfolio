@@ -19,37 +19,37 @@ export default function Footer({
 }: FooterProps) {
   return (
     <footer className="mt-auto border-t border-amber-500/25 bg-[#050c18] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-18">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12 mb-12">
           {/* Brand Column */}
-          <div className="md:col-span-2 space-y-3">
-            <div className="flex items-center gap-2.5">
-              <span className="w-8 h-8 rounded-lg bg-[#0d1f38] border border-amber-400 text-amber-400 flex items-center justify-center font-bold text-xs tracking-wider shadow-md">
+          <div className="md:col-span-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="w-10 h-10 rounded-xl bg-[#0d1f38] border-2 border-amber-400 text-amber-400 flex items-center justify-center font-extrabold text-base tracking-wider shadow-md">
                 NH
               </span>
-              <span className="font-bold text-base text-white tracking-tight">
+              <span className="font-extrabold text-xl sm:text-2xl text-white tracking-tight">
                 {name}
               </span>
             </div>
-            <p className="text-xs text-slate-300 max-w-sm leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-300 max-w-lg leading-relaxed">
               Full Stack Developer and AI Engineer passionate about building scalable
               applications, intelligent systems and innovative digital experiences using
               modern web technologies and artificial intelligence.
             </p>
-            <div className="flex items-center gap-2 pt-1">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shadow-[0_0_6px_#f59e0b]" />
-              <span className="text-[11px] font-medium text-amber-300">
+            <div className="flex items-center gap-2.5 pt-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_#f59e0b]" />
+              <span className="text-xs sm:text-sm font-semibold text-amber-300">
                 Available for engineering opportunities & AI collaborations
               </span>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400">
+          <div className="md:col-span-3 space-y-4">
+            <h4 className="text-sm sm:text-base font-bold uppercase tracking-wider text-amber-400">
               Navigation
             </h4>
-            <ul className="space-y-2 text-xs text-slate-300">
+            <ul className="space-y-3 text-sm sm:text-base font-medium text-slate-200">
               <li>
                 <Link href="/about" className="hover:text-amber-300 transition-colors">
                   About Me
@@ -79,50 +79,53 @@ export default function Footer({
           </div>
 
           {/* Connect Column */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400">
+          <div className="md:col-span-3 space-y-4">
+            <h4 className="text-sm sm:text-base font-bold uppercase tracking-wider text-amber-400">
               Connect
             </h4>
-            <div className="flex flex-col space-y-2 text-xs">
+            <div className="flex flex-col space-y-3 text-sm sm:text-base font-medium">
               <a
                 href={githubUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-slate-300 hover:text-amber-300 transition-colors"
+                className="inline-flex items-center gap-2 text-slate-200 hover:text-amber-300 transition-colors"
               >
-                <GithubIcon className="w-3.5 h-3.5 text-amber-400" />
+                <GithubIcon className="w-4 h-4 text-amber-400" />
                 <span>GitHub</span>
-                <ArrowUpRight className="w-3 h-3 text-slate-500" />
+                <ArrowUpRight className="w-4 h-4 text-amber-400/70" />
               </a>
               <a
                 href={linkedinUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-slate-300 hover:text-amber-300 transition-colors"
+                className="inline-flex items-center gap-2 text-slate-200 hover:text-amber-300 transition-colors"
               >
-                <LinkedinIcon className="w-3.5 h-3.5 text-amber-400" />
+                <LinkedinIcon className="w-4 h-4 text-amber-400" />
                 <span>LinkedIn</span>
-                <ArrowUpRight className="w-3 h-3 text-slate-500" />
+                <ArrowUpRight className="w-4 h-4 text-amber-400/70" />
               </a>
               <a
                 href={`mailto:${email}`}
-                className="inline-flex items-center gap-1.5 text-slate-300 hover:text-amber-300 transition-colors"
+                className="inline-flex items-center gap-2 text-slate-200 hover:text-amber-300 transition-colors"
               >
-                <Mail className="w-3.5 h-3.5 text-amber-400" />
+                <Mail className="w-4 h-4 text-amber-400" />
                 <span>{email}</span>
               </a>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-amber-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
+        {/* Bottom Bar - Clean and Large, No tech text, No 2026 */}
+        <div className="pt-8 border-t border-amber-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-slate-300 font-medium">
           <div>
-            © {new Date().getFullYear()} {name}. Built with Next.js, TypeScript & Supabase.
+            <span className="text-white font-bold">{name}</span>
+            <span className="mx-2.5 text-amber-400">•</span>
+            <span className="text-amber-300">Full Stack Developer & AI Engineer</span>
           </div>
           <div>
-            <Link href="/contact" className="hover:text-amber-300 transition-colors">
-              Contact
+            <Link href="/contact" className="text-amber-400 hover:text-amber-300 font-bold transition-colors inline-flex items-center gap-1.5">
+              <span>Get in Touch</span>
+              <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
             </Link>
           </div>
         </div>

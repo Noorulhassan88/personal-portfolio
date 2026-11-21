@@ -17,9 +17,9 @@ export default async function HomePage() {
       </main>
 
       {/* Navy & Gold Bottom Bar */}
-      <footer className="py-3 px-4 border-t border-amber-500/20 bg-[#050c18] text-center text-[11px] text-amber-200/80">
-        <span className="text-white font-medium">© {new Date().getFullYear()} {settings.name}</span>
-        <span className="mx-2 text-amber-400">•</span>
+      <footer className="py-3.5 px-4 border-t border-amber-500/20 bg-[#050c18] text-center text-xs sm:text-sm text-amber-200/90 font-medium">
+        <span className="text-white font-bold">{settings.name}</span>
+        <span className="mx-2.5 text-amber-400">•</span>
         <span className="text-amber-400 font-semibold">Full Stack Developer & AI Engineer</span>
       </footer>
     </div>
