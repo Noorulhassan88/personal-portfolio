@@ -1,7 +1,11 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Mail, ArrowUpRight } from "lucide-react";
+import { Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/shared/SocialIcons";
+import { FooterSettings } from "@/types/portfolio";
+import { initialFooterSettings } from "@/data/initialData";
 
 interface FooterProps {
   name?: string;
@@ -12,11 +16,58 @@ interface FooterProps {
 }
 
 export default function Footer({
-  name = "Noorul Hassan",
-  githubUrl = "https://github.com",
-  linkedinUrl = "https://linkedin.com",
-  email = "noorulhassan.ai@gmail.com",
+  name,
+  githubUrl,
+  linkedinUrl,
+  email,
 }: FooterProps) {
+  const [footerData, setFooterData] = useState<FooterSettings>(() => ({
+    ...initialFooterSettings,
+    brand_name: name || initialFooterSettings.brand_name,
+    github_url: githubUrl || initialFooterSettings.github_url,
+    linkedin_url: linkedinUrl || initialFooterSettings.linkedin_url,
+    email: email || initialFooterSettings.email,
+  }));
+
+  useEffect(() => {
+    const syncFooter = () => {
+      try {
+        const local = localStorage.getItem("portfolio_footer_settings");
+        if (local) {
+          const parsed = JSON.parse(local);
+          setFooterData((prev) => ({ ...prev, ...parsed }));
+        }
+      } catch (e) {
+        console.error("Footer localStorage sync error:", e);
+      }
+    };
+
+    syncFooter();
+
+    fetch("/api/admin/data?section=footer")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setFooterData((prev) => ({ ...prev, ...res.data }));
+          try {
+            localStorage.setItem("portfolio_footer_settings", JSON.stringify(res.data));
+          } catch {}
+        }
+      })
+      .catch(console.error);
+
+    const handleStorageChange = () => {
+      syncFooter();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("portfolio_footer_updated", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("portfolio_footer_updated", handleStorageChange);
+    };
+  }, []);
+
   return (
     <footer className="mt-auto border-t border-amber-500/25 bg-[#050c18] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 md:py-18">
@@ -25,29 +76,31 @@ export default function Footer({
           <div className="md:col-span-6 space-y-4">
             <div className="flex items-center gap-3">
               <span className="w-10 h-10 rounded-xl bg-[#0d1f38] border-2 border-amber-400 text-amber-400 flex items-center justify-center font-extrabold text-base tracking-wider shadow-md">
-                NH
+                {footerData.brand_monogram || "NH"}
               </span>
               <span className="font-extrabold text-xl sm:text-2xl text-white tracking-tight">
-                {name}
+                {footerData.brand_name || name || "Noorul Hassan"}
               </span>
             </div>
             <p className="text-sm sm:text-base text-slate-300 max-w-lg leading-relaxed">
-              Full Stack Developer and AI Engineer passionate about building scalable
-              applications, intelligent systems and innovative digital experiences using
-              modern web technologies and artificial intelligence.
+              {footerData.bio_description ||
+                "Full Stack Developer and AI Engineer passionate about building scalable applications, intelligent systems and innovative digital experiences using modern web technologies and artificial intelligence."}
             </p>
-            <div className="flex items-center gap-2.5 pt-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_#f59e0b]" />
-              <span className="text-xs sm:text-sm font-semibold text-amber-300">
-                Available for engineering opportunities & AI collaborations
-              </span>
-            </div>
+            {footerData.status_enabled && (
+              <div className="flex items-center gap-2.5 pt-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_#f59e0b]" />
+                <span className="text-xs sm:text-sm font-semibold text-amber-300">
+                  {footerData.status_text ||
+                    "Available for engineering opportunities & AI collaborations"}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Quick Links */}
           <div className="md:col-span-3 space-y-4">
             <h4 className="text-sm sm:text-base font-bold uppercase tracking-wider text-amber-400">
-              Navigation
+              {footerData.nav_title || "Navigation"}
             </h4>
             <ul className="space-y-3 text-sm sm:text-base font-medium text-slate-200">
               <li>
@@ -78,54 +131,55 @@ export default function Footer({
             </ul>
           </div>
 
-          {/* Connect Column */}
+          {/* Connect Column - Clean links WITHOUT arrow marks */}
           <div className="md:col-span-3 space-y-4">
             <h4 className="text-sm sm:text-base font-bold uppercase tracking-wider text-amber-400">
-              Connect
+              {footerData.connect_title || "Connect"}
             </h4>
             <div className="flex flex-col space-y-3 text-sm sm:text-base font-medium">
               <a
-                href={githubUrl}
+                href={footerData.github_url || githubUrl || "https://github.com"}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 text-slate-200 hover:text-amber-300 transition-colors"
+                className="inline-flex items-center gap-2.5 text-slate-200 hover:text-amber-300 transition-colors"
               >
                 <GithubIcon className="w-4 h-4 text-amber-400" />
                 <span>GitHub</span>
-                <ArrowUpRight className="w-4 h-4 text-amber-400/70" />
               </a>
               <a
-                href={linkedinUrl}
+                href={footerData.linkedin_url || linkedinUrl || "https://linkedin.com"}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 text-slate-200 hover:text-amber-300 transition-colors"
+                className="inline-flex items-center gap-2.5 text-slate-200 hover:text-amber-300 transition-colors"
               >
                 <LinkedinIcon className="w-4 h-4 text-amber-400" />
                 <span>LinkedIn</span>
-                <ArrowUpRight className="w-4 h-4 text-amber-400/70" />
               </a>
               <a
-                href={`mailto:${email}`}
-                className="inline-flex items-center gap-2 text-slate-200 hover:text-amber-300 transition-colors"
+                href={`mailto:${footerData.email || email || "noorulhassan.ai@gmail.com"}`}
+                className="inline-flex items-center gap-2.5 text-slate-200 hover:text-amber-300 transition-colors"
               >
                 <Mail className="w-4 h-4 text-amber-400" />
-                <span>{email}</span>
+                <span>{footerData.email || email || "noorulhassan.ai@gmail.com"}</span>
               </a>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar - Clean and Large, No tech text, No 2026 */}
+        {/* Bottom Bar - Clean and Large WITHOUT arrow mark on Get in Touch */}
         <div className="pt-8 border-t border-amber-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-slate-300 font-medium text-center sm:text-left">
           <div className="text-center sm:text-left">
-            <span className="text-white font-bold">{name}</span>
-            <span className="mx-2.5 text-amber-400">•</span>
-            <span className="text-amber-300">Full Stack Developer & AI Engineer</span>
+            <span className="text-amber-200 font-semibold">
+              {footerData.bottom_left_text ||
+                `${footerData.brand_name || name || "Noorul Hassan"} • Full Stack Developer & AI Engineer`}
+            </span>
           </div>
           <div>
-            <Link href="/contact" className="text-amber-400 hover:text-amber-300 font-bold transition-colors inline-flex items-center gap-1.5">
-              <span>Get in Touch</span>
-              <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+            <Link
+              href={footerData.cta_link || "/contact"}
+              className="text-amber-400 hover:text-amber-300 font-bold transition-colors inline-flex items-center"
+            >
+              <span>{footerData.cta_text || "Get in Touch"}</span>
             </Link>
           </div>
         </div>

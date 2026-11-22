@@ -30,6 +30,8 @@ import {
   updateSeoSettings,
   getWebsiteSettings,
   updateWebsiteSettings,
+  getFooterSettings,
+  updateFooterSettings,
   getMediaItems,
   addMediaItem,
   deleteMediaItem,
@@ -79,6 +81,10 @@ export async function GET(request: Request) {
       const data = await getWebsiteSettings();
       return NextResponse.json({ success: true, data });
     }
+    if (section === "footer") {
+      const data = await getFooterSettings();
+      return NextResponse.json({ success: true, data });
+    }
     if (section === "media") {
       const data = await getMediaItems();
       return NextResponse.json({ success: true, data });
@@ -99,6 +105,7 @@ export async function GET(request: Request) {
       appearance,
       seo,
       settings,
+      footer,
       media,
       messages,
     ] = await Promise.all([
@@ -112,6 +119,7 @@ export async function GET(request: Request) {
       getAppearanceSettings(),
       getSeoSettings(),
       getWebsiteSettings(),
+      getFooterSettings(),
       getMediaItems(),
       getContactMessages(),
     ]);
@@ -129,6 +137,7 @@ export async function GET(request: Request) {
         appearance,
         seo,
         settings,
+        footer,
         media,
         messages,
       },
@@ -238,6 +247,11 @@ export async function POST(request: Request) {
 
       case "updateSettings": {
         const result = await updateWebsiteSettings(payload);
+        return NextResponse.json({ success: true, data: result });
+      }
+
+      case "updateFooter": {
+        const result = await updateFooterSettings(payload);
         return NextResponse.json({ success: true, data: result });
       }
 

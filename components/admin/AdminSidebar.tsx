@@ -17,6 +17,7 @@ import {
   Palette,
   Search,
   Settings,
+  PanelBottom,
   ChevronRight,
   ExternalLink,
 } from "lucide-react";
@@ -39,6 +40,7 @@ const menuItems = [
   { name: "Messages", href: "/admin/messages", icon: Mail, hasBadge: true },
   { name: "Media Library", href: "/admin/media", icon: ImageIcon },
   { name: "Appearance", href: "/admin/appearance", icon: Palette },
+  { name: "Footer", href: "/admin/footer", icon: PanelBottom },
   { name: "SEO Meta", href: "/admin/seo", icon: Search },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];

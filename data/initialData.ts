@@ -10,6 +10,7 @@ import {
   AppearanceSettings,
   SeoSettings,
   WebsiteSettings,
+  FooterSettings,
 } from "@/types/portfolio";
 
 export const initialHomepageSettings: HomepageSettings = {
@@ -241,7 +242,7 @@ export const initialProjects: Project[] = [
     id: "rag-chatbot-voice-emotion",
     title: "RAG Chatbot with Voice and Emotion Detection",
     slug: "rag-chatbot-voice-emotion",
-    category: "Generative AI",
+    category: "AI/ML",
     short_description:
       "Document-based conversational AI application with voice interaction and emotion detection using Streamlit and GPT-4o mini.",
     full_description:
@@ -621,3 +622,21 @@ export const initialContactMessages: ContactMessage[] = [
     created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
   },
 ];
+
+export const initialFooterSettings: FooterSettings = {
+  id: "default-footer",
+  brand_monogram: "NH",
+  brand_name: "Noorul Hassan",
+  bio_description:
+    "Full Stack Developer and AI Engineer passionate about building scalable applications, intelligent systems and innovative digital experiences using modern web technologies and artificial intelligence.",
+  status_text: "Available for engineering opportunities & AI collaborations",
+  status_enabled: true,
+  nav_title: "Navigation",
+  connect_title: "Connect",
+  github_url: "https://github.com",
+  linkedin_url: "https://linkedin.com",
+  email: "noorulhassan.ai@gmail.com",
+  bottom_left_text: "Noorul Hassan • Full Stack Developer & AI Engineer",
+  cta_text: "Get in Touch",
+  cta_link: "/contact",
+};

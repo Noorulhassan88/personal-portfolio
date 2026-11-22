@@ -88,10 +88,9 @@ export default function Navbar({ name = "Noorul Hassan" }: NavbarProps) {
           <div className="hidden md:flex items-center">
             <Link
               href="/contact"
-              className="btn-shine inline-flex items-center gap-2 text-sm sm:text-base font-extrabold bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] px-6 py-2.5 rounded-full shadow-[0_0_22px_rgba(245,158,11,0.4)] hover:shadow-[0_0_30px_rgba(245,158,11,0.65)] hover:scale-[1.02] active:scale-95 transition-all duration-150 border-2 border-amber-300 cursor-pointer"
+              className="btn-shine inline-flex items-center justify-center text-sm sm:text-base font-extrabold bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] px-6 py-2.5 rounded-full shadow-[0_0_22px_rgba(245,158,11,0.4)] hover:shadow-[0_0_30px_rgba(245,158,11,0.65)] hover:scale-[1.02] active:scale-95 transition-all duration-150 border-2 border-amber-300 cursor-pointer"
             >
               <span>Get in Touch</span>
-              <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
             </Link>
           </div>
 

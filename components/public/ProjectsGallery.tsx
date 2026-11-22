@@ -11,7 +11,7 @@ interface ProjectsGalleryProps {
   initialProjects: Project[];
 }
 
-const categories = ["All", "Full Stack", "AI/ML", "Generative AI", "Web Development"];
+const categories = ["All", "Full Stack", "AI/ML"];
 
 export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProps) {
   const [projectsList, setProjectsList] = useState<Project[]>(initialProjects);
@@ -61,8 +61,12 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
 
   const filteredProjects = useMemo(() => {
     return projectsList.filter((project) => {
+      const normalizedCategory =
+        project.category === "Generative AI" || project.category === "Web Development"
+          ? "AI/ML"
+          : project.category;
       const matchesCategory =
-        selectedCategory === "All" || project.category === selectedCategory;
+        selectedCategory === "All" || normalizedCategory === selectedCategory;
       const query = searchQuery.toLowerCase();
       const matchesSearch =
         !searchQuery ||
@@ -154,7 +158,9 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
                 )}
                 <div className="absolute top-3 left-3">
                   <span className="px-3 py-1 text-[11px] font-bold rounded-full bg-[#071324]/90 backdrop-blur-md text-amber-300 border border-amber-400/60 shadow-md">
-                    {project.category}
+                    {project.category === "Generative AI" || project.category === "Web Development"
+                      ? "AI/ML"
+                      : project.category}
                   </span>
                 </div>
               </Link>

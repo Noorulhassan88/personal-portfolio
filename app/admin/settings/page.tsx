@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Settings,
   Save,
@@ -11,6 +12,7 @@ import {
   Globe,
   Mail,
   ToggleLeft,
+  PanelBottom,
 } from "lucide-react";
 import { WebsiteSettings } from "@/types/portfolio";
 import { initialWebsiteSettings } from "@/data/initialData";
@@ -250,6 +252,27 @@ export default function AdminSettingsPage() {
                 placeholder="© 2026 Noorul Hassan. All rights reserved."
                 className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/30 bg-[#071324] text-xs text-white focus:outline-none focus:border-amber-400"
               />
+            </div>
+          </div>
+
+          {/* Quick link to Footer Manager */}
+          <div className="pt-2">
+            <div className="p-4 rounded-xl bg-[#071324]/80 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <PanelBottom className="w-5 h-5 text-amber-400 shrink-0" />
+                <div>
+                  <p className="text-xs font-bold text-white">Full Footer Texts Manager</p>
+                  <p className="text-[11px] text-amber-200/70">
+                    Edit brand bio paragraph, availability status line, navigation headers, and custom CTA button.
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/admin/footer"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/50 text-xs font-bold transition-colors shrink-0"
+              >
+                <span>Edit All Footer Texts</span>
+              </Link>
             </div>
           </div>
         </div>

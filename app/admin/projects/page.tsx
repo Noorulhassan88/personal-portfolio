@@ -616,8 +616,6 @@ export default function AdminProjectsPage() {
                   >
                     <option value="Full Stack">Full Stack</option>
                     <option value="AI/ML">AI/ML</option>
-                    <option value="Generative AI">Generative AI</option>
-                    <option value="Web Development">Web Development</option>
                   </select>
                 </div>
 

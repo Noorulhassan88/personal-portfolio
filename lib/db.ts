@@ -12,6 +12,7 @@ import {
   initialSeoSettings,
   initialWebsiteSettings,
   initialContactMessages,
+  initialFooterSettings,
 } from "@/data/initialData";
 import {
   HomepageSettings,
@@ -26,6 +27,7 @@ import {
   SeoSettings,
   WebsiteSettings,
   MediaItem,
+  FooterSettings,
 } from "@/types/portfolio";
 import { createServerSupabaseClient } from "./supabase/server";
 
@@ -81,6 +83,7 @@ class LocalStore {
   appearance: AppearanceSettings = { ...initialAppearanceSettings };
   seo: SeoSettings = { ...initialSeoSettings };
   settings: WebsiteSettings = { ...initialWebsiteSettings };
+  footer: FooterSettings = { ...initialFooterSettings };
   messages: ContactMessage[] = [...initialContactMessages];
   media: MediaItem[] = [
     {
@@ -125,6 +128,7 @@ class LocalStore {
       if (saved.appearance) this.appearance = saved.appearance;
       if (saved.seo) this.seo = saved.seo;
       if (saved.settings) this.settings = saved.settings;
+      if (saved.footer) this.footer = saved.footer;
       if (saved.messages) this.messages = saved.messages;
       if (saved.media) this.media = saved.media;
     }
@@ -977,4 +981,59 @@ export async function updateWebsiteSettings(
   localStore.settings = merged;
   persistChanges();
   return localStore.settings;
+}
+
+export async function getFooterSettings(): Promise<FooterSettings> {
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("footer_settings")
+        .select("*")
+        .single();
+      if (!error && data) {
+        localStore.footer = { ...localStore.footer, ...data };
+        return localStore.footer;
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase getFooterSettings fallback:", err);
+  }
+  return localStore.footer;
+}
+
+export async function updateFooterSettings(
+  settings: Partial<FooterSettings>
+): Promise<FooterSettings> {
+  const merged: FooterSettings = {
+    ...localStore.footer,
+    ...settings,
+    id: "default-footer",
+    updated_at: new Date().toISOString(),
+  };
+
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("footer_settings")
+        .upsert(merged)
+        .select()
+        .single();
+
+      if (!error && data) {
+        localStore.footer = data as FooterSettings;
+        persistChanges();
+        return localStore.footer;
+      } else if (error) {
+        console.warn("Supabase updateFooterSettings fallback:", error);
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase updateFooterSettings fallback:", err);
+  }
+
+  localStore.footer = merged;
+  persistChanges();
+  return localStore.footer;
 }

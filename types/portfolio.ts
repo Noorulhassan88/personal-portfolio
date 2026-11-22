@@ -81,7 +81,7 @@ export interface Project {
   id: string;
   title: string;
   slug: string;
-  category: "Full Stack" | "AI/ML" | "Generative AI" | "Web Development";
+  category: "Full Stack" | "AI/ML" | "Generative AI" | "Web Development" | string;
   short_description: string;
   full_description: string;
   technologies: string[];
@@ -196,5 +196,23 @@ export interface WebsiteSettings {
   contact_form_enabled: boolean;
   maintenance_mode: boolean;
   analytics_enabled: boolean;
+  updated_at?: string;
+}
+
+export interface FooterSettings {
+  id: string;
+  brand_monogram: string;
+  brand_name: string;
+  bio_description: string;
+  status_text: string;
+  status_enabled: boolean;
+  nav_title: string;
+  connect_title: string;
+  github_url: string;
+  linkedin_url: string;
+  email: string;
+  bottom_left_text: string;
+  cta_text: string;
+  cta_link: string;
   updated_at?: string;
 }
