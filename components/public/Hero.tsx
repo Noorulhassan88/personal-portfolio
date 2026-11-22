@@ -140,7 +140,7 @@ export default function Hero({ settings }: HeroProps) {
               {/* Tertiary: Download Resume */}
               {settings.resume_enabled && (
                 <a
-                  href={settings.resume_url || "/resume.pdf"}
+                  href="/api/resume"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border-2 border-amber-400/80 hover:scale-[1.02] active:scale-95 font-bold text-sm sm:text-base transition-all duration-200 shadow-sm tracking-wide cursor-pointer text-center"

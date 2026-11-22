@@ -51,9 +51,13 @@ export default function HomePageClient({ initialSettings }: HomePageClientProps)
     };
     window.addEventListener("storage", handleStorageChange);
     window.addEventListener("portfolio_seo_updated", handleStorageChange);
+    window.addEventListener("portfolio_homepage_updated", handleStorageChange);
+    window.addEventListener("portfolio_resume_updated", handleStorageChange);
     return () => {
       window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("portfolio_seo_updated", handleStorageChange);
+      window.removeEventListener("portfolio_homepage_updated", handleStorageChange);
+      window.removeEventListener("portfolio_resume_updated", handleStorageChange);
     };
   }, []);
 

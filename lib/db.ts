@@ -155,28 +155,33 @@ export async function getHomepageSettings(): Promise<HomepageSettings> {
 export async function updateHomepageSettings(
   settings: Partial<HomepageSettings>
 ): Promise<HomepageSettings> {
+  const merged: HomepageSettings = {
+    ...localStore.homepage,
+    ...settings,
+    id: "default-homepage",
+    updated_at: new Date().toISOString(),
+  };
+
   try {
     const supabase = await createServerSupabaseClient();
     if (supabase) {
       const { data, error } = await supabase
         .from("homepage_settings")
-        .upsert({ ...settings, updated_at: new Date().toISOString() })
+        .upsert(merged)
         .select()
         .single();
       if (!error && data) {
         localStore.homepage = data as HomepageSettings;
         persistChanges();
         return data as HomepageSettings;
+      } else if (error) {
+        console.error("Supabase homepage update error:", error);
       }
     }
   } catch (err) {
     console.warn("Supabase homepage update fallback:", err);
   }
-  localStore.homepage = {
-    ...localStore.homepage,
-    ...settings,
-    updated_at: new Date().toISOString(),
-  };
+  localStore.homepage = merged;
   persistChanges();
   return localStore.homepage;
 }
