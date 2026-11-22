@@ -598,30 +598,7 @@ export const initialWebsiteSettings: WebsiteSettings = {
   analytics_enabled: false,
 };
 
-export const initialContactMessages: ContactMessage[] = [
-  {
-    id: "msg-1",
-    name: "Dr. Sarah Chen",
-    email: "sarah.chen@techventures.io",
-    subject: "Collaboration on RAG Vector Retrieval Architecture",
-    message:
-      "Hello Noorul, I reviewed your CalQuity embedding evaluation project. The comparison between Voyage and Cohere embeddings on PGVector is remarkably insightful. We are building an enterprise RAG system and would love to discuss a potential engineering lead opportunity with you.",
-    is_read: false,
-    is_archived: false,
-    created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
-  },
-  {
-    id: "msg-2",
-    name: "Alex Rivera",
-    email: "alex@innovatedesign.co",
-    subject: "Full Stack Next.js Contract Project",
-    message:
-      "Hi Noorul, loved your portfolio clean aesthetic. We have an upcoming client project requiring a modern Next.js frontend with Supabase backend and AI integration. Are you currently taking on new opportunities?",
-    is_read: true,
-    is_archived: false,
-    created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-  },
-];
+export const initialContactMessages: ContactMessage[] = [];
 
 export const initialFooterSettings: FooterSettings = {
   id: "default-footer",

@@ -132,7 +132,15 @@ class LocalStore {
       if (saved.seo) this.seo = saved.seo;
       if (saved.settings) this.settings = saved.settings;
       if (saved.footer) this.footer = saved.footer;
-      if (saved.messages) this.messages = saved.messages;
+      if (saved.messages) {
+        this.messages = saved.messages.filter(
+          (m: ContactMessage) =>
+            m.id !== "msg-1" &&
+            m.id !== "msg-2" &&
+            !m.email?.includes("ai-institute.org") &&
+            !m.email?.includes("techventures.io")
+        );
+      }
       if (saved.media) this.media = saved.media;
     }
   }
@@ -733,7 +741,10 @@ export async function getContactMessages(): Promise<ContactMessage[]> {
         .from("contact_messages")
         .select("*")
         .order("created_at", { ascending: false });
-      if (!error && data) return data as ContactMessage[];
+      if (!error && data) {
+        localStore.messages = data as ContactMessage[];
+        return data as ContactMessage[];
+      }
     }
   } catch (err) {
     console.warn("Supabase messages fallback:", err);

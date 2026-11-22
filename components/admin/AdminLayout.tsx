@@ -11,7 +11,7 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(1);
+  const [unreadCount, setUnreadCount] = useState(0);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -30,6 +30,41 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         sessionStorage.setItem("admin_auth", "true");
       }
     }
+
+    // Dynamic unread count calculation from real messages
+    const fetchUnread = () => {
+      fetch("/api/admin/data?section=messages")
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.success && Array.isArray(res.data)) {
+            const count = res.data.filter(
+              (m: any) =>
+                !m.is_read &&
+                !m.is_archived &&
+                m.id !== "msg-1" &&
+                m.id !== "msg-2" &&
+                !m.email?.includes("ai-institute.org") &&
+                !m.email?.includes("techventures.io")
+            ).length;
+            setUnreadCount(count);
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchUnread();
+
+    const handleMessageUpdate = () => {
+      fetchUnread();
+    };
+
+    window.addEventListener("portfolio_messages_updated", handleMessageUpdate);
+    window.addEventListener("storage", handleMessageUpdate);
+
+    return () => {
+      window.removeEventListener("portfolio_messages_updated", handleMessageUpdate);
+      window.removeEventListener("storage", handleMessageUpdate);
+    };
   }, [isLoginPage, router]);
 
   if (isLoginPage) {
