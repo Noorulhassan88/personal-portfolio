@@ -49,9 +49,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
       <main className="flex-1">
         {/* Header Breadcrumb & Title: Navy & Gold Gradient */}
-        <div className="pt-28 pb-10 md:pt-36 md:pb-12 border-b border-amber-500/20 bg-linear-to-b from-[#050c18] to-[#0d1f38] text-white">
+        <div className="pt-24 pb-8 sm:pt-28 sm:pb-10 md:pt-36 md:pb-12 border-b border-amber-500/20 bg-linear-to-b from-[#050c18] to-[#0d1f38] text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-1.5 text-xs text-amber-300 mb-4 font-mono">
+            <div className="flex flex-wrap items-center gap-1.5 text-xs text-amber-300 mb-3 sm:mb-4 font-mono">
               <Link href="/" className="hover:text-amber-200 transition-colors">
                 Home
               </Link>
@@ -60,7 +60,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                 Projects
               </Link>
               <ChevronRight className="w-3.5 h-3.5 text-amber-500/60" />
-              <span className="text-white font-semibold">{project.title}</span>
+              <span className="text-white font-semibold truncate max-w-[200px] sm:max-w-none">{project.title}</span>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -69,22 +69,22 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white max-w-4xl">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white max-w-4xl break-words">
               {project.title}
             </h1>
 
-            <p className="mt-4 text-base sm:text-lg text-slate-300 max-w-3xl leading-relaxed">
+            <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-slate-300 max-w-3xl leading-relaxed break-words">
               {project.short_description}
             </p>
 
             {/* Links Bar */}
-            <div className="flex flex-wrap items-center gap-4 mt-6 pt-6 border-t border-amber-500/20">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-4 mt-6 pt-6 border-t border-amber-500/20">
               {project.live_demo_url && (
                 <a
                   href={project.live_demo_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="btn-shine active:scale-95 cursor-pointer inline-flex items-center gap-2.5 px-7 py-3 rounded-full bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] text-sm sm:text-base font-extrabold transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)] border-2 border-amber-300"
+                  className="btn-shine active:scale-95 cursor-pointer w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-7 py-3 rounded-full bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] text-sm sm:text-base font-extrabold transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)] border-2 border-amber-300 text-center"
                 >
                   <ExternalLink className="w-4 h-4 stroke-[2.5]" />
                   <span>Launch Live Demo</span>
@@ -95,7 +95,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   href={project.github_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="active:scale-95 cursor-pointer inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#142c50] hover:bg-[#1b3a6b] text-amber-300 border-2 border-amber-400/60 text-sm sm:text-base font-bold transition-colors"
+                  className="active:scale-95 cursor-pointer w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-full bg-[#142c50] hover:bg-[#1b3a6b] text-amber-300 border-2 border-amber-400/60 text-sm sm:text-base font-bold transition-colors text-center"
                 >
                   <GithubIcon className="w-4 h-4 text-amber-400" />
                   <span>View Repository</span>
@@ -106,8 +106,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         </div>
 
         {/* Content Body */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 md:py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
             {/* Left 8 Cols: Deep Details */}
             <div className="lg:col-span-8 space-y-14">
               {/* Main Showcase Image */}

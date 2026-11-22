@@ -19,8 +19,8 @@ export default function Footer({
 }: FooterProps) {
   return (
     <footer className="mt-auto border-t border-amber-500/25 bg-[#050c18] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-18">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12 mb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 md:py-18">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 mb-8 sm:mb-12">
           {/* Brand Column */}
           <div className="md:col-span-6 space-y-4">
             <div className="flex items-center gap-3">
@@ -116,8 +116,8 @@ export default function Footer({
         </div>
 
         {/* Bottom Bar - Clean and Large, No tech text, No 2026 */}
-        <div className="pt-8 border-t border-amber-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-slate-300 font-medium">
-          <div>
+        <div className="pt-8 border-t border-amber-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-slate-300 font-medium text-center sm:text-left">
+          <div className="text-center sm:text-left">
             <span className="text-white font-bold">{name}</span>
             <span className="mx-2.5 text-amber-400">•</span>
             <span className="text-amber-300">Full Stack Developer & AI Engineer</span>

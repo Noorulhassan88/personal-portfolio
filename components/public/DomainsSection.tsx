@@ -43,9 +43,9 @@ const domains = [
 
 export default function DomainsSection() {
   return (
-    <section className="py-16 md:py-24 border-y border-amber-500/20 bg-[#071324] text-white">
+    <section className="py-10 sm:py-16 md:py-24 border-y border-amber-500/20 bg-[#071324] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/10 border border-amber-400 text-amber-300 text-xs font-mono font-bold tracking-wide mb-3">
               CORE SPECIALIZATIONS
@@ -54,19 +54,19 @@ export default function DomainsSection() {
               Technical Focus Areas
             </h2>
           </div>
-          <p className="mt-3 md:mt-0 text-sm text-slate-300 max-w-md">
+          <p className="mt-3 md:mt-0 text-xs sm:text-sm text-slate-300 max-w-md leading-relaxed">
             Bridging theoretical artificial intelligence and enterprise-grade full stack
             software architecture.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
           {domains.map((domain) => {
             const Icon = domain.icon;
             return (
               <div
                 key={domain.title}
-                className="group relative p-6 rounded-2xl border border-amber-500/30 bg-[#0d1f38] hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.25)] transition-all duration-200 flex flex-col justify-between"
+                className="group relative p-5 sm:p-6 rounded-2xl border border-amber-500/30 bg-[#0d1f38] hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.25)] transition-all duration-200 flex flex-col justify-between"
               >
                 <div>
                   <div className="w-12 h-12 rounded-xl bg-[#071324] border border-amber-400 text-amber-400 flex items-center justify-center mb-5 group-hover:bg-amber-400 group-hover:text-[#071324] transition-all duration-200 shadow-md">
@@ -78,7 +78,7 @@ export default function DomainsSection() {
                   <p className="text-[11px] font-mono text-amber-300 mb-3">
                     {domain.tagline}
                   </p>
-                  <p className="text-xs text-neutral-600 leading-relaxed mb-4">
+                  <p className="text-xs text-slate-300 leading-relaxed mb-4">
                     {domain.description}
                   </p>
                 </div>

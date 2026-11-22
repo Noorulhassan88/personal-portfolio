@@ -98,7 +98,7 @@ export default function Navbar({ name = "Noorul Hassan" }: NavbarProps) {
           {/* Mobile Menu Trigger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-amber-300 hover:bg-[#0d1f38] transition-colors"
+            className="md:hidden p-2.5 rounded-xl text-amber-300 hover:bg-[#0d1f38] transition-colors border border-amber-500/30 flex items-center justify-center min-w-[42px] min-h-[42px] cursor-pointer"
             aria-label="Toggle navigation"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -107,7 +107,7 @@ export default function Navbar({ name = "Noorul Hassan" }: NavbarProps) {
 
         {/* Mobile Slide-down Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-3 p-4 bg-[#0d1f38]/98 backdrop-blur-xl border border-amber-500/40 rounded-2xl shadow-2xl flex flex-col gap-2 text-white">
+          <div className="md:hidden mt-3 p-4 bg-[#0d1f38]/98 backdrop-blur-2xl border border-amber-500/40 rounded-2xl shadow-2xl flex flex-col gap-1.5 text-white">
             {navLinks.map((link) => {
               const isActive =
                 link.href === "/"
@@ -118,14 +118,14 @@ export default function Navbar({ name = "Noorul Hassan" }: NavbarProps) {
                   key={link.name}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-3 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-between ${
+                  className={`px-3.5 py-2.5 text-sm font-semibold rounded-xl transition-colors flex items-center justify-between ${
                     isActive
-                      ? "bg-amber-400 text-[#071324] font-bold"
+                      ? "bg-amber-400 text-[#071324] font-bold shadow-md"
                       : "text-neutral-200 hover:bg-[#142c50] hover:text-amber-300"
                   }`}
                 >
                   <span>{link.name}</span>
-                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#071324]" />}
+                  {isActive && <span className="w-2 h-2 rounded-full bg-[#071324]" />}
                 </Link>
               );
             })}
@@ -134,7 +134,7 @@ export default function Navbar({ name = "Noorul Hassan" }: NavbarProps) {
               <Link
                 href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 text-xs font-bold bg-linear-to-r from-amber-400 to-amber-500 text-[#071324] rounded-xl hover:from-amber-500 hover:to-amber-600 block transition-all shadow-md"
+                className="w-full text-center py-3 text-xs font-extrabold bg-linear-to-r from-amber-400 to-amber-500 text-[#071324] rounded-xl hover:from-amber-500 hover:to-amber-600 block transition-all shadow-md cursor-pointer"
               >
                 Contact Noorul
               </Link>

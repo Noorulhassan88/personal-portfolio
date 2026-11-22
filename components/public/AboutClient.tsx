@@ -37,15 +37,39 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 export default function AboutClient({ initialAbout, settings }: AboutClientProps) {
-  const [about, setAbout] = useState<AboutContent>(initialAbout);
+  const [about, setAbout] = useState<AboutContent>(() => {
+    const sanitizeDesc = (desc?: string) => {
+      if (!desc || desc.includes("development philosophy")) {
+        return "Discover my background, education, and technical expertise in building scalable software systems and applied AI.";
+      }
+      return desc;
+    };
+    return {
+      ...initialAbout,
+      header_description: sanitizeDesc(initialAbout.header_description),
+    };
+  });
 
   useEffect(() => {
+    const sanitizeDesc = (desc?: string) => {
+      if (!desc || desc.includes("development philosophy")) {
+        return "Discover my background, education, and technical expertise in building scalable software systems and applied AI.";
+      }
+      return desc;
+    };
+
     const syncLocal = () => {
       try {
         const local = localStorage.getItem("portfolio_about");
         if (local) {
           const parsed = JSON.parse(local);
-          setAbout((prev) => ({ ...prev, ...parsed }));
+          if (parsed.header_description) {
+            parsed.header_description = sanitizeDesc(parsed.header_description);
+          }
+          if (parsed.career_objectives && parsed.career_objectives.includes("development philosophy")) {
+            parsed.career_objectives = sanitizeDesc(parsed.career_objectives);
+          }
+          setAbout((prev) => ({ ...prev, ...parsed, header_description: sanitizeDesc(parsed.header_description) }));
         }
       } catch (e) {
         console.error(e);
@@ -58,9 +82,13 @@ export default function AboutClient({ initialAbout, settings }: AboutClientProps
       .then((res) => res.json())
       .then((res) => {
         if (res.success && res.data) {
-          setAbout((prev) => ({ ...prev, ...res.data }));
+          const cleanData = {
+            ...res.data,
+            header_description: sanitizeDesc(res.data.header_description),
+          };
+          setAbout((prev) => ({ ...prev, ...cleanData }));
           try {
-            localStorage.setItem("portfolio_about", JSON.stringify(res.data));
+            localStorage.setItem("portfolio_about", JSON.stringify(cleanData));
           } catch {}
         }
       })
@@ -77,6 +105,11 @@ export default function AboutClient({ initialAbout, settings }: AboutClientProps
     };
   }, []);
 
+  const headerDesc =
+    about.header_description && !about.header_description.includes("development philosophy")
+      ? about.header_description
+      : "Discover my background, education, and technical expertise in building scalable software systems and applied AI.";
+
   return (
     <div className="min-h-screen flex flex-col bg-[#071324] text-white">
       <Navbar name={settings.name} designation={settings.designation} />
@@ -88,17 +121,14 @@ export default function AboutClient({ initialAbout, settings }: AboutClientProps
             about.header_title ||
             "Bridging Artificial Intelligence with Modern Web Architecture."
           }
-          description={
-            about.header_description ||
-            "Discover my background, education, and technical expertise in building scalable software systems and applied AI."
-          }
+          description={headerDesc}
           breadcrumb="About"
         />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 md:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
             {/* Left 8 Cols: Editorial Biography & Academic Education */}
-            <div className="lg:col-span-8 space-y-16">
+            <div className="lg:col-span-8 space-y-10 sm:space-y-16">
               {/* Biography Section */}
               <section>
                 <div className="flex items-center gap-2 mb-4 text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
@@ -129,13 +159,13 @@ export default function AboutClient({ initialAbout, settings }: AboutClientProps
                   {about.education.map((edu) => (
                     <div
                       key={edu.id}
-                      className="interactive-card p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-xl transition-all"
+                      className="interactive-card p-5 sm:p-6 md:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-xl transition-all"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-2">
-                        <h3 className="text-lg font-bold text-white">
+                        <h3 className="text-base sm:text-lg font-bold text-white">
                           {edu.degree}
                         </h3>
-                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-[#142c50] text-amber-300 border border-amber-400/50 shrink-0">
+                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-[#142c50] text-amber-300 border border-amber-400/50 self-start sm:self-auto shrink-0">
                           {edu.start_year} – {edu.end_year}
                         </span>
                       </div>

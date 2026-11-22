@@ -66,10 +66,10 @@ export default function HomePageClient({ initialSettings }: HomePageClientProps)
       </main>
 
       {/* Navy & Gold Bottom Bar */}
-      <footer className="py-3.5 px-4 border-t border-amber-500/20 bg-[#050c18] text-center text-xs sm:text-sm text-amber-200/90 font-medium">
+      <footer className="py-3 px-4 border-t border-amber-500/20 bg-[#050c18] text-center text-xs sm:text-sm text-amber-200/90 font-medium flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
         <span className="text-white font-bold">{settings.name}</span>
-        <span className="mx-2.5 text-amber-400">•</span>
-        <span className="text-amber-400 font-semibold">{settings.designation}</span>
+        <span className="text-amber-400">•</span>
+        <span className="text-amber-300 font-semibold">{settings.designation}</span>
       </footer>
     </div>
   );

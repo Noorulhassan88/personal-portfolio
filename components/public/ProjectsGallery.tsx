@@ -42,16 +42,16 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
   }, [projectsList, selectedCategory, searchQuery]);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8 sm:space-y-10">
       {/* Filters and Search Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-amber-500/20">
         {/* Category Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer shrink-0 ${
                 selectedCategory === cat
                   ? "bg-linear-to-r from-amber-400 to-amber-500 text-[#071324] font-extrabold shadow-[0_0_15px_rgba(245,158,11,0.4)]"
                   : "bg-[#0d1f38] text-neutral-300 hover:text-amber-300 border border-amber-500/30 hover:border-amber-400"
@@ -77,7 +77,7 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
 
       {/* Projects Grid */}
       {filteredProjects.length === 0 ? (
-        <div className="py-20 text-center bg-[#0d1f38] rounded-2xl border border-amber-500/20">
+        <div className="py-16 sm:py-20 text-center bg-[#0d1f38] rounded-2xl border border-amber-500/20 px-4">
           <p className="text-sm font-semibold text-slate-300">
             No projects found matching the selected filter or search query.
           </p>
@@ -86,13 +86,13 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
               setSelectedCategory("All");
               setSearchQuery("");
             }}
-            className="mt-4 text-xs font-bold text-amber-400 hover:underline"
+            className="mt-4 text-xs font-bold text-amber-400 hover:underline cursor-pointer"
           >
             Reset Filters
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredProjects.map((project) => (
             <div
               key={project.id}

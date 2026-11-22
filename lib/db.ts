@@ -200,10 +200,13 @@ export async function getAboutContent(): Promise<AboutContent> {
             localStore.about.header_title ||
             "Bridging Artificial Intelligence with Modern Web Architecture.",
           header_description:
-            row.header_description ||
-            row.career_objectives ||
-            localStore.about.header_description ||
-            "Discover my background, education, and technical expertise in building scalable software systems and applied AI.",
+            (row.header_description && !row.header_description.includes("development philosophy"))
+              ? row.header_description
+              : (row.career_objectives && !row.career_objectives.includes("development philosophy"))
+              ? row.career_objectives
+              : (localStore.about.header_description && !localStore.about.header_description.includes("development philosophy"))
+              ? localStore.about.header_description
+              : "Discover my background, education, and technical expertise in building scalable software systems and applied AI.",
           areas_of_specialization:
             row.areas_of_specialization && row.areas_of_specialization.length > 0
               ? row.areas_of_specialization

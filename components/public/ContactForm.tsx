@@ -45,10 +45,10 @@ export default function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-8 sm:p-10 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xl space-y-6 text-white"
+      className="p-5 sm:p-8 md:p-10 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-2xl space-y-5 sm:space-y-6 text-white"
     >
       <div className="border-b border-amber-500/20 pb-4">
-        <h2 className="text-xl font-bold tracking-tight text-white">
+        <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white">
           Send a Direct Message
         </h2>
         <p className="text-xs text-slate-300 mt-1">

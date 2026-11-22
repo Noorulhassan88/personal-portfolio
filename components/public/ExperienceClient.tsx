@@ -71,10 +71,10 @@ export default function ExperienceClient({
           breadcrumb="Experience"
         />
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="relative border-l-2 border-amber-500/40 ml-4 sm:ml-8 space-y-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 md:py-24">
+          <div className="relative border-l-2 border-amber-500/40 ml-2 sm:ml-6 md:ml-8 space-y-8 sm:space-y-12">
             {experience.map((entry) => (
-              <div key={entry.id} className="relative pl-6 sm:pl-8 group">
+              <div key={entry.id} className="relative pl-4 sm:pl-8 group">
                 {/* Timeline Dot Indicator */}
                 <div
                   className={`absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 transition-colors duration-200 ${
@@ -85,13 +85,13 @@ export default function ExperienceClient({
                 />
 
                 {/* Entry Card */}
-                <div className="interactive-card p-6 sm:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-xl transition-all duration-200">
+                <div className="interactive-card p-4 sm:p-6 md:p-8 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-xl transition-all duration-200">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                     <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-[#142c50] text-amber-300 border border-amber-400/50 w-fit">
                       {entry.type}
                     </span>
                     <div className="flex items-center gap-1.5 text-xs text-amber-200/80 font-mono font-medium">
-                      <Calendar className="w-3.5 h-3.5 text-amber-400" />
+                      <Calendar className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                       <span>
                         {formatDate(entry.start_date)} –{" "}
                         {entry.is_current ? "Present" : formatDate(entry.end_date)}
@@ -99,7 +99,7 @@ export default function ExperienceClient({
                     </div>
                   </div>
 
-                  <h3 className="text-xl font-bold text-white tracking-tight">
+                  <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight break-words">
                     {entry.designation}
                   </h3>
 
