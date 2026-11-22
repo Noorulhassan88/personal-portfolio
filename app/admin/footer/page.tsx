@@ -53,8 +53,23 @@ export default function AdminFooterPage() {
     // 1. Immediately store in localStorage & fire custom events for instant client reactivity
     try {
       localStorage.setItem("portfolio_footer_settings", JSON.stringify(footer));
+
+      const hpLocal = localStorage.getItem("portfolio_homepage_settings");
+      if (hpLocal) {
+        const hpParsed = JSON.parse(hpLocal);
+        const hpUpdated = {
+          ...hpParsed,
+          social_github: footer.github_url || hpParsed.social_github,
+          social_linkedin: footer.linkedin_url || hpParsed.social_linkedin,
+          social_email: footer.email || hpParsed.social_email,
+        };
+        localStorage.setItem("portfolio_homepage_settings", JSON.stringify(hpUpdated));
+      }
+
       window.dispatchEvent(new Event("storage"));
       window.dispatchEvent(new CustomEvent("portfolio_footer_updated"));
+      window.dispatchEvent(new CustomEvent("portfolio_homepage_updated"));
+      window.dispatchEvent(new CustomEvent("portfolio_settings_updated"));
     } catch (err) {
       console.error("Local storage error:", err);
     }

@@ -21,13 +21,23 @@ export default function Footer({
   linkedinUrl,
   email,
 }: FooterProps) {
-  const [footerData, setFooterData] = useState<FooterSettings>(() => ({
-    ...initialFooterSettings,
-    brand_name: name || initialFooterSettings.brand_name,
-    github_url: githubUrl || initialFooterSettings.github_url,
-    linkedin_url: linkedinUrl || initialFooterSettings.linkedin_url,
-    email: email || initialFooterSettings.email,
-  }));
+  const [footerData, setFooterData] = useState<FooterSettings>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const local = localStorage.getItem("portfolio_footer_settings");
+        if (local) {
+          return { ...initialFooterSettings, ...JSON.parse(local) };
+        }
+      } catch {}
+    }
+    return {
+      ...initialFooterSettings,
+      brand_name: name || initialFooterSettings.brand_name,
+      github_url: githubUrl || initialFooterSettings.github_url,
+      linkedin_url: linkedinUrl || initialFooterSettings.linkedin_url,
+      email: email || initialFooterSettings.email,
+    };
+  });
 
   useEffect(() => {
     const syncFooter = () => {

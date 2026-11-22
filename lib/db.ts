@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import os from "os";
 import {
   initialHomepageSettings,
   initialAboutContent,
@@ -35,7 +36,7 @@ function getStorageFilePath() {
   try {
     return path.join(process.cwd(), "data", "portfolio_store.json");
   } catch {
-    return "/tmp/portfolio_store.json";
+    return path.join(os.tmpdir(), "portfolio_store.json");
   }
 }
 
@@ -48,8 +49,9 @@ function loadDiskStore(): any | null {
     }
   } catch {
     try {
-      if (fs.existsSync("/tmp/portfolio_store.json")) {
-        return JSON.parse(fs.readFileSync("/tmp/portfolio_store.json", "utf-8"));
+      const fallback = path.join(os.tmpdir(), "portfolio_store.json");
+      if (fs.existsSync(fallback)) {
+        return JSON.parse(fs.readFileSync(fallback, "utf-8"));
       }
     } catch {}
   }
@@ -66,7 +68,8 @@ function saveDiskStore(store: LocalStore) {
     fs.writeFileSync(file, JSON.stringify(store, null, 2), "utf-8");
   } catch {
     try {
-      fs.writeFileSync("/tmp/portfolio_store.json", JSON.stringify(store, null, 2), "utf-8");
+      const fallback = path.join(os.tmpdir(), "portfolio_store.json");
+      fs.writeFileSync(fallback, JSON.stringify(store, null, 2), "utf-8");
     } catch {}
   }
 }
@@ -1010,13 +1013,32 @@ export async function getFooterSettings(): Promise<FooterSettings> {
   try {
     const supabase = await createServerSupabaseClient();
     if (supabase) {
-      const { data, error } = await supabase
-        .from("footer_settings")
-        .select("*")
+      const { data: hp, error } = await supabase
+        .from("homepage_settings")
+        .select("sections_enabled, social_github, social_linkedin, social_email, name")
+        .eq("id", "default-homepage")
         .single();
-      if (!error && data) {
-        localStore.footer = { ...localStore.footer, ...data };
-        return localStore.footer;
+
+      if (!error && hp) {
+        const sections = hp.sections_enabled as any;
+        if (sections && sections.footer_data) {
+          localStore.footer = {
+            ...localStore.footer,
+            ...sections.footer_data,
+            github_url: sections.footer_data.github_url || hp.social_github || localStore.footer.github_url,
+            linkedin_url: sections.footer_data.linkedin_url || hp.social_linkedin || localStore.footer.linkedin_url,
+            email: sections.footer_data.email || hp.social_email || localStore.footer.email,
+          };
+          return localStore.footer;
+        } else {
+          localStore.footer = {
+            ...localStore.footer,
+            github_url: hp.social_github || localStore.footer.github_url,
+            linkedin_url: hp.social_linkedin || localStore.footer.linkedin_url,
+            email: hp.social_email || localStore.footer.email,
+          };
+          return localStore.footer;
+        }
       }
     }
   } catch (err) {
@@ -1038,19 +1060,47 @@ export async function updateFooterSettings(
   try {
     const supabase = await createServerSupabaseClient();
     if (supabase) {
-      const { data, error } = await supabase
-        .from("footer_settings")
-        .upsert(merged)
-        .select()
+      // 1. Fetch current sections_enabled to preserve other keys
+      const { data: hp } = await supabase
+        .from("homepage_settings")
+        .select("sections_enabled")
+        .eq("id", "default-homepage")
         .single();
 
-      if (!error && data) {
-        localStore.footer = data as FooterSettings;
-        persistChanges();
-        return localStore.footer;
-      } else if (error) {
-        console.warn("Supabase updateFooterSettings fallback:", error);
-      }
+      const existingSections = hp?.sections_enabled ? (hp.sections_enabled as any) : {};
+      const updatedSections = {
+        ...existingSections,
+        footer_data: merged,
+      };
+
+      const hpUpdatePayload: Record<string, any> = {
+        sections_enabled: updatedSections,
+        updated_at: new Date().toISOString(),
+      };
+      if (merged.github_url) hpUpdatePayload.social_github = merged.github_url;
+      if (merged.linkedin_url) hpUpdatePayload.social_linkedin = merged.linkedin_url;
+      if (merged.email) hpUpdatePayload.social_email = merged.email;
+
+      await supabase
+        .from("homepage_settings")
+        .update(hpUpdatePayload)
+        .eq("id", "default-homepage");
+
+      // 2. Also sync with website_settings
+      try {
+        const wsPayload: Record<string, any> = {};
+        if (merged.github_url) wsPayload.github_url = merged.github_url;
+        if (merged.linkedin_url) wsPayload.linkedin_url = merged.linkedin_url;
+        if (merged.email) wsPayload.contact_email = merged.email;
+        if (merged.bottom_left_text) wsPayload.copyright_text = merged.bottom_left_text;
+        if (Object.keys(wsPayload).length > 0) {
+          await supabase.from("website_settings").update(wsPayload).eq("id", "default-settings");
+        }
+      } catch {}
+
+      localStore.footer = merged;
+      persistChanges();
+      return localStore.footer;
     }
   } catch (err) {
     console.warn("Supabase updateFooterSettings fallback:", err);
