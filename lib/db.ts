@@ -441,7 +441,10 @@ export async function getProjects(options?: {
         query = query.eq("category", options.category);
       }
       const { data, error } = await query;
-      if (!error && data && data.length > 0) return data as Project[];
+      if (!error && data) {
+        localStore.projects = data as Project[];
+        return data as Project[];
+      }
     }
   } catch (err) {
     console.warn("Supabase projects fallback:", err);
@@ -468,8 +471,8 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
         .from("projects")
         .select("*")
         .eq("slug", slug)
-        .single();
-      if (!error && data) return data as Project;
+        .maybeSingle();
+      if (!error) return (data as Project) || null;
     }
   } catch (err) {
     console.warn("Supabase project slug fallback:", err);
@@ -519,17 +522,34 @@ export async function saveAllProjects(projects: Project[]): Promise<Project[]> {
   try {
     const supabase = await createServerSupabaseClient();
     if (supabase) {
-      const { data, error } = await supabase
-        .from("projects")
-        .upsert(updatedProjects)
-        .select();
+      const currentIds = updatedProjects.map((p) => p.id);
+      const { data: existing } = await supabase.from("projects").select("id");
+      if (existing && existing.length > 0) {
+        const toDelete = existing
+          .filter((row) => !currentIds.includes(row.id))
+          .map((row) => row.id);
+        if (toDelete.length > 0) {
+          await supabase.from("projects").delete().in("id", toDelete);
+        }
+      }
 
-      if (!error && data && data.length > 0) {
-        localStore.projects = data as Project[];
+      if (updatedProjects.length > 0) {
+        const { data, error } = await supabase
+          .from("projects")
+          .upsert(updatedProjects)
+          .select();
+
+        if (!error && data) {
+          localStore.projects = data as Project[];
+          persistChanges();
+          return localStore.projects;
+        } else if (error) {
+          console.error("Supabase saveAllProjects error:", error);
+        }
+      } else {
+        localStore.projects = [];
         persistChanges();
-        return localStore.projects;
-      } else if (error) {
-        console.error("Supabase saveAllProjects error:", error);
+        return [];
       }
     }
   } catch (err) {
@@ -545,7 +565,10 @@ export async function deleteProject(projectId: string): Promise<boolean> {
   try {
     const supabase = await createServerSupabaseClient();
     if (supabase) {
-      await supabase.from("projects").delete().eq("id", projectId);
+      const { error } = await supabase.from("projects").delete().eq("id", projectId);
+      if (error) {
+        console.error("Supabase delete project error:", error);
+      }
     }
   } catch (err) {
     console.warn("Supabase delete project fallback:", err);

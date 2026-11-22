@@ -22,9 +22,9 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
     const syncLocal = () => {
       try {
         const local = localStorage.getItem("portfolio_projects");
-        if (local) {
+        if (local !== null) {
           const parsed = JSON.parse(local);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+          if (Array.isArray(parsed)) {
             setProjectsList(parsed.filter((p: Project) => p.is_published));
           }
         }

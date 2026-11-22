@@ -6,6 +6,7 @@ import { getProjects, getHomepageSettings, getSeoSettings } from "@/lib/db";
 import ProjectsGallery from "@/components/public/ProjectsGallery";
 
 export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const seo = await getSeoSettings();

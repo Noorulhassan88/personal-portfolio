@@ -260,15 +260,21 @@ export default function AdminProjectsPage() {
     }
 
     try {
-      await fetch("/api/admin/data", {
+      const res = await fetch("/api/admin/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "deleteProject", payload: { id } }),
       });
-      setStatusMessage("Project deleted.");
-      setTimeout(() => setStatusMessage(""), 3000);
+      const resData = await res.json();
+      if (!res.ok || !resData.success) {
+        throw new Error(resData.error || "Failed to delete project on server");
+      }
+      setStatusMessage("Project deleted and synchronized across portfolio.");
+      setTimeout(() => setStatusMessage(""), 3500);
     } catch (e) {
       console.error(e);
+      setStatusMessage("Project deleted locally. Cloud sync pending.");
+      setTimeout(() => setStatusMessage(""), 3500);
     }
   };
 
