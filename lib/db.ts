@@ -500,6 +500,38 @@ export async function saveProject(project: Project): Promise<Project> {
   return updatedProject;
 }
 
+export async function saveAllProjects(projects: Project[]): Promise<Project[]> {
+  const updatedProjects = projects.map((p, idx) => ({
+    ...p,
+    sort_order: p.sort_order ?? idx + 1,
+    updated_at: new Date().toISOString(),
+  }));
+
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("projects")
+        .upsert(updatedProjects)
+        .select();
+
+      if (!error && data && data.length > 0) {
+        localStore.projects = data as Project[];
+        persistChanges();
+        return localStore.projects;
+      } else if (error) {
+        console.error("Supabase saveAllProjects error:", error);
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase saveAllProjects fallback:", err);
+  }
+
+  localStore.projects = updatedProjects;
+  persistChanges();
+  return updatedProjects;
+}
+
 export async function deleteProject(projectId: string): Promise<boolean> {
   try {
     const supabase = await createServerSupabaseClient();

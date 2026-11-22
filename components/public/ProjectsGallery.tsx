@@ -19,12 +19,44 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    try {
-      const local = localStorage.getItem("portfolio_projects");
-      if (local) {
-        setProjectsList(JSON.parse(local));
+    const syncLocal = () => {
+      try {
+        const local = localStorage.getItem("portfolio_projects");
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setProjectsList(parsed.filter((p: Project) => p.is_published));
+          }
+        }
+      } catch (e) {
+        console.error("Local sync error:", e);
       }
-    } catch {}
+    };
+
+    syncLocal();
+
+    fetch("/api/admin/data?section=projects")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success && res.data && Array.isArray(res.data)) {
+          const published = res.data.filter((p: Project) => p.is_published);
+          setProjectsList(published);
+          try {
+            localStorage.setItem("portfolio_projects", JSON.stringify(res.data));
+          } catch {}
+        }
+      })
+      .catch(console.error);
+
+    const handleStorageChange = () => {
+      syncLocal();
+    };
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("portfolio_projects_updated", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("portfolio_projects_updated", handleStorageChange);
+    };
   }, []);
 
   const filteredProjects = useMemo(() => {

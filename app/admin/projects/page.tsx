@@ -15,6 +15,10 @@ import {
   Save,
   Search,
   Upload,
+  Loader2,
+  ArrowUp,
+  ArrowDown,
+  Sparkles,
 } from "lucide-react";
 import { Project } from "@/types/portfolio";
 import { initialProjects } from "@/data/initialData";
@@ -27,6 +31,7 @@ export default function AdminProjectsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [savingAll, setSavingAll] = useState(false);
 
   useEffect(() => {
     try {
@@ -50,6 +55,100 @@ export default function AdminProjectsPage() {
       })
       .catch(console.error);
   }, []);
+
+  const handleSaveAll = async () => {
+    setSavingAll(true);
+    setStatusMessage("");
+
+    // 1. Immediately sync to local storage & trigger live events across open tabs
+    try {
+      localStorage.setItem("portfolio_projects", JSON.stringify(projects));
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent("portfolio_projects_updated"));
+    } catch (e) {
+      console.error(e);
+    }
+
+    // 2. Persist to Supabase database via API
+    try {
+      const res = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "saveAllProjects",
+          payload: projects,
+        }),
+      });
+
+      const resData = await res.json();
+      if (!res.ok || !resData.success) {
+        throw new Error(resData.error || "Failed to save projects to database.");
+      }
+
+      if (resData.data && Array.isArray(resData.data)) {
+        setProjects(resData.data);
+        try {
+          localStorage.setItem("portfolio_projects", JSON.stringify(resData.data));
+          window.dispatchEvent(new Event("storage"));
+          window.dispatchEvent(new CustomEvent("portfolio_projects_updated"));
+        } catch {}
+      }
+
+      setStatusMessage("All projects saved and synchronized successfully!");
+      setTimeout(() => setStatusMessage(""), 4000);
+    } catch (err) {
+      console.error("Save all projects error:", err);
+      setStatusMessage("Saved locally. Database sync failed.");
+      setTimeout(() => setStatusMessage(""), 4000);
+    } finally {
+      setSavingAll(false);
+    }
+  };
+
+  const handleTogglePublish = (p: Project) => {
+    const updated = projects.map((item) =>
+      item.id === p.id ? { ...item, is_published: !item.is_published } : item
+    );
+    setProjects(updated);
+    try {
+      localStorage.setItem("portfolio_projects", JSON.stringify(updated));
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent("portfolio_projects_updated"));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleToggleFeatured = (p: Project) => {
+    const updated = projects.map((item) =>
+      item.id === p.id ? { ...item, is_featured: !item.is_featured } : item
+    );
+    setProjects(updated);
+    try {
+      localStorage.setItem("portfolio_projects", JSON.stringify(updated));
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent("portfolio_projects_updated"));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleMoveOrder = (index: number, direction: "up" | "down") => {
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= projects.length) return;
+    const reordered = [...projects];
+    const [moved] = reordered.splice(index, 1);
+    reordered.splice(targetIndex, 0, moved);
+    const updated = reordered.map((item, idx) => ({ ...item, sort_order: idx + 1 }));
+    setProjects(updated);
+    try {
+      localStorage.setItem("portfolio_projects", JSON.stringify(updated));
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent("portfolio_projects_updated"));
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const filteredProjects = projects.filter(
     (p) =>
@@ -129,6 +228,8 @@ export default function AdminProjectsPage() {
     setProjects(updated);
     try {
       localStorage.setItem("portfolio_projects", JSON.stringify(updated));
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent("portfolio_projects_updated"));
     } catch (e) {
       console.error(e);
     }
@@ -152,6 +253,8 @@ export default function AdminProjectsPage() {
     setProjects(updated);
     try {
       localStorage.setItem("portfolio_projects", JSON.stringify(updated));
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent("portfolio_projects_updated"));
     } catch (e) {
       console.error(e);
     }
@@ -186,6 +289,8 @@ export default function AdminProjectsPage() {
     setProjects(updated);
     try {
       localStorage.setItem("portfolio_projects", JSON.stringify(updated));
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent("portfolio_projects_updated"));
     } catch (e) {
       console.error(e);
     }
@@ -207,25 +312,48 @@ export default function AdminProjectsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-amber-500/30">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            Projects Manager (CRUD)
+          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
+            <span>Projects Manager</span>
+            <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40">
+              {projects.length} Projects
+            </span>
           </h1>
           <p className="text-xs text-amber-200/80 mt-1">
-            Create, edit, duplicate, publish, and feature your software & AI projects.
+            Create, edit, duplicate, reorder, publish, and feature your software & AI projects.
           </p>
         </div>
 
-        <button
-          onClick={handleOpenNew}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm sm:text-base px-6 py-3 border border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all shadow-xs"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Project</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={handleSaveAll}
+            disabled={savingAll}
+            className="btn-shine inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm border-2 border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] tracking-wide transition-all cursor-pointer disabled:opacity-50"
+          >
+            {savingAll ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-[#071324]" />
+                <span>Saving All...</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>Save Changes</span>
+              </>
+            )}
+          </button>
+
+          <button
+            onClick={handleOpenNew}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0d1f38] hover:bg-[#142c50] border border-amber-400/60 text-amber-300 font-bold text-sm transition-all shadow-md cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add New Project</span>
+          </button>
+        </div>
       </div>
 
       {statusMessage && (
@@ -257,20 +385,43 @@ export default function AdminProjectsPage() {
           <table className="w-full text-left text-xs">
             <thead className="bg-[#071324] border-b border-amber-500/20 text-amber-200/80 uppercase font-mono tracking-wider">
               <tr>
+                <th className="py-3 px-4 w-16 text-center">Order</th>
                 <th className="py-3 px-4">Project</th>
                 <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Featured</th>
+                <th className="py-3 px-4 text-center">Status</th>
+                <th className="py-3 px-4 text-center">Featured</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100 text-slate-100">
-              {filteredProjects.map((p) => (
+            <tbody className="divide-y divide-amber-500/10 text-slate-100">
+              {filteredProjects.map((p, idx) => (
                 <tr key={p.id} className="hover:bg-[#071324]/60 transition-colors">
+                  <td className="py-3 px-4 text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => handleMoveOrder(idx, "up")}
+                        disabled={idx === 0}
+                        title="Move Up"
+                        className="p-1 rounded text-slate-400 hover:text-amber-300 hover:bg-[#142c50] disabled:opacity-20 cursor-pointer"
+                      >
+                        <ArrowUp className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMoveOrder(idx, "down")}
+                        disabled={idx === filteredProjects.length - 1}
+                        title="Move Down"
+                        className="p-1 rounded text-slate-400 hover:text-amber-300 hover:bg-[#142c50] disabled:opacity-20 cursor-pointer"
+                      >
+                        <ArrowDown className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
                       {p.thumbnail_url && (
-                        <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-[#142c50]">
+                        <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-[#142c50] border border-amber-500/30">
                           <Image
                             src={p.thumbnail_url}
                             alt={p.title}
@@ -288,57 +439,65 @@ export default function AdminProjectsPage() {
                     </div>
                   </td>
                   <td className="py-3 px-4">
-                    <span className="px-2 py-0.5 rounded-md bg-[#142c50] text-amber-300 font-medium">
+                    <span className="px-2.5 py-1 rounded-md bg-[#142c50] text-amber-300 font-medium border border-amber-400/30">
                       {p.category}
                     </span>
                   </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`px-2 py-0.5 rounded-full font-semibold text-[10px] ${
+                  <td className="py-3 px-4 text-center">
+                    <button
+                      type="button"
+                      onClick={() => handleTogglePublish(p)}
+                      title="Click to toggle publish status"
+                      className={`px-3 py-1 rounded-full font-bold text-[10px] transition-all cursor-pointer border ${
                         p.is_published
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-[#142c50] text-amber-400"
+                          ? "bg-emerald-500/15 border-emerald-400/40 text-emerald-300 hover:bg-emerald-500/25"
+                          : "bg-slate-700/50 border-slate-600 text-slate-400 hover:bg-slate-700"
                       }`}
                     >
                       {p.is_published ? "Published" : "Draft"}
-                    </span>
+                    </button>
                   </td>
-                  <td className="py-3 px-4">
-                    {p.is_featured ? (
-                      <span className="px-2 py-0.5 rounded-full font-semibold text-[10px] bg-blue-50 text-blue-700">
-                        Yes
-                      </span>
-                    ) : (
-                      <span className="text-slate-400 text-[10px]">No</span>
-                    )}
+                  <td className="py-3 px-4 text-center">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleFeatured(p)}
+                      title="Click to toggle featured status"
+                      className={`px-3 py-1 rounded-full font-bold text-[10px] transition-all cursor-pointer border ${
+                        p.is_featured
+                          ? "bg-amber-400/15 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                          : "bg-slate-800/40 border-slate-700 text-slate-500 hover:text-slate-300"
+                      }`}
+                    >
+                      {p.is_featured ? "Featured" : "No"}
+                    </button>
                   </td>
                   <td className="py-3 px-4 text-right">
                     <div className="inline-flex items-center gap-1">
                       <Link
                         href={`/projects/${p.slug}`}
                         target="_blank"
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#142c50]"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#142c50] transition-colors"
                         title="View Live Detail Page"
                       >
                         <Eye className="w-3.5 h-3.5" />
                       </Link>
                       <button
                         onClick={() => handleDuplicate(p)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-[#142c50]"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-amber-300 hover:bg-[#142c50] transition-colors cursor-pointer"
                         title="Duplicate"
                       >
                         <Copy className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleEdit(p)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-[#142c50]"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-amber-300 hover:bg-[#142c50] transition-colors cursor-pointer"
                         title="Edit Project"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDelete(p.id)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-[#142c50]"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-[#142c50] transition-colors cursor-pointer"
                         title="Delete Project"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -350,6 +509,39 @@ export default function AdminProjectsPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Floating Bottom Save Bar */}
+      <div className="sticky bottom-4 z-40 bg-[#0d1f38]/95 backdrop-blur-md p-4 rounded-2xl border-2 border-amber-400/60 shadow-[0_10px_35px_rgba(0,0,0,0.5)] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-3 h-3 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_#f59e0b]" />
+          <div>
+            <p className="text-xs font-bold text-white tracking-wide">
+              {projects.length} Total Projects ({projects.filter((p) => p.is_published).length} Published, {projects.filter((p) => p.is_featured).length} Featured)
+            </p>
+            <p className="text-[11px] text-amber-200/70">
+              Click &quot;Save Changes&quot; to commit project records and sync with live portfolio.
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={handleSaveAll}
+          disabled={savingAll}
+          className="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-linear-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-[#071324] font-extrabold text-sm border-2 border-amber-300 shadow-[0_0_25px_rgba(245,158,11,0.5)] tracking-wide transition-all cursor-pointer disabled:opacity-50"
+        >
+          {savingAll ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin text-[#071324]" />
+              <span>Saving Changes...</span>
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4" />
+              <span>Save Changes</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Editor Modal */}

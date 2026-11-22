@@ -12,6 +12,7 @@ import {
   deleteSkill,
   getProjects,
   saveProject,
+  saveAllProjects,
   deleteProject,
   getExperience,
   saveExperience,
@@ -177,6 +178,11 @@ export async function POST(request: Request) {
 
       case "saveProject": {
         const result = await saveProject(payload);
+        return NextResponse.json({ success: true, data: result });
+      }
+
+      case "saveAllProjects": {
+        const result = await saveAllProjects(payload);
         return NextResponse.json({ success: true, data: result });
       }
 
