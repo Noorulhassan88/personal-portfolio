@@ -2,7 +2,7 @@ import React from "react";
 import ExperienceClient from "@/components/public/ExperienceClient";
 import { getExperience, getHomepageSettings, getSeoSettings } from "@/lib/db";
 
-export const revalidate = 0;
+export const revalidate = 30;
 
 export async function generateMetadata() {
   const seo = await getSeoSettings();

@@ -7,7 +7,7 @@ import { Award, ExternalLink, Calendar, CheckCircle } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import Image from "next/image";
 
-export const revalidate = 0;
+export const revalidate = 30;
 
 export async function generateMetadata() {
   const seo = await getSeoSettings();

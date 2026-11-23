@@ -7,7 +7,7 @@ import { getHomepageSettings, getSeoSettings } from "@/lib/db";
 import { Mail, ArrowUpRight } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/shared/SocialIcons";
 
-export const revalidate = 0;
+export const revalidate = 30;
 
 export async function generateMetadata() {
   const seo = await getSeoSettings();

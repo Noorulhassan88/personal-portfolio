@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getSeoSettings } from "@/lib/db";
 import "./globals.css";
 
-export const revalidate = 0;
+export const revalidate = 30;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeoSettings();

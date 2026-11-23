@@ -2,7 +2,7 @@ import React from "react";
 import HomePageClient from "@/components/public/HomePageClient";
 import { getHomepageSettings, getSeoSettings } from "@/lib/db";
 
-export const revalidate = 0; // Dynamic on admin change
+export const revalidate = 30; // Dynamic with ISR on admin change
 
 export async function generateMetadata() {
   const seo = await getSeoSettings();

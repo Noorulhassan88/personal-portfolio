@@ -7,7 +7,7 @@ import {
 } from "@/lib/db";
 import SkillsClient from "@/components/public/SkillsClient";
 
-export const revalidate = 0;
+export const revalidate = 30;
 
 export async function generateMetadata() {
   const seo = await getSeoSettings();

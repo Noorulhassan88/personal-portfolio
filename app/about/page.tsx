@@ -2,7 +2,7 @@ import React from "react";
 import AboutClient from "@/components/public/AboutClient";
 import { getAboutContent, getHomepageSettings, getSeoSettings } from "@/lib/db";
 
-export const revalidate = 0;
+export const revalidate = 30;
 
 export async function generateMetadata() {
   const [about, seo] = await Promise.all([

@@ -114,27 +114,27 @@ export default function Footer({
             </h4>
             <ul className="space-y-3 text-sm sm:text-base font-medium text-slate-200">
               <li>
-                <Link href="/about" className="hover:text-amber-300 transition-colors">
+                <Link href="/about" prefetch={true} className="hover:text-amber-300 transition-colors">
                   About Me
                 </Link>
               </li>
               <li>
-                <Link href="/skills" className="hover:text-amber-300 transition-colors">
+                <Link href="/skills" prefetch={true} className="hover:text-amber-300 transition-colors">
                   Technical Skills
                 </Link>
               </li>
               <li>
-                <Link href="/projects" className="hover:text-amber-300 transition-colors">
+                <Link href="/projects" prefetch={true} className="hover:text-amber-300 transition-colors">
                   Projects Showcase
                 </Link>
               </li>
               <li>
-                <Link href="/experience" className="hover:text-amber-300 transition-colors">
+                <Link href="/experience" prefetch={true} className="hover:text-amber-300 transition-colors">
                   Experience & Timeline
                 </Link>
               </li>
               <li>
-                <Link href="/certifications" className="hover:text-amber-300 transition-colors">
+                <Link href="/certifications" prefetch={true} className="hover:text-amber-300 transition-colors">
                   Certifications
                 </Link>
               </li>
@@ -187,6 +187,7 @@ export default function Footer({
           <div>
             <Link
               href={footerData.cta_link || "/contact"}
+              prefetch={true}
               className="text-amber-400 hover:text-amber-300 font-bold transition-colors inline-flex items-center"
             >
               <span>{footerData.cta_text || "Get in Touch"}</span>

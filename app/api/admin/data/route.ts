@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import {
   getHomepageSettings,
   updateHomepageSettings,
@@ -35,6 +36,7 @@ import {
   getMediaItems,
   addMediaItem,
   deleteMediaItem,
+  clearDataCache,
 } from "@/lib/db";
 
 export async function GET(request: Request) {
@@ -154,6 +156,10 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const { action, payload } = await request.json();
+    clearDataCache();
+    try {
+      revalidatePath("/", "layout");
+    } catch {}
 
     switch (action) {
       case "updateHomepage": {

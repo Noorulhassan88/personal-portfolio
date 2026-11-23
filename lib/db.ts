@@ -150,21 +150,68 @@ const globalForStore = globalThis as unknown as { localStore?: LocalStore };
 export const localStore = globalForStore.localStore || new LocalStore();
 if (process.env.NODE_ENV !== "production") globalForStore.localStore = localStore;
 
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+const memoryCache = new Map<string, CacheEntry<any>>();
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds TTL
+
+export function clearDataCache(key?: string) {
+  if (key) {
+    memoryCache.delete(key);
+  } else {
+    memoryCache.clear();
+  }
+}
+
+async function getCachedOrFetch<T>(
+  key: string,
+  fetcher: () => Promise<T>,
+  ttl = CACHE_TTL_MS
+): Promise<T> {
+  const cached = memoryCache.get(key);
+  const now = Date.now();
+  if (cached && now - cached.timestamp < ttl) {
+    return cached.data;
+  }
+
+  try {
+    const data = await fetcher();
+    memoryCache.set(key, { data, timestamp: now });
+    return data;
+  } catch (error) {
+    if (cached) return cached.data;
+    throw error;
+  }
+}
+
 function persistChanges() {
   saveDiskStore(localStore);
+  clearDataCache();
 }
 
 // Unified Data Access Layer
 export async function getHomepageSettings(): Promise<HomepageSettings> {
-  const supabase = await createServerSupabaseClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("homepage_settings")
-      .select("*")
-      .single();
-    if (!error && data) return data as HomepageSettings;
-  }
-  return localStore.homepage;
+  return getCachedOrFetch("homepage_settings", async () => {
+    try {
+      const supabase = await createServerSupabaseClient();
+      if (supabase) {
+        const { data, error } = await supabase
+          .from("homepage_settings")
+          .select("*")
+          .single();
+        if (!error && data) {
+          localStore.homepage = data as HomepageSettings;
+          return data as HomepageSettings;
+        }
+      }
+    } catch (err) {
+      console.warn("Supabase homepage fallback:", err);
+    }
+    return localStore.homepage;
+  });
 }
 
 export async function updateHomepageSettings(
@@ -202,56 +249,58 @@ export async function updateHomepageSettings(
 }
 
 export async function getAboutContent(): Promise<AboutContent> {
-  try {
-    const supabase = await createServerSupabaseClient();
-    if (supabase) {
-      const { data, error } = await supabase
-        .from("about_content")
-        .select("*")
-        .single();
-      if (!error && data) {
-        const row = data as any;
-        const result: AboutContent = {
-          ...localStore.about,
-          ...row,
-          header_title:
-            row.header_title ||
-            row.development_philosophy ||
-            localStore.about.header_title ||
-            "Bridging Artificial Intelligence with Modern Web Architecture.",
-          header_description:
-            (row.header_description && !row.header_description.includes("development philosophy"))
-              ? row.header_description
-              : (row.career_objectives && !row.career_objectives.includes("development philosophy"))
-              ? row.career_objectives
-              : (localStore.about.header_description && !localStore.about.header_description.includes("development philosophy"))
-              ? localStore.about.header_description
-              : "Discover my background, education, and technical expertise in building scalable software systems and applied AI.",
-          areas_of_specialization:
-            row.areas_of_specialization && row.areas_of_specialization.length > 0
-              ? row.areas_of_specialization
-              : localStore.about.areas_of_specialization,
-          technical_interests:
-            row.technical_interests && row.technical_interests.length > 0
-              ? row.technical_interests
-              : localStore.about.technical_interests,
-          bio_paragraphs:
-            row.bio_paragraphs && row.bio_paragraphs.length > 0
-              ? row.bio_paragraphs
-              : localStore.about.bio_paragraphs,
-          education:
-            row.education && row.education.length > 0
-              ? row.education
-              : localStore.about.education,
-        };
-        localStore.about = result;
-        return result;
+  return getCachedOrFetch("about_content", async () => {
+    try {
+      const supabase = await createServerSupabaseClient();
+      if (supabase) {
+        const { data, error } = await supabase
+          .from("about_content")
+          .select("*")
+          .single();
+        if (!error && data) {
+          const row = data as any;
+          const result: AboutContent = {
+            ...localStore.about,
+            ...row,
+            header_title:
+              row.header_title ||
+              row.development_philosophy ||
+              localStore.about.header_title ||
+              "Bridging Artificial Intelligence with Modern Web Architecture.",
+            header_description:
+              (row.header_description && !row.header_description.includes("development philosophy"))
+                ? row.header_description
+                : (row.career_objectives && !row.career_objectives.includes("development philosophy"))
+                ? row.career_objectives
+                : (localStore.about.header_description && !localStore.about.header_description.includes("development philosophy"))
+                ? localStore.about.header_description
+                : "Discover my background, education, and technical expertise in building scalable software systems and applied AI.",
+            areas_of_specialization:
+              row.areas_of_specialization && row.areas_of_specialization.length > 0
+                ? row.areas_of_specialization
+                : localStore.about.areas_of_specialization,
+            technical_interests:
+              row.technical_interests && row.technical_interests.length > 0
+                ? row.technical_interests
+                : localStore.about.technical_interests,
+            bio_paragraphs:
+              row.bio_paragraphs && row.bio_paragraphs.length > 0
+                ? row.bio_paragraphs
+                : localStore.about.bio_paragraphs,
+            education:
+              row.education && row.education.length > 0
+                ? row.education
+                : localStore.about.education,
+          };
+          localStore.about = result;
+          return result;
+        }
       }
+    } catch (err) {
+      console.warn("Supabase about query fallback:", err);
     }
-  } catch (err) {
-    console.warn("Supabase about query fallback:", err);
-  }
-  return localStore.about;
+    return localStore.about;
+  });
 }
 
 export async function updateAboutContent(
@@ -310,39 +359,49 @@ export async function updateAboutContent(
 }
 
 export async function getSkillCategories(): Promise<SkillCategory[]> {
-  try {
-    const supabase = await createServerSupabaseClient();
-    if (supabase) {
-      const { data, error } = await supabase
-        .from("skill_categories")
-        .select("*")
-        .order("sort_order", { ascending: true });
-      if (!error && data && data.length > 0) return data as SkillCategory[];
+  return getCachedOrFetch("skill_categories", async () => {
+    try {
+      const supabase = await createServerSupabaseClient();
+      if (supabase) {
+        const { data, error } = await supabase
+          .from("skill_categories")
+          .select("*")
+          .order("sort_order", { ascending: true });
+        if (!error && data && data.length > 0) {
+          localStore.skillCategories = data as SkillCategory[];
+          return data as SkillCategory[];
+        }
+      }
+    } catch (err) {
+      console.warn("Supabase skill categories fallback:", err);
     }
-  } catch (err) {
-    console.warn("Supabase skill categories fallback:", err);
-  }
-  return localStore.skillCategories.sort((a, b) => a.sort_order - b.sort_order);
+    return localStore.skillCategories.sort((a, b) => a.sort_order - b.sort_order);
+  });
 }
 
 export async function getSkills(onlyActive = true): Promise<Skill[]> {
-  try {
-    const supabase = await createServerSupabaseClient();
-    if (supabase) {
-      let query = supabase.from("skills").select("*").order("sort_order", { ascending: true });
-      if (onlyActive) {
-        query = query.eq("is_active", true);
+  return getCachedOrFetch(`skills_${onlyActive}`, async () => {
+    try {
+      const supabase = await createServerSupabaseClient();
+      if (supabase) {
+        let query = supabase.from("skills").select("*").order("sort_order", { ascending: true });
+        if (onlyActive) {
+          query = query.eq("is_active", true);
+        }
+        const { data, error } = await query;
+        if (!error && data && data.length > 0) {
+          if (!onlyActive) localStore.skills = data as Skill[];
+          return data as Skill[];
+        }
       }
-      const { data, error } = await query;
-      if (!error && data && data.length > 0) return data as Skill[];
+    } catch (err) {
+      console.warn("Supabase skills fallback:", err);
     }
-  } catch (err) {
-    console.warn("Supabase skills fallback:", err);
-  }
-  const skills = onlyActive
-    ? localStore.skills.filter((s) => s.is_active)
-    : localStore.skills;
-  return skills.sort((a, b) => a.sort_order - b.sort_order);
+    const skills = onlyActive
+      ? localStore.skills.filter((s) => s.is_active)
+      : localStore.skills;
+    return skills.sort((a, b) => a.sort_order - b.sort_order);
+  });
 }
 
 export async function saveSkill(skill: Skill): Promise<Skill> {
@@ -438,40 +497,45 @@ export async function getProjects(options?: {
   featuredOnly?: boolean;
   category?: string;
 }): Promise<Project[]> {
-  try {
-    const supabase = await createServerSupabaseClient();
-    if (supabase) {
-      let query = supabase.from("projects").select("*").order("sort_order", { ascending: true });
-      if (options?.publishedOnly) {
-        query = query.eq("is_published", true);
+  const cacheKey = `projects_${options?.publishedOnly}_${options?.featuredOnly}_${options?.category}`;
+  return getCachedOrFetch(cacheKey, async () => {
+    try {
+      const supabase = await createServerSupabaseClient();
+      if (supabase) {
+        let query = supabase.from("projects").select("*").order("sort_order", { ascending: true });
+        if (options?.publishedOnly) {
+          query = query.eq("is_published", true);
+        }
+        if (options?.featuredOnly) {
+          query = query.eq("is_featured", true);
+        }
+        if (options?.category && options.category !== "All") {
+          query = query.eq("category", options.category);
+        }
+        const { data, error } = await query;
+        if (!error && data) {
+          if (!options?.publishedOnly && !options?.featuredOnly && !options?.category) {
+            localStore.projects = data as Project[];
+          }
+          return data as Project[];
+        }
       }
-      if (options?.featuredOnly) {
-        query = query.eq("is_featured", true);
-      }
-      if (options?.category && options.category !== "All") {
-        query = query.eq("category", options.category);
-      }
-      const { data, error } = await query;
-      if (!error && data) {
-        localStore.projects = data as Project[];
-        return data as Project[];
-      }
+    } catch (err) {
+      console.warn("Supabase projects fallback:", err);
     }
-  } catch (err) {
-    console.warn("Supabase projects fallback:", err);
-  }
 
-  let projects = [...localStore.projects];
-  if (options?.publishedOnly) {
-    projects = projects.filter((p) => p.is_published);
-  }
-  if (options?.featuredOnly) {
-    projects = projects.filter((p) => p.is_featured);
-  }
-  if (options?.category && options.category !== "All") {
-    projects = projects.filter((p) => p.category === options.category);
-  }
-  return projects.sort((a, b) => a.sort_order - b.sort_order);
+    let projects = [...localStore.projects];
+    if (options?.publishedOnly) {
+      projects = projects.filter((p) => p.is_published);
+    }
+    if (options?.featuredOnly) {
+      projects = projects.filter((p) => p.is_featured);
+    }
+    if (options?.category && options.category !== "All") {
+      projects = projects.filter((p) => p.category === options.category);
+    }
+    return projects.sort((a, b) => a.sort_order - b.sort_order);
+  });
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
@@ -590,19 +654,24 @@ export async function deleteProject(projectId: string): Promise<boolean> {
 }
 
 export async function getExperience(onlyPublished = true): Promise<ExperienceEntry[]> {
-  try {
-    const supabase = await createServerSupabaseClient();
-    if (supabase) {
-      const { data, error } = await supabase
-        .from("experience")
-        .select("*")
-        .order("sort_order", { ascending: true });
-      if (!error && data && data.length > 0) return data as ExperienceEntry[];
+  return getCachedOrFetch(`experience_${onlyPublished}`, async () => {
+    try {
+      const supabase = await createServerSupabaseClient();
+      if (supabase) {
+        const { data, error } = await supabase
+          .from("experience")
+          .select("*")
+          .order("sort_order", { ascending: true });
+        if (!error && data && data.length > 0) {
+          localStore.experience = data as ExperienceEntry[];
+          return data as ExperienceEntry[];
+        }
+      }
+    } catch (err) {
+      console.warn("Supabase experience fallback:", err);
     }
-  } catch (err) {
-    console.warn("Supabase experience fallback:", err);
-  }
-  return localStore.experience.sort((a, b) => a.sort_order - b.sort_order);
+    return localStore.experience.sort((a, b) => a.sort_order - b.sort_order);
+  });
 }
 
 export async function saveExperience(entry: ExperienceEntry): Promise<ExperienceEntry> {
@@ -672,21 +741,26 @@ export async function saveAllExperience(entries: ExperienceEntry[]): Promise<Exp
 }
 
 export async function getCertifications(onlyPublished = true): Promise<Certification[]> {
-  try {
-    const supabase = await createServerSupabaseClient();
-    if (supabase) {
-      let query = supabase.from("certifications").select("*").order("sort_order", { ascending: true });
-      if (onlyPublished) query = query.eq("is_published", true);
-      const { data, error } = await query;
-      if (!error && data && data.length > 0) return data as Certification[];
+  return getCachedOrFetch(`certifications_${onlyPublished}`, async () => {
+    try {
+      const supabase = await createServerSupabaseClient();
+      if (supabase) {
+        let query = supabase.from("certifications").select("*").order("sort_order", { ascending: true });
+        if (onlyPublished) query = query.eq("is_published", true);
+        const { data, error } = await query;
+        if (!error && data && data.length > 0) {
+          localStore.certifications = data as Certification[];
+          return data as Certification[];
+        }
+      }
+    } catch (err) {
+      console.warn("Supabase certifications fallback:", err);
     }
-  } catch (err) {
-    console.warn("Supabase certifications fallback:", err);
-  }
-  const certs = onlyPublished
-    ? localStore.certifications.filter((c) => c.is_published)
-    : localStore.certifications;
-  return certs.sort((a, b) => a.sort_order - b.sort_order);
+    const certs = onlyPublished
+      ? localStore.certifications.filter((c) => c.is_published)
+      : localStore.certifications;
+    return certs.sort((a, b) => a.sort_order - b.sort_order);
+  });
 }
 
 export async function saveCertification(cert: Certification): Promise<Certification> {
@@ -859,37 +933,39 @@ export async function updateAppearanceSettings(
 }
 
 export async function getSeoSettings(): Promise<SeoSettings> {
-  try {
-    const supabase = await createServerSupabaseClient();
-    if (supabase) {
-      // 1. Try dedicated seo_settings table if created
-      const { data: seoTableData, error: seoTableError } = await supabase
-        .from("seo_settings")
-        .select("*")
-        .single();
-      if (!seoTableError && seoTableData) {
-        localStore.seo = { ...localStore.seo, ...seoTableData };
-        return localStore.seo;
-      }
+  return getCachedOrFetch("seo_settings", async () => {
+    try {
+      const supabase = await createServerSupabaseClient();
+      if (supabase) {
+        // 1. Try dedicated seo_settings table if created
+        const { data: seoTableData, error: seoTableError } = await supabase
+          .from("seo_settings")
+          .select("*")
+          .single();
+        if (!seoTableError && seoTableData) {
+          localStore.seo = { ...localStore.seo, ...seoTableData };
+          return localStore.seo;
+        }
 
-      // 2. Read from homepage_settings.sections_enabled.seo (native JSONB column)
-      const { data: hpData, error: hpError } = await supabase
-        .from("homepage_settings")
-        .select("sections_enabled")
-        .eq("id", "default-homepage")
-        .single();
-      if (!hpError && hpData?.sections_enabled?.seo) {
-        localStore.seo = {
-          ...localStore.seo,
-          ...hpData.sections_enabled.seo,
-        };
-        return localStore.seo;
+        // 2. Read from homepage_settings.sections_enabled.seo (native JSONB column)
+        const { data: hpData, error: hpError } = await supabase
+          .from("homepage_settings")
+          .select("sections_enabled")
+          .eq("id", "default-homepage")
+          .single();
+        if (!hpError && hpData?.sections_enabled?.seo) {
+          localStore.seo = {
+            ...localStore.seo,
+            ...hpData.sections_enabled.seo,
+          };
+          return localStore.seo;
+        }
       }
+    } catch (err) {
+      console.warn("Supabase getSeoSettings fallback:", err);
     }
-  } catch (err) {
-    console.warn("Supabase getSeoSettings fallback:", err);
-  }
-  return localStore.seo;
+    return localStore.seo;
+  });
 }
 
 export async function updateSeoSettings(
@@ -946,22 +1022,24 @@ export async function updateSeoSettings(
 }
 
 export async function getWebsiteSettings(): Promise<WebsiteSettings> {
-  try {
-    const supabase = await createServerSupabaseClient();
-    if (supabase) {
-      const { data, error } = await supabase
-        .from("website_settings")
-        .select("*")
-        .single();
-      if (!error && data) {
-        localStore.settings = { ...localStore.settings, ...data };
-        return localStore.settings;
+  return getCachedOrFetch("website_settings", async () => {
+    try {
+      const supabase = await createServerSupabaseClient();
+      if (supabase) {
+        const { data, error } = await supabase
+          .from("website_settings")
+          .select("*")
+          .single();
+        if (!error && data) {
+          localStore.settings = { ...localStore.settings, ...data };
+          return localStore.settings;
+        }
       }
+    } catch (err) {
+      console.warn("Supabase getWebsiteSettings fallback:", err);
     }
-  } catch (err) {
-    console.warn("Supabase getWebsiteSettings fallback:", err);
-  }
-  return localStore.settings;
+    return localStore.settings;
+  });
 }
 
 export async function updateWebsiteSettings(
@@ -1021,41 +1099,43 @@ export async function updateWebsiteSettings(
 }
 
 export async function getFooterSettings(): Promise<FooterSettings> {
-  try {
-    const supabase = await createServerSupabaseClient();
-    if (supabase) {
-      const { data: hp, error } = await supabase
-        .from("homepage_settings")
-        .select("sections_enabled, social_github, social_linkedin, social_email, name")
-        .eq("id", "default-homepage")
-        .single();
+  return getCachedOrFetch("footer_settings", async () => {
+    try {
+      const supabase = await createServerSupabaseClient();
+      if (supabase) {
+        const { data: hp, error } = await supabase
+          .from("homepage_settings")
+          .select("sections_enabled, social_github, social_linkedin, social_email, name")
+          .eq("id", "default-homepage")
+          .single();
 
-      if (!error && hp) {
-        const sections = hp.sections_enabled as any;
-        if (sections && sections.footer_data) {
-          localStore.footer = {
-            ...localStore.footer,
-            ...sections.footer_data,
-            github_url: sections.footer_data.github_url || hp.social_github || localStore.footer.github_url,
-            linkedin_url: sections.footer_data.linkedin_url || hp.social_linkedin || localStore.footer.linkedin_url,
-            email: sections.footer_data.email || hp.social_email || localStore.footer.email,
-          };
-          return localStore.footer;
-        } else {
-          localStore.footer = {
-            ...localStore.footer,
-            github_url: hp.social_github || localStore.footer.github_url,
-            linkedin_url: hp.social_linkedin || localStore.footer.linkedin_url,
-            email: hp.social_email || localStore.footer.email,
-          };
-          return localStore.footer;
+        if (!error && hp) {
+          const sections = hp.sections_enabled as any;
+          if (sections && sections.footer_data) {
+            localStore.footer = {
+              ...localStore.footer,
+              ...sections.footer_data,
+              github_url: sections.footer_data.github_url || hp.social_github || localStore.footer.github_url,
+              linkedin_url: sections.footer_data.linkedin_url || hp.social_linkedin || localStore.footer.linkedin_url,
+              email: sections.footer_data.email || hp.social_email || localStore.footer.email,
+            };
+            return localStore.footer;
+          } else {
+            localStore.footer = {
+              ...localStore.footer,
+              github_url: hp.social_github || localStore.footer.github_url,
+              linkedin_url: hp.social_linkedin || localStore.footer.linkedin_url,
+              email: hp.social_email || localStore.footer.email,
+            };
+            return localStore.footer;
+          }
         }
       }
+    } catch (err) {
+      console.warn("Supabase getFooterSettings fallback:", err);
     }
-  } catch (err) {
-    console.warn("Supabase getFooterSettings fallback:", err);
-  }
-  return localStore.footer;
+    return localStore.footer;
+  });
 }
 
 export async function updateFooterSettings(
