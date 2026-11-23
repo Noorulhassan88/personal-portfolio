@@ -4,9 +4,17 @@ import Image from "next/image";
 import { ArrowRight, ExternalLink, Cpu } from "lucide-react";
 import { GithubIcon } from "@/components/shared/SocialIcons";
 import { Project } from "@/types/portfolio";
+import { slugify } from "@/lib/utils";
 
 interface FeaturedProjectsProps {
   projects: Project[];
+}
+
+function getSafeSlug(project: Project): string {
+  if (project.slug && !project.slug.startsWith("http")) {
+    return project.slug;
+  }
+  return slugify(project.title) || project.id;
 }
 
 export default function FeaturedProjects({ projects }: FeaturedProjectsProps) {
@@ -40,7 +48,7 @@ export default function FeaturedProjects({ projects }: FeaturedProjectsProps) {
             >
               {/* Project Thumbnail Image */}
               <Link
-                href={`/projects/${project.slug}`}
+                href={`/projects/${getSafeSlug(project)}`}
                 className="relative block h-48 sm:h-52 w-full overflow-hidden bg-[#071324]"
               >
                 {project.thumbnail_url ? (
@@ -67,7 +75,7 @@ export default function FeaturedProjects({ projects }: FeaturedProjectsProps) {
               <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>
                   <h3 className="text-lg font-bold text-white tracking-tight group-hover:text-amber-300 transition-colors">
-                    <Link href={`/projects/${project.slug}`}>{project.title}</Link>
+                    <Link href={`/projects/${getSafeSlug(project)}`}>{project.title}</Link>
                   </h3>
                   <p className="mt-2 text-xs sm:text-sm text-neutral-600 line-clamp-3 leading-relaxed">
                     {project.short_description}
@@ -95,7 +103,7 @@ export default function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                   {/* Links */}
                   <div className="flex items-center justify-between text-xs">
                     <Link
-                      href={`/projects/${project.slug}`}
+                      href={`/projects/${getSafeSlug(project)}`}
                       className="font-bold text-amber-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1.5"
                     >
                       <span>View Details</span>

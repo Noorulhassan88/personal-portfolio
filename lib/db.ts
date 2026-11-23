@@ -15,6 +15,7 @@ import {
   initialContactMessages,
   initialFooterSettings,
 } from "@/data/initialData";
+import { slugify } from "@/lib/utils";
 import {
   HomepageSettings,
   AboutContent,
@@ -538,26 +539,121 @@ export async function getProjects(options?: {
   });
 }
 
+export function sanitizeProject(project: Project): Project {
+  let slug = (project.slug || "").trim();
+  let liveDemo = (project.live_demo_url || "").trim();
+  if (slug.startsWith("http://") || slug.startsWith("https://")) {
+    if (!liveDemo) {
+      liveDemo = slug;
+    }
+    slug = slugify(project.title) || project.id;
+  } else {
+    slug = slugify(slug || project.title) || project.id;
+  }
+  return {
+    ...project,
+    slug,
+    live_demo_url: liveDemo,
+  };
+}
+
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
+  if (!slug) return null;
+  let decoded = "";
+  try {
+    decoded = decodeURIComponent(slug).trim();
+  } catch {
+    decoded = slug.trim();
+  }
+
+  const clean = decoded.replace(/^https?:\/\//i, "").replace(/[\/\?#].*$/, "").trim();
+  const cleanSlugified = slugify(clean);
+
+  // 1. Check cached projects via getProjects (fast and consistent)
+  try {
+    const allProjects = await getProjects();
+    if (allProjects && allProjects.length > 0) {
+      let match = allProjects.find((p) => p.slug === slug || p.slug === decoded);
+      if (match) return match;
+
+      match = allProjects.find(
+        (p) =>
+          p.slug === clean ||
+          p.slug === cleanSlugified ||
+          slugify(p.slug) === cleanSlugified
+      );
+      if (match) return match;
+
+      match = allProjects.find((p) => p.id === decoded || p.id === clean);
+      if (match) return match;
+
+      match = allProjects.find(
+        (p) =>
+          slugify(p.title) === cleanSlugified ||
+          slugify(p.title) === slugify(decoded)
+      );
+      if (match) return match;
+
+      match = allProjects.find((p) => {
+        if (!p.live_demo_url) return false;
+        const cleanDemo = p.live_demo_url
+          .replace(/^https?:\/\//i, "")
+          .replace(/\/+$/, "")
+          .toLowerCase();
+        return cleanDemo === clean.toLowerCase() || cleanDemo.includes(clean.toLowerCase());
+      });
+      if (match) return match;
+    }
+  } catch (err) {
+    console.warn("getProjectBySlug getProjects warning:", err);
+  }
+
+  // 2. Direct Supabase query as fallback
   try {
     const supabase = await createServerSupabaseClient();
     if (supabase) {
-      const { data, error } = await supabase
+      const { data: exact } = await supabase
         .from("projects")
         .select("*")
-        .eq("slug", slug)
+        .eq("slug", decoded)
         .maybeSingle();
-      if (!error) return (data as Project) || null;
+      if (exact) return exact as Project;
+
+      if (cleanSlugified) {
+        const { data: byClean } = await supabase
+          .from("projects")
+          .select("*")
+          .eq("slug", cleanSlugified)
+          .maybeSingle();
+        if (byClean) return byClean as Project;
+      }
+
+      const { data: byId } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("id", decoded)
+        .maybeSingle();
+      if (byId) return byId as Project;
     }
   } catch (err) {
     console.warn("Supabase project slug fallback:", err);
   }
-  const found = localStore.projects.find((p) => p.slug === slug);
+
+  // 3. Fallback to localStore
+  const found = localStore.projects.find(
+    (p) =>
+      p.slug === decoded ||
+      p.slug === clean ||
+      p.slug === cleanSlugified ||
+      p.id === decoded ||
+      slugify(p.title) === cleanSlugified
+  );
   return found || null;
 }
 
 export async function saveProject(project: Project): Promise<Project> {
-  const updatedProject = { ...project, updated_at: new Date().toISOString() };
+  const sanitized = sanitizeProject(project);
+  const updatedProject = { ...sanitized, updated_at: new Date().toISOString() };
   try {
     const supabase = await createServerSupabaseClient();
     if (supabase) {
@@ -567,7 +663,7 @@ export async function saveProject(project: Project): Promise<Project> {
         .select()
         .single();
       if (!error && data) {
-        const index = localStore.projects.findIndex((p) => p.id === project.id);
+        const index = localStore.projects.findIndex((p) => p.id === sanitized.id);
         if (index >= 0) localStore.projects[index] = data as Project;
         else localStore.projects.push(data as Project);
         persistChanges();
@@ -577,7 +673,7 @@ export async function saveProject(project: Project): Promise<Project> {
   } catch (err) {
     console.warn("Supabase save project fallback:", err);
   }
-  const index = localStore.projects.findIndex((p) => p.id === project.id);
+  const index = localStore.projects.findIndex((p) => p.id === sanitized.id);
   if (index >= 0) {
     localStore.projects[index] = updatedProject;
   } else {
@@ -588,11 +684,14 @@ export async function saveProject(project: Project): Promise<Project> {
 }
 
 export async function saveAllProjects(projects: Project[]): Promise<Project[]> {
-  const updatedProjects = projects.map((p, idx) => ({
-    ...p,
-    sort_order: p.sort_order ?? idx + 1,
-    updated_at: new Date().toISOString(),
-  }));
+  const updatedProjects = projects.map((p, idx) => {
+    const sanitized = sanitizeProject(p);
+    return {
+      ...sanitized,
+      sort_order: sanitized.sort_order ?? idx + 1,
+      updated_at: new Date().toISOString(),
+    };
+  });
 
   try {
     const supabase = await createServerSupabaseClient();

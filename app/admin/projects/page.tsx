@@ -34,10 +34,31 @@ export default function AdminProjectsPage() {
   const [savingAll, setSavingAll] = useState(false);
 
   useEffect(() => {
+    const sanitizeProjects = (list: Project[]) => {
+      return list.map((p) => {
+        let slug = (p.slug || "").trim();
+        let live_demo_url = (p.live_demo_url || "").trim();
+        if (slug.startsWith("http://") || slug.startsWith("https://")) {
+          if (!live_demo_url) live_demo_url = slug;
+          slug = slugify(p.title) || p.id;
+        }
+        return {
+          ...p,
+          slug: slug || slugify(p.title) || p.id,
+          live_demo_url,
+        };
+      });
+    };
+
     try {
       const local = localStorage.getItem("portfolio_projects");
       if (local) {
-        setProjects(JSON.parse(local));
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed)) {
+          const sanitized = sanitizeProjects(parsed);
+          setProjects(sanitized);
+          localStorage.setItem("portfolio_projects", JSON.stringify(sanitized));
+        }
       }
     } catch (e) {
       console.error(e);
@@ -46,10 +67,11 @@ export default function AdminProjectsPage() {
     fetch("/api/admin/data?section=projects")
       .then((res) => res.json())
       .then((res) => {
-        if (res.success && res.data) {
-          setProjects(res.data);
+        if (res.success && res.data && Array.isArray(res.data)) {
+          const sanitized = sanitizeProjects(res.data);
+          setProjects(sanitized);
           try {
-            localStorage.setItem("portfolio_projects", JSON.stringify(res.data));
+            localStorage.setItem("portfolio_projects", JSON.stringify(sanitized));
           } catch {}
         }
       })
@@ -282,9 +304,22 @@ export default function AdminProjectsPage() {
     e.preventDefault();
     if (!editingProject) return;
 
+    let cleanSlug = (editingProject.slug || "").trim();
+    let liveDemo = (editingProject.live_demo_url || "").trim();
+
+    if (cleanSlug.startsWith("http://") || cleanSlug.startsWith("https://")) {
+      if (!liveDemo) {
+        liveDemo = cleanSlug;
+      }
+      cleanSlug = slugify(editingProject.title) || `proj-${Date.now()}`;
+    } else {
+      cleanSlug = slugify(cleanSlug || editingProject.title) || `proj-${Date.now()}`;
+    }
+
     const payload = {
       ...editingProject,
-      slug: editingProject.slug || slugify(editingProject.title),
+      slug: cleanSlug,
+      live_demo_url: liveDemo,
     };
 
     const exists = projects.some((p) => p.id === payload.id);
@@ -480,7 +515,7 @@ export default function AdminProjectsPage() {
                   <td className="py-3 px-4 text-right">
                     <div className="inline-flex items-center gap-1">
                       <Link
-                        href={`/projects/${p.slug}`}
+                        href={`/projects/${p.slug && !p.slug.startsWith("http") ? p.slug : slugify(p.title)}`}
                         target="_blank"
                         className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#142c50] transition-colors"
                         title="View Live Detail Page"
@@ -600,8 +635,27 @@ export default function AdminProjectsPage() {
                     onChange={(e) =>
                       setEditingProject({ ...editingProject, slug: e.target.value })
                     }
+                    onBlur={() => {
+                      if (editingProject.slug?.startsWith("http")) {
+                        const url = editingProject.slug.trim();
+                        setEditingProject({
+                          ...editingProject,
+                          slug: slugify(editingProject.title) || `proj-${Date.now()}`,
+                          live_demo_url: editingProject.live_demo_url || url,
+                        });
+                      } else if (editingProject.slug) {
+                        setEditingProject({
+                          ...editingProject,
+                          slug: slugify(editingProject.slug),
+                        });
+                      }
+                    }}
+                    placeholder="e.g. heavenly-treats"
                     className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs text-white"
                   />
+                  <p className="mt-1 text-[10px] text-slate-400">
+                    Used in URL (/projects/slug). Enter website address in Live Demo URL.
+                  </p>
                 </div>
               </div>
 

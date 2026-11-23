@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ArrowRight, ExternalLink, Search, Cpu } from "lucide-react";
 import { GithubIcon } from "@/components/shared/SocialIcons";
 import { Project } from "@/types/portfolio";
+import { slugify } from "@/lib/utils";
 
 interface ProjectsGalleryProps {
   initialProjects: Project[];
@@ -13,19 +14,56 @@ interface ProjectsGalleryProps {
 
 const categories = ["All", "Full Stack", "AI/ML"];
 
+function getSafeSlug(project: Project): string {
+  if (project.slug && !project.slug.startsWith("http")) {
+    return project.slug;
+  }
+  return slugify(project.title) || project.id;
+}
+
 export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProps) {
-  const [projectsList, setProjectsList] = useState<Project[]>(initialProjects);
+  const [projectsList, setProjectsList] = useState<Project[]>(() => {
+    return initialProjects.map((p) => {
+      let slug = (p.slug || "").trim();
+      let live_demo_url = (p.live_demo_url || "").trim();
+      if (slug.startsWith("http://") || slug.startsWith("https://")) {
+        if (!live_demo_url) live_demo_url = slug;
+        slug = slugify(p.title) || p.id;
+      }
+      return { ...p, slug: slug || slugify(p.title) || p.id, live_demo_url };
+    });
+  });
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
+    const sanitizeProjects = (list: Project[]) => {
+      return list.map((p) => {
+        let slug = (p.slug || "").trim();
+        let live_demo_url = (p.live_demo_url || "").trim();
+        if (slug.startsWith("http://") || slug.startsWith("https://")) {
+          if (!live_demo_url) live_demo_url = slug;
+          slug = slugify(p.title) || p.id;
+        }
+        return {
+          ...p,
+          slug: slug || slugify(p.title) || p.id,
+          live_demo_url,
+        };
+      });
+    };
+
     const syncLocal = () => {
       try {
         const local = localStorage.getItem("portfolio_projects");
         if (local !== null) {
           const parsed = JSON.parse(local);
           if (Array.isArray(parsed)) {
-            setProjectsList(parsed.filter((p: Project) => p.is_published));
+            const sanitized = sanitizeProjects(parsed);
+            setProjectsList(sanitized.filter((p: Project) => p.is_published));
+            try {
+              localStorage.setItem("portfolio_projects", JSON.stringify(sanitized));
+            } catch {}
           }
         }
       } catch (e) {
@@ -39,10 +77,11 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
       .then((res) => res.json())
       .then((res) => {
         if (res.success && res.data && Array.isArray(res.data)) {
-          const published = res.data.filter((p: Project) => p.is_published);
+          const sanitized = sanitizeProjects(res.data);
+          const published = sanitized.filter((p: Project) => p.is_published);
           setProjectsList(published);
           try {
-            localStorage.setItem("portfolio_projects", JSON.stringify(res.data));
+            localStorage.setItem("portfolio_projects", JSON.stringify(sanitized));
           } catch {}
         }
       })
@@ -136,7 +175,7 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
             >
               {/* Thumbnail */}
               <Link
-                href={`/projects/${project.slug}`}
+                href={`/projects/${getSafeSlug(project)}`}
                 className="relative block h-52 w-full overflow-hidden bg-[#071324]"
               >
                 {project.thumbnail_url ? (
@@ -169,7 +208,7 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
               <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>
                   <h3 className="text-lg font-bold text-white tracking-tight group-hover:text-amber-400 transition-colors">
-                    <Link href={`/projects/${project.slug}`}>{project.title}</Link>
+                    <Link href={`/projects/${getSafeSlug(project)}`}>{project.title}</Link>
                   </h3>
                   <p className="mt-2 text-xs sm:text-sm text-slate-300 line-clamp-3 leading-relaxed">
                     {project.short_description}
@@ -197,7 +236,7 @@ export default function ProjectsGallery({ initialProjects }: ProjectsGalleryProp
                   {/* Actions */}
                   <div className="flex items-center justify-between text-xs">
                     <Link
-                      href={`/projects/${project.slug}`}
+                      href={`/projects/${getSafeSlug(project)}`}
                       className="font-bold text-amber-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1.5"
                     >
                       <span>View Deep Dive</span>
