@@ -92,8 +92,8 @@ export interface Project {
   github_url?: string;
   live_demo_url?: string;
   video_url?: string;
-  problem_statement: string;
-  solution: string;
+  problem_statement?: string;
+  solution?: string;
   key_features: string[];
   technical_implementation: string;
   challenges_solutions: {

@@ -9,7 +9,6 @@ import {
   ExternalLink,
   ChevronRight,
   CheckCircle2,
-  AlertCircle,
   TrendingUp,
   Layers,
   ArrowLeft,
@@ -124,7 +123,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                 </div>
               )}
 
-              {/* Overview & Problem Statement */}
+              {/* Overview */}
               <section className="space-y-4">
                 <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
                   Project Overview
@@ -132,29 +131,6 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                 <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
                   {project.full_description}
                 </p>
-              </section>
-
-              {/* Problem & Solution Grid */}
-              <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-lg">
-                  <div className="flex items-center gap-2 text-amber-400 font-bold text-sm mb-3">
-                    <AlertCircle className="w-4 h-4 text-amber-400" />
-                    <span>The Problem Statement</span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                    {project.problem_statement}
-                  </p>
-                </div>
-
-                <div className="p-6 rounded-2xl bg-[#0d1f38] border border-amber-500/30 shadow-lg">
-                  <div className="flex items-center gap-2 text-amber-300 font-bold text-sm mb-3">
-                    <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                    <span>Proposed Solution</span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                    {project.solution}
-                  </p>
-                </div>
               </section>
 
               {/* Architecture Section */}

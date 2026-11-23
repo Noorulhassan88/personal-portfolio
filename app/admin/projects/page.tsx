@@ -757,42 +757,6 @@ export default function AdminProjectsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-amber-300 mb-1">
-                    Problem Statement
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={editingProject.problem_statement}
-                    onChange={(e) =>
-                      setEditingProject({
-                        ...editingProject,
-                        problem_statement: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs resize-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-amber-300 mb-1">
-                    Proposed Solution
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={editingProject.solution}
-                    onChange={(e) =>
-                      setEditingProject({
-                        ...editingProject,
-                        solution: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 text-xs resize-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-amber-300 mb-1">
                     GitHub URL
                   </label>
                   <input
