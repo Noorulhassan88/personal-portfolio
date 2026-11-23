@@ -89,9 +89,9 @@ export default function Navbar({ name = "Noorul Hassan" }: NavbarProps) {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-none ${
           isScrolled || mobileMenuOpen
-            ? "bg-[#071324]/95 backdrop-blur-md border-b border-amber-500/25 shadow-lg py-2.5 sm:py-3 text-white"
+            ? "bg-[#071324]/95 backdrop-blur-md shadow-[0_4px_25px_rgba(0,0,0,0.6)] py-2.5 sm:py-3 text-white"
             : "bg-transparent py-3.5 sm:py-5 text-white"
         }`}
       >
